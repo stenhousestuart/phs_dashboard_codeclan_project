@@ -1,0 +1,91 @@
+---
+title: "demographics"
+output: html_notebook
+---
+
+# Load Libraries
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+# Read In Data
+```{r}
+admission_demographics <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv")
+```
+
+# Data Cleaning
+
+## Clean Variable Names 
+```{r}
+admission_demographics_clean <- admission_demographics %>% clean_names()
+```
+
+## Select Required Variables
+```{r}
+admission_demographics_clean <- admission_demographics_clean %>% 
+  select(quarter, hb, location, admission_type, sex, age, episodes, 
+         length_of_episode, average_length_of_episode, stays,
+         length_of_stay, average_length_of_stay)
+```
+
+## Select Required Variables
+```{r}
+admission_demographics_clean <- admission_demographics_clean %>% mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
+         hb = ifelse(hb == "S08000016", "Borders", hb),
+         hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
+         hb = ifelse(hb == "S08000018", "Fife", hb),
+         hb = ifelse(hb == "S08000019", "Forth Valley", hb),
+         hb = ifelse(hb == "S08000020", "Grampian", hb),
+         hb = ifelse(hb == "S08000021", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000022", "Highland", hb),
+         hb = ifelse(hb == "S08000023", "Lanarkshire", hb),
+         hb = ifelse(hb == "S08000024", "Lothian", hb),
+         hb = ifelse(hb == "S08000025", "Orkney", hb),
+         hb = ifelse(hb == "S08000026", "Shetland", hb),
+         hb = ifelse(hb == "S08000027", "Tayside", hb),
+         hb = ifelse(hb == "S08000028", "Western Isles", hb),
+         hb = ifelse(hb == "S08000029", "Fife", hb),
+         hb = ifelse(hb == "S08000030", "Tayside", hb),
+         hb = ifelse(hb == "S08000031", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000032", "Lanarkshire", hb),
+         hb = ifelse(hb == "S92000003", "All of Scotland", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb)
+         ) %>%
+  rename(nhs_health_board = hb)
+
+```
+
+## Filter for Required Data
+
+```{r}
+admission_demographics_scotland <- admission_demographics_clean %>%
+  filter(nhs_health_board == "All of Scotland",
+         admission_type == "All Inpatients")
+```
+
+```{r}
+
+admission_demographics_scotland %>% 
+  group_by(quarter, sex) %>%
+  summarise(total_admissions = sum(episodes)) %>% 
+  ggplot() +
+  geom_col(aes(x = quarter, y = total_admissions, fill = sex), 
+           position = "fill") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+```
+
+
+```{r}
+admission_demographics_scotland %>% 
+  group_by(quarter, age) %>%
+  summarise(total_admissions = sum(episodes)) %>% 
+  ggplot() +
+  geom_col(aes(x = quarter, y = total_admissions, fill = age), 
+           position = "fill") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
