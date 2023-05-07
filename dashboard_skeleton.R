@@ -23,7 +23,11 @@ ui <- fluidPage(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-      plotOutput("temporal_out")
+      plotOutput("temporal_out"),
+      fluidRow(
+        print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
+            This would be where some stats go, but good luck interpretting these nonsense graphs")
+      )
     ),
     # this allows for multiple inputs for Health Board - Actual data set
     # will probably need more human readable choice names
@@ -47,9 +51,14 @@ ui <- fluidPage(
         actionButton(inputId = "update_geo",
                      label = "Update dashboard")
       ),
-      plotOutput("geo_output")
-      
+      plotOutput("geo_output"),
+      fluidRow(
+        print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
+            This would be where some stats go, but good luck interpretting these nonsense graphs")
+      )
     ),
+    
+    
     # using age for the demographic for testing purposes
     tabPanel(
       title = "Demographic",
@@ -69,22 +78,30 @@ ui <- fluidPage(
       
       fluidRow(
         actionButton(inputId = "update_demo",
-                     label = "Update dashboard"),
-        fluidRow(   
-          plotOutput("demo_output")
+                     label = "Update dashboard")
+        ),
+  
+          plotOutput("demo_output"),
+        
+        fluidRow(
+          print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
+            This would be where some stats go, but good luck interpretting these nonsense graphs")
+        
         )
-      )
-    )
-  ),
+      ),
+      
+    
+  ),  
+  
+  # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
   # Testing a "footer" that mentions where data was taken from
   # Will need to alter link and title for actual dataset used
   # Could be shifted into individual tabs if we end up using different datasets for different outputs
   hr(),
   print("Data taken from "),
-  tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb", 
+  tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
          "Public health Scotland")
 )
-
 
 server <- function(input, output, session) {
   
