@@ -78,6 +78,7 @@ ui <- fluidPage(
   ),
   # Testing a "footer" that mentions where data was taken from
   # Will need to alter link and title for actual dataset used
+  # Could be shifted into individual tabs if we end up using different datasets for different outputs
   hr(),
   print("Data taken from "),
   tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb", 
