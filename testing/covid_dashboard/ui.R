@@ -1,10 +1,6 @@
-library(shiny)
 
-# This is where we'll source in data
-source("example_data.R")
-source("UI.R")
 
-ui <- fluidPage(
+ ui <- fluidPage(
   titlePanel("Change me!"),
   tabsetPanel(
     tabPanel(
@@ -79,17 +75,17 @@ ui <- fluidPage(
       fluidRow(
         actionButton(inputId = "update_demo",
                      label = "Update dashboard")
-        ),
-  
-          plotOutput("demo_output"),
-        
-        fluidRow(
-          print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
-            This would be where some stats go, but good luck interpretting these nonsense graphs")
-        
-        )
       ),
       
+      plotOutput("demo_output"),
+      
+      fluidRow(
+        print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
+            This would be where some stats go, but good luck interpretting these nonsense graphs")
+        
+      )
+    ),
+    
     
   ),  
   
@@ -102,49 +98,4 @@ ui <- fluidPage(
   tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
          "Public health Scotland")
 )
-
-server <- function(input, output, session) {
   
-  # These are test outputs - must be altered to fit real data set!
-  # WARNING! THESE LOOK TERRIBLE!
-  
-  filtered_temporal <- eventReactive(eventExpr = input$update_temporal,
-                                     valueExpr = {
-                                       test_data_year %>% 
-                                         filter(year == input$year_input)
-                                     })
-  
-  filtered_geo <- eventReactive(eventExpr = input$update_geo,
-                                valueExpr = {
-                                  test_data_year %>% 
-                                    filter(HB %in% input$health_board_input,
-                                           year == input$year_input_geo)
-                                })
-  
-  filtered_demo <- eventReactive(eventExpr = input$update_demo,
-                                 valueExpr = {
-                                   test_data_year %>% 
-                                     filter(AgeGroup == input$age_input,
-                                            year == input$year_input_demo)
-                                 })
-  
-  output$temporal_out <- renderPlot(
-    filtered_temporal() %>% 
-      ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
-      geom_line(aes(colour = HB))
-  )
-  
-  output$geo_output <- renderPlot(
-    filtered_geo() %>% 
-      ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
-      geom_line(aes(colour = HB))
-  )
-  
-  output$demo_output <- renderPlot(
-    filtered_demo() %>% 
-      ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
-      geom_line(aes(colour = HB))
-  )
-}
-
-shinyApp(ui, server)
