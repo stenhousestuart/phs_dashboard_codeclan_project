@@ -17,13 +17,10 @@ ui <- fluidPage(
         selectInput(inputId = "year_input",
                     label = "Select Year",
                     choices = year_choice,
-                    multiple = TRUE,
                     selected = "2020"),
         
       ),
       fluidRow(
-        column(
-          width = 6,
           actionButton(inputId = "update_temporal",
                        label = "Update dashboard")
         ) 
@@ -35,15 +32,19 @@ ui <- fluidPage(
                     label = "Select Health Board",
                     choices = health_board_choice,
                     multiple = TRUE,
-                    selected = "S08000015")
-        
+                    selected = "S08000015"),
+        fluidRow(
+          actionButton(inputId = "update_geo",
+                       label = "Update dashboard")
+        )
+
       ),
       tabPanel(
-        title = "Demographic"
+         title = "Demographic"
       )
     )
   )
-)
+# )
 
 server <- function(input, output, session) {
   
@@ -51,22 +52,26 @@ server <- function(input, output, session) {
   filtered_temporal <- eventReactive(eventExpr = input$update_temporal,
                                      valueExpr = {
                                        test_data_year %>% 
-                                         filter(year %in% input$year_input)
+                                         filter(year == input$year_input)
                                      })
   
-  filted_geo <- eventReactive(eventExpr = input$update_geo,
+  filtered_geo <- eventReactive(eventExpr = input$update_geo,
                               valueExpr = {
                                 test_data_year %>% 
                                   filter(HB %in% input$health_board_input)
                               })
   
-  # this output allows for multiple selections in the input 
+  
   output$temporal_out <- renderPlot(
     filtered_temporal() %>% 
       ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
       geom_line(aes(colour = HB))
   )
-  
+  output$geo_output <- renderPlot(
+    filtered_geo() %>% 
+      ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
+      geom_line(aes(colour = HB))
+  )
 }
 
 shinyApp(ui, server)
