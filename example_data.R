@@ -12,3 +12,6 @@ year_choice <- test_data_year %>%
 health_board_choice <- test_data_year %>% 
   distinct(HB) %>% 
   drop_na()
+
+age_choice <- test_data_year %>% 
+  distinct(AgeGroup) 
