@@ -325,7 +325,7 @@ pre_post_2020_avg_admissions_winter %>%
 
 -----------------------------------------------------------------------------------
 
-Rerun Above but For Proportions of Beds
+# Percentage Occupancy
 
 ```{r}
 beds_data <- read_csv("data/beds_by_nhs_board_of_treatment_and_specialty.csv")
@@ -569,14 +569,16 @@ pre_post_2020_avg_occupancy %>%
 First, group Q4 + Q1 together
 
 ```{r}
-average_occupancy_quart_winter <- beds_data_year_quart %>% 
+
+
+average_occupancy_quart_winter <- average_occupancy_4_years %>% 
   mutate(winter = ifelse(quarter %in% c("Q1", "Q4"), "winter", "Q2 & Q3")) %>% 
   group_by(nhs_health_board, year) %>% 
-  mutate(percentage_occupancy = mean(percentage_occupancy)) 
+  mutate(avg_percentage_occupancy = mean(percentage_occupancy)) 
 
-average_admissions_quart_winter %>%
-  filter(year == "pre_2020") %>% 
-  ggplot(aes(x = nhs_health_board, y = annual_total, fill = winter)) +
+average_occupancy_quart_winter %>%
+  filter(year == "17_19_avg") %>% 
+  ggplot(aes(x = nhs_health_board, y =avg_percentage_occupancy, fill = winter)) +
   geom_col() +
   coord_flip(expand = FALSE) +
   labs(x = "NHS Health Board",

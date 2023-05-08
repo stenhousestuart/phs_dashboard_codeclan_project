@@ -171,3 +171,71 @@ pre_post_2020_avg_occupancy <- rbind(three_year_avg_occupancy, avg_occupancy_aft
 
 
 ```
+
+
+# Line graphs
+
+```{r}
+
+# <2020
+three_year_avg_occupancy %>% 
+  filter(year == "pre 2020") %>% 
+  ggplot(aes(x = quarter, y = percentage_occupancy, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "Pre-2020 Occupancy of Beds per Health Board",
+    colour = "NHS Health Board"
+  )
+
+# 2020
+
+full_avg_occupancy_post_2020 %>% 
+  filter(year == 2020) %>% 
+  ggplot(aes(x = quarter, y = percentage_occupancy, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "2020 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+
+# 2021
+
+full_avg_occupancy_post_2020 %>% 
+  filter(year == 2021) %>% 
+  ggplot(aes(x = quarter, y = percentage_occupancy, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "2021 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+
+# 2022
+full_avg_occupancy_post_2020 %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(x = quarter, y = percentage_occupancy, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "2022 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+# Pre-Post
+
+pre_post_2020_avg_occupancy %>% 
+  ggplot(aes(x = quarter, y = percentage_occupancy, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  facet_wrap(~year) +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "Average Hospital Admissions per Location and Quarter",
+    colour = "NHS Health Board"
+  )
+```
