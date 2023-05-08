@@ -19,7 +19,6 @@ server <- function(input, output, session) {
   
   filtered_age_demo <- eventReactive(eventExpr = input$update_demo,
                                  valueExpr = {
-
                                    admission_demographics_all %>%
                                      filter(age %in% input$age_input) %>% 
                                      group_by(quarter, age, pre_post_2020) %>% 
@@ -33,8 +32,6 @@ server <- function(input, output, session) {
                                        y = "Mean Episodes of Care \n",
                                        title = "Mean Episodes of Care by Age & Quarter",
                                        colour = "Age:")
-                                   
-                                
                                    })
   
   

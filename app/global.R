@@ -18,7 +18,7 @@ health_board_choice <- test_data_year %>%
 age_choice <- test_data_year %>% 
   distinct(AgeGroup) 
 
-  
+# This will be moved to the cleaning script - Will only contain calls for clean data in final  
 admission_demographics <- read_csv(here("data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv"))
 
 admission_demographics_clean <- admission_demographics %>% clean_names()
