@@ -684,6 +684,47 @@ filter(admission_type == "Emergency Inpatients",
     x = "Quarter",
     y = "Inpatient Episodes") 
   # ylim(90000, 140000)
+################################################
+clean_hosp_admissions_qyear %>% 
+filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  select(total_episodes) %>% 
+  slice_max(total_episodes, n = 1)
+  ggplot() +
+  aes(x = quarter, y = total_episodes) +
+  geom_line(aes(group = 1, colour = "red"),show.legend = FALSE) +
+  geom_point(size = 4, shape = 17, colour = "red") +
+  geom_line(aes(group = quarter)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
+  theme() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Pre-Pandemic",
+    x = 2.5,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Pandemic",
+    x = 20,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 11.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Total Number of Inpatient Episodes",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")# +
+ # ylim(80000, 140000)
 ```
 
 

@@ -5,13 +5,18 @@ ui <- fluidPage(
       title = "Temporal",
       
       fluidRow(
-        # These inputs will need to be altered to fit real data set
-        # Currently allowing single input - might need changed
-        selectInput(inputId = "year_input",
-                    label = "Select Year",
-                    choices = year_choice,
-                    selected = "2020"),
-        
+        column(width = 6,
+        selectInput(inputId = "admission_input_tempo",
+                    label = "Select Admission Type",
+                    choices = admission_choice,
+                    selected = "All Inpatients")
+        ),
+        column(width = 6,
+        selectInput(inputId = "health_board_input_tempo",
+                    label = "Select Health Board",
+                    choices = health_board_choice,
+                    selected = "All Inpatients")
+        ),
       ),
       fluidRow(
         actionButton(inputId = "update_temporal",
@@ -29,7 +34,7 @@ ui <- fluidPage(
       title = "Geographical",
       
       column(width = 6,
-             selectInput(inputId = "health_board_input",
+             selectInput(inputId = "health_board_input_geo",
                          label = "Select Health Board",
                          choices = health_board_choice,
                          multiple = TRUE,
@@ -77,7 +82,10 @@ ui <- fluidPage(
         
       )
     ),
-    
+    tabPanel(
+      title = "Stats"
+      
+    )
     
   ),  
   

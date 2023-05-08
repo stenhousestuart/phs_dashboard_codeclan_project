@@ -6,8 +6,11 @@ server <- function(input, output, session) {
   
   filtered_temporal <- eventReactive(eventExpr = input$update_temporal,
                                      valueExpr = {
-                                       test_data_year %>% 
-                                         filter(year == input$year_input)
+                                       clean_hosp_admissions_qyear %>% 
+                                         filter(admission_type %in% input$admission_input_tempo,
+                                                nhs_health_board %in% input$health_board_input_tempo) %>%
+                                         group_by(quarter) %>% 
+                                         summarise(total_episodes = sum(episodes))
                                      })
   
   filtered_geo <- eventReactive(eventExpr = input$update_geo,
@@ -33,12 +36,49 @@ server <- function(input, output, session) {
                                        title = "Mean Episodes of Care by Age & Quarter",
                                        colour = "Age:")
                                    })
-  
-  
+  max_total_episodes <- eventReactive(eventExpr = input$update_temporal,
+                                      valueExpr = {
+                                        clean_hosp_admissions_qyear %>%
+                                          filter(admission_type %in% input$admission_input_tempo,
+                                                 nhs_health_board %in% input$health_board_input_tempo) %>%
+                                          group_by(quarter) %>%
+                                          summarise(total_episodes = sum(episodes)) %>%
+                                          select(total_episodes) %>%
+                                          slice_max(total_episodes, n = 1) %>% 
+                                          pull()
+                                      })
   output$temporal_out <- renderPlot(
     filtered_temporal() %>% 
-      ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
-      geom_line(aes(colour = HB))
+      ggplot() +
+      aes(x = quarter, y = total_episodes) +
+      geom_line(aes(group = 1, colour = "red"),show.legend = FALSE) +
+      geom_point(size = 4, shape = 17, colour = "red") +
+      geom_line(aes(group = quarter)) +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
+      scale_colour_brewer(palette = "Dark2") +
+      geom_label(
+        label = "Pre-2020",
+         x = 2.5,
+         y = max_total_episodes(),
+        label.padding = unit(0.15, "lines"),
+        label.size = 0.15,
+        color = "black"
+      ) +
+      geom_label(
+        label = "Post-2020",
+         x = 20,
+         y = max_total_episodes(),
+        label.padding = unit(0.15, "lines"),
+        label.size = 0.15,
+        color = "black"
+      ) +
+      geom_vline(xintercept = 10.5, linetype = "dashed") +
+      labs(
+        title = "Total Number of Hospital Admissions",
+        subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+        x = "Quarter",
+        y = "Hospital Admissions")
   )
   
   output$geo_output <- renderPlot(
