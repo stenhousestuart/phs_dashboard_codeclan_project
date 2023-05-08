@@ -10,7 +10,7 @@ library(ggpubr)
 library(broom)
 library(AICcmodavg)
 
-hospital_admissions <- read_csv("inpatient_and_daycase_by_nhs_board_of_residence.csv")
+hospital_admissions <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment.csv")
 
 hospital_admissions_speciality <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
 ```
@@ -45,11 +45,14 @@ clean_hosp_admissions <- hospital_admissions %>%
          hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
          hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
          hb = ifelse(hb == "RA2703", "Outside the UK", hb),
-         hb = ifelse(hb == "RA2704", "Unknown Residency", hb)
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
            ) %>%
   rename(nhs_health_board = hb) %>% 
   separate(quarter,into = c("year", "quarter"), sep = "Q" ) %>% 
-  mutate(pre_post_covid = ifelse(year %in% c("2017", "2018", "2019"), "pre", "post")) 
+  mutate(pre_post_covid = ifelse(year %in% c("2017", "2018", "2019"), "pre", "post"))
 
 
 
@@ -601,7 +604,7 @@ clean_hosp_admissions %>%
 ```{r}
 clean_hosp_admissions_qyear <- hospital_admissions %>% 
   clean_names() %>% 
-  select(- quarter_qf, - hbqf, location_qf, admission_type_qf, 
+  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
          -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
          -admission_type_qf) %>% 
   mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
@@ -626,9 +629,12 @@ clean_hosp_admissions_qyear <- hospital_admissions %>%
          hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
          hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
          hb = ifelse(hb == "RA2703", "Outside the UK", hb),
-         hb = ifelse(hb == "RA2704", "Unknown Residency", hb)
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
            ) %>%
-  rename(nhs_health_board = hb)
+  rename(nhs_health_board = hb) 
   # separate(quarter,into = c("year", "quarter"), sep = "Q" ) %>% 
   # mutate(pre_post_covid = ifelse(year %in% c("2017", "2018", "2019"), "pre", "post"))
 ```
@@ -648,8 +654,7 @@ filter(admission_type == "Emergency Inpatients",
   geom_point(size = 4, shape = 17, colour = "red") +
   geom_line(aes(group = quarter)) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5),
-        legend) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
   scale_colour_brewer(palette = "Dark2") +
   geom_label(
     label = "Pre-Pandemic",
@@ -673,8 +678,8 @@ filter(admission_type == "Emergency Inpatients",
     title = "Total Number of Inpatient Episodes",
     subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
     x = "Quarter",
-    y = "Inpatient Episodes") +
-  ylim(90000, 140000)
+    y = "Inpatient Episodes") 
+  # ylim(90000, 140000)
 ```
 
 

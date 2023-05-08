@@ -1,8 +1,12 @@
 # Reading in data files
 
-hospital_admissions <- read_csv("inpatient_and_daycase_by_nhs_board_of_residence.csv")
-
 hospital_admissions_speciality <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
+
+inpatient_data <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment.csv")
+
+admission_demographics <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv")
+
+beds_data <- read_csv("data/beds_by_nhs_board_of_treatment_and_specialty.csv")
 
 # reading in libraries
 
@@ -17,7 +21,7 @@ library(here) # KA
 
 
 # David's cleaning starts here
-clean_hosp_admissions <- hospital_admissions %>% 
+clean_hosp_admissions <- inpatient_data %>% 
   clean_names() %>% 
   select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
          -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
@@ -53,9 +57,9 @@ clean_hosp_admissions <- hospital_admissions %>%
 
 # quarter and year combined data cleaning
 
-clean_hosp_admissions_qyear <- hospital_admissions %>% 
+clean_hosp_admissions_qyear <- inpatient_data %>% 
   clean_names() %>% 
-  select(- quarter_qf, - hbqf, location_qf, admission_type_qf, 
+  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
          -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
          -admission_type_qf) %>% 
   mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
@@ -80,9 +84,12 @@ clean_hosp_admissions_qyear <- hospital_admissions %>%
          hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
          hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
          hb = ifelse(hb == "RA2703", "Outside the UK", hb),
-         hb = ifelse(hb == "RA2704", "Unknown Residency", hb)
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
   ) %>%
-  rename(nhs_health_board = hb)
+  rename(nhs_health_board = hb) 
 
 
 # speciality_cleaning
@@ -183,10 +190,20 @@ admission_deprivation_clean <- admission_deprivation_clean %>%
                                 levels = c("pre 2020",
                                            "post 2020")))
 
+admission_demographics_all <- admission_demographics_clean %>%
+  filter(nhs_health_board == "All of Scotland",
+         admission_type == "All Inpatients")
+
+admission_deprivation_all <- admission_deprivation_clean %>%
+  filter(nhs_health_board == "All of Scotland",
+         admission_type == "All Inpatients")
+
+
+
 
 # Kirsty's cleaning starts here
 
-inpatient_data <- inpatient_data %>% 
+beds_data <- beds_data %>% 
   clean_names() %>% 
   mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
          hb = ifelse(hb == "S08000016", "Borders", hb),
@@ -213,14 +230,10 @@ inpatient_data <- inpatient_data %>%
          hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
          hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
          hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
-         
-         
-         
   ) %>%
   rename(nhs_health_board = hb) 
 
-# Hospital cleaning data
-inpatient_data <- inpatient_data %>% 
+beds_data <- beds_data %>% 
   mutate(location = ifelse(location == "A210H", "University Hospital Ayr", location),
          location = ifelse(location == "A111H", "University Hospital Crosshouse", location),
          location = ifelse(location == "B120H", "Borders Hospital", location),
@@ -260,16 +273,54 @@ inpatient_data <- inpatient_data %>%
          location = ifelse(location == "Z102H", "Gilbert Bain Hospital", location),
   )
 
-after_2020_adm_count <- inpatient_data_year_quart %>% 
+beds_data_year_quart <- beds_data %>% 
+  separate(quarter, c("year", "quarter"),"Q", remove = FALSE) %>% 
+  mutate(quarter = paste0("Q", quarter)) %>% 
+  mutate(three_yr_avg = ifelse(year %in% c(2017:2019), "17_19_avg", year))
+
+three_year_avg_occupancy <- beds_data_year_quart %>% 
+  filter(three_yr_avg == "17_19_avg") %>% # data set only goes 17-19
+  group_by(nhs_health_board,year, quarter) %>% 
+  summarise(percentage_occupancy = mean(percentage_occupancy)) %>% 
+  group_by(nhs_health_board, quarter) %>% # lump all years together and just focus on quarters
+  summarise(percentage_occupancy = mean(percentage_occupancy)) %>% 
+  mutate(year = "pre 2020")
+
+full_avg_occupancy_post_2020 <- beds_data_year_quart %>% 
   filter(three_yr_avg != "17_19_avg") %>% 
   group_by(nhs_health_board,year, quarter) %>% 
-  summarise(episodes = sum(episodes)) 
+  summarise(percentage_occupancy = mean(percentage_occupancy)) 
 
-average_admissions_quart <- rbind(three_year_avg_adm_count, after_2020_adm_count)
+avg_occupancy_after_2020 <- beds_data_year_quart %>% 
+  filter(three_yr_avg != "17_19_avg") %>% # data set only goes 17-19
+  group_by(nhs_health_board,year, quarter) %>% 
+  summarise(percentage_occupancy = mean(percentage_occupancy)) %>% 
+  group_by(nhs_health_board, quarter) %>% # lump all years together and just focus on quarters
+  summarise(percentage_occupancy = mean(percentage_occupancy)) %>% 
+  mutate(year = "post 2020")
 
-
+pre_post_2020_avg_occupancy <- rbind(three_year_avg_occupancy, avg_occupancy_after_2020) %>% 
+  mutate(year = factor(year, levels = c("pre 2020", "post 2020")))
 
 
 
 # writing CSV files
+
+write_csv(clean_hosp_admissions, here("app/clean_data/clean_hosp_admissions"))
+
+write_csv(clean_hosp_admissions_qyear, here("app/clean_data/clean_hosp_admissions_qyear"))
+
+write_csv(clean_hospital_admissions_speciality, here("app/clean_data/clean_hospital_admissions_speciality"))
+
+write_csv(admission_deprivation_all, here("app/clean_data/admission_deprivation_all"))
+
+write_csv(admission_demographics_all, here("app/clean_data/admission_demographics_all"))
+
+write_csv(average_admissions_quart, here("app/clean_data/average_admissions_quart"))
+
+write_csv(pre_post_2020_avg_occupancy, here("app/clean_data/pre_post_2020_avg_occupancy"))
+
+
+
+
 
