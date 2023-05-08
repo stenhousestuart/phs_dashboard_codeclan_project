@@ -126,4 +126,22 @@ server <- function(input, output, session) {
   output$demo_age_output <- renderPlot(
     filtered_age_demo()
   )
+  output$stats_table_output <- renderDataTable(
+    
+    clean_hosp_admissions_qyear %>% 
+      filter(nhs_health_board != "All of Scotland",
+             nhs_health_board != "Non-NHS Provider",
+             admission_type == "All Inpatients") %>% 
+      group_by(quarter) %>%
+      summarise(mean_hospital_admissions = mean(episodes),
+                median_hospital_admissions = median(episodes),
+                sd_hospital_admissions = sd(episodes),
+                iqr_hospital_admissions = IQR(episodes)) %>% 
+      separate(quarter,into = c("year", "quarter"), sep = "Q" )
+  )
+  
+  
+  
+  
+  
 }
