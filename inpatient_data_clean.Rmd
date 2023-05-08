@@ -1,0 +1,288 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+```
+
+```{r}
+# rewrite healthboards
+  inpatient_data <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment.csv")
+
+# load data and recode healthboards
+inpatient_data <- inpatient_data %>% 
+  clean_names() %>% 
+  mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
+         hb = ifelse(hb == "S08000016", "Borders", hb),
+         hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
+         hb = ifelse(hb == "S08000018", "Fife", hb),
+         hb = ifelse(hb == "S08000019", "Forth Valley", hb),
+         hb = ifelse(hb == "S08000020", "Grampian", hb),
+         hb = ifelse(hb == "S08000021", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000022", "Highland", hb),
+         hb = ifelse(hb == "S08000023", "Lanarkshire", hb),
+         hb = ifelse(hb == "S08000024", "Lothian", hb),
+         hb = ifelse(hb == "S08000025", "Orkney", hb),
+         hb = ifelse(hb == "S08000026", "Shetland", hb),
+         hb = ifelse(hb == "S08000027", "Tayside", hb),
+         hb = ifelse(hb == "S08000028", "Western Isles", hb),
+         hb = ifelse(hb == "S08000029", "Fife", hb),
+         hb = ifelse(hb == "S08000030", "Tayside", hb),
+         hb = ifelse(hb == "S08000031", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000032", "Lanarkshire", hb),
+         hb = ifelse(hb == "S92000003", "All of Scotland", hb),
+         hb = ifelse(hb == "RA2702", "Rest of UK (Outside of Scotland)", hb),
+         hb = ifelse(hb == "RA2703", "Outside the UK", hb),
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
+         ) %>%
+  rename(nhs_health_board = hb) 
+```
+
+```{r}
+# check health boards
+inpatient_data %>% 
+  distinct(nhs_health_board)
+```
+
+```{r}
+# view health boards
+inpatient_data %>% 
+  distinct(location)
+```
+```{r}
+# recode hospital locations
+inpatient_data <- inpatient_data %>% 
+    mutate(location = ifelse(location == "A210H", "University Hospital Ayr", location),
+           location = ifelse(location == "A111H", "University Hospital Crosshouse", location),
+           location = ifelse(location == "B120H", "Borders Hospital", location),
+           location = ifelse(location == "Y146H", "Dumfries & Galloway Royal Infirmary", location),
+           location = ifelse(location == "Y144H", "Galloway Community Hospital", location),
+           location = ifelse(location == "F805H", "Queen Margaret Hospital", location),
+           location = ifelse(location == "F704H", "Victoria Hospital", location),
+           location = ifelse(location == "N101H", "Aberdeen Royal Infirmary", location),
+           location = ifelse(location == "N411H", "Dr Gray's Hospital", location),
+           location = ifelse(location == "G107H", "Glasgow Royal Infirmary", location),
+           location = ifelse(location == "C313H", "Inverclyde Royal Hospital", location),
+           location = ifelse(location == "G306H", "New Victoria Hospital", location),
+           location = ifelse(location == "G405H", "Queen Elizabeth University Hospital", location),
+           location = ifelse(location == "C418H", "Royal Alexandra Hospital", location),
+           location = ifelse(location == "G207H", "Stobhill Hospital", location),
+           location = ifelse(location == "C206H", "Vale of Leven General Hospital", location),
+           location = ifelse(location == "G516H", "West Glasgow", location),
+           location = ifelse(location == "H212H", "Belford Hospital", location),
+           location = ifelse(location == "H103H", "Caithness General Hospital", location),
+           location = ifelse(location == "C121H", "Lorn & Islands Hospital", location),
+           location = ifelse(location == "H202H", "Raigmore Hospital", location),
+           location = ifelse(location == "L302H", "University Hospital Hairmyres", location),
+           location = ifelse(location == "L106H", "University Hospital Monklands", location),
+           location = ifelse(location == "L308H", "University Hospital Wishaw", location),
+           location = ifelse(location == "S314H", "Royal Infirmary of Edinburgh at Little France", location),
+           location = ifelse(location == "S308H", "St John's Hospital", location),
+           location = ifelse(location == "S116H", "Western General Hospital", location),
+           location = ifelse(location == "R103H", "The Balfour", location),
+           location = ifelse(location == "T101H", "Ninewells Hospital", location),
+           location = ifelse(location == "T202H", "Perth Royal Infirmary", location),
+           location = ifelse(location == "T312H", "Stracathro Hospital", location),
+           location = ifelse(location == "W107H", "Western Isles Hospital", location),
+           location = ifelse(location == "A101H", "Arran War Memorial Hospital", location),
+           location = ifelse(location == "D102H", "Golden Jubilee National Hospital", location),
+           location = ifelse(location == "A101H", "Arran War Memorial Hospital", location),
+           location = ifelse(location == "V217H", "Forth Valley Royal Hospital", location),
+           location = ifelse(location == "Z102H", "Gilbert Bain Hospital", location),
+    )
+           
+           
+           
+```
+
+
+
+
+
+```{r}
+# split date col into year and quarter, add a column annotating if year <2020
+inpatient_data_year_quart <- inpatient_data %>% 
+  separate(quarter, c("year", "quarter"),"Q", remove = FALSE) %>% 
+  mutate(quarter = paste0("Q", quarter)) %>% 
+  mutate(three_yr_avg = ifelse(year %in% c(2017:2019), "17_19_avg", year))
+```
+
+- Create Tables of Count of Admissions Per Quarter - one table for <2020 grouped together, and one for >2020 ungrouped
+
+```{r}
+
+# for years <2020, group by quarter, then find the mean of the sum of episodes across the three years, summarise per quarter
+
+three_year_avg_adm_count <- inpatient_data_year_quart %>% 
+  filter(three_yr_avg == "17_19_avg") %>% # data set only goes 17-19
+  group_by(nhs_health_board,year, quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  group_by(nhs_health_board, quarter) %>% # lump all years together and just focus on quarters
+  summarise(episodes = mean(total_episodes)) %>% 
+  mutate(year = "pre_2020")
+  
+
+  
+```
+
+```{r}
+# for years >2020, group by quarter, then find the total episodes
+after_2020_adm_count <- inpatient_data_year_quart %>% 
+  filter(three_yr_avg != "17_19_avg") %>% 
+  group_by(nhs_health_board,year, quarter) %>% 
+  summarise(episodes = sum(episodes)) 
+```
+# Bind tables
+```{r}
+
+average_admissions_quart <- rbind(three_year_avg_adm_count, after_2020_adm_count)
+```
+
+
+```{r}
+# for years > 2020 create one average called avg_adm_after_2020
+
+avg_adm_after_2020 <- inpatient_data_year_quart %>% 
+  filter(three_yr_avg != "17_19_avg") %>% 
+  group_by(nhs_health_board,year, quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  group_by(nhs_health_board, quarter) %>% # lump all years together and just focus on quarters
+  summarise(episodes = mean(total_episodes)) %>% 
+  mutate(year = "post_2020")
+```
+
+# Line graphs
+
+```{r}
+# <2020
+average_admissions_quart %>% 
+  filter(year == "pre_2020") %>% 
+  ggplot(aes(x = quarter, y = episodes, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  #facet_wrap(~year) +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "Pre-2020 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+```
+```{r}
+# 2020
+average_admissions_quart %>% 
+  filter(year == 2020) %>% 
+  ggplot(aes(x = quarter, y = episodes, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  #facet_wrap(~year) +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "2020 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+```
+```{r}
+# 2021
+average_admissions_quart %>% 
+  filter(year == 2021) %>% 
+  ggplot(aes(x = quarter, y = episodes, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  #facet_wrap(~year) +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "2021 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+```
+```{r}
+# 2022
+average_admissions_quart %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(x = quarter, y = episodes, group = nhs_health_board, colour = nhs_health_board)) + 
+  geom_line() +
+  #facet_wrap(~year) +
+  labs(
+    x = "Quarter", 
+    y = "Count of Hospital Admissions",
+    title = "2022 Hospital Admissions per Quarter",
+    colour = "NHS Health Board"
+  )
+```
+# Proportional: Define Q4 and Q1 as Winter:
+
+First, group Q4 + Q1 together
+
+```{r}
+average_admissions_quart_winter <- average_admissions_quart %>% 
+  mutate(winter = ifelse(quarter %in% c("Q1", "Q4"), "winter", "Q2 & Q3")) %>% 
+  group_by(nhs_health_board, year) %>% 
+  mutate(annual_total = sum(avg)) 
+
+average_admissions_quart_winter %>%
+  filter(year == "pre_2020") %>% 
+  ggplot(aes(x = nhs_health_board, y = annual_total, fill = winter)) +
+  geom_col() +
+  coord_flip(expand = FALSE) +
+  labs(x = "NHS Health Board",
+       y = "Total Annual Admissions",
+       fill = "Season",
+       title = "Winter Hospital Admissions per Healthboard 2017 - 2019")
+
+average_admissions_quart_winter %>%
+  filter(year == 2020) %>% 
+  ggplot(aes(x = nhs_health_board, y = annual_total, fill = winter)) +
+  geom_col() +
+  coord_flip(expand = FALSE) +
+  labs(x = "NHS Health Board",
+       y = "Total Annual Admissions",
+       fill = "Season",
+       title = "Winter Hospital Admissions per Healthboard 2020")
+
+average_admissions_quart_winter %>%
+  filter(year == 2021) %>% 
+  ggplot(aes(x = nhs_health_board, y = annual_total, fill = winter)) +
+  geom_col() +
+  coord_flip(expand = FALSE) +
+  labs(x = "NHS Health Board",
+       y = "Total Annual Admissions",
+       fill = "Season",
+       title = "Winter Hospital Admissions per Healthboard 2021")
+
+average_admissions_quart_winter %>%
+  filter(year == 2022) %>% 
+  ggplot(aes(x = nhs_health_board, y = annual_total, fill = winter)) +
+  geom_col() +
+  coord_flip(expand = FALSE) +
+  labs(x = "NHS Health Board",
+       y = "Total Annual Admissions",
+       fill = "Season",
+       title = "Winter Hospital Admissions per Healthboard 2022")
+  
+```
+
+
+```{r}
+library(foreign)
+
+location_shapes <- read.dbf(file = "data/SG_NHS_HealthBoards_2019.dbf")
+```
+
+```{r}
+library(sf)
+  nhs_locations <- st_read(dsn = "data/SG_NHS_HealthBoards_2019/", #esri shape file, takes data source name
+                         layer = "SG_NHS_HealthBoards_2019") # the layer is the prefix
+```
+
+```{r}
+ggplot(nhs_locations) +
+  geom_sf()
+```
+
