@@ -79,7 +79,7 @@ server <- function(input, output, session) {
                valueExpr = {
                  updateTabsetPanel(inputId = "temporal_graphs",
                                    selected = input$temporal_checkbox_input)
-               )
+               
                })
   
   output$temporal_out_total_episodes <- renderPlot(
