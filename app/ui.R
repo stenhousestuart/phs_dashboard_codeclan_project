@@ -83,7 +83,8 @@ ui <- fluidPage(
       )
     ),
     tabPanel(
-      title = "Stats"
+      title = "Stats",
+      dataTableOutput("stats_table_output"),
       
     )
     
