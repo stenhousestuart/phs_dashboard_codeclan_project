@@ -1,6 +1,4 @@
-
-
- ui <- fluidPage(
+ui <- fluidPage(
   titlePanel("Change me!"),
   tabsetPanel(
     tabPanel(
@@ -61,15 +59,9 @@
       column( width = 6,
               selectInput(inputId = "age_input",
                           label = "Select Age Range",
-                          choices = age_choice,
+                          choices = age_choices,
                           multiple = TRUE,
                           selected = "All ages")
-      ),
-      column(width = 6,
-             selectInput(inputId = "year_input_demo",
-                         label = "Select Year",
-                         choices = year_choice,
-                         selected = "2020")
       ),
       
       fluidRow(
@@ -77,7 +69,7 @@
                      label = "Update dashboard")
       ),
       
-      plotOutput("demo_output"),
+      plotOutput("demo_age_output"),
       
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
@@ -98,4 +90,4 @@
   tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
          "Public health Scotland")
 )
-  
+
