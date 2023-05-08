@@ -3,7 +3,6 @@
 .RData
 .Ruserdata
 ### Data Files###
-*.csv
 *.dat
 *.efx
 *.gbr
