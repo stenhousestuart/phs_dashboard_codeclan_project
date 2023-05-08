@@ -63,7 +63,7 @@ ui <- fluidPage(
       column( width = 6,
               selectInput(inputId = "age_input",
                           label = "Select Age Range",
-                          choices = age_choices,
+                          choices = age_choice,
                           multiple = TRUE,
                           selected = "All ages")
       ),
