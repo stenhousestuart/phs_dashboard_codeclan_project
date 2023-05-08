@@ -15,14 +15,14 @@ ui <- fluidPage(
         selectInput(inputId = "health_board_input_tempo",
                     label = "Select Health Board",
                     choices = health_board_choice,
-                    selected = "All Inpatients")
+                    selected = "All of Scotland")
         ),
       ),
       fluidRow(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-      plotOutput("temporal_out"),
+      plotOutput("temporal_out_length_stay"),
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
@@ -63,7 +63,7 @@ ui <- fluidPage(
       column( width = 6,
               selectInput(inputId = "age_input",
                           label = "Select Age Range",
-                          choices = age_choices,
+                          choices = age_choice,
                           multiple = TRUE,
                           selected = "All ages")
       ),
