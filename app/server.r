@@ -72,7 +72,15 @@ server <- function(input, output, session) {
                                 slice_max(percentage_occupancy, n = 1) %>% 
                                 pull()
                             })
-  
+ 
+ # this is an attempt to get either or both plots to display based on the "temporal_checkbox_input"
+ # as seen in ui.R
+ eventReactive(eventExpr = input$update_temporal,
+               valueExpr = {
+                 updateTabsetPanel(inputId = "temporal_graphs",
+                                   selected = input$temporal_checkbox_input)
+               )
+               })
   
   output$temporal_out_total_episodes <- renderPlot(
     filtered_temporal() %>% 

@@ -5,24 +5,47 @@ ui <- fluidPage(
       title = "Temporal",
       
       fluidRow(
-        column(width = 6,
+        awesomeCheckboxGroup(
+          inputId = "temporal_checkbox_input",
+          label = "Please select what to display", 
+          choices = c("Total Admissions", "Average Length of Stay"),
+        ),
+        
+
+               ),
+        fluidRow(
+        column(width = 4,
         selectInput(inputId = "admission_input_tempo",
                     label = "Select Admission Type",
                     choices = admission_choice,
                     selected = "All Inpatients")
         ),
-        column(width = 6,
+        column(width = 4,
         selectInput(inputId = "health_board_input_tempo",
                     label = "Select Health Board",
                     choices = health_board_choice,
                     selected = "All of Scotland")
         ),
+      
       ),
       fluidRow(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-      plotOutput("temporal_out_length_stay"),
+      # this is an attempt to get either or both plots to display based on the "temporal_checkbox_input"
+      # above - see global.R and server.R 
+      temporal_checkbox_tabs,
+      
+      # conditionalPanel(
+      #   condition = "temporal_checkbox_input == 'Total Admissions'",
+      #   plotOutput("temporal_out_total_episodes")
+      # ),
+      # 
+      # conditionalPanel(
+      #   condition = "temporal_checkbox_input == 'Average Length of Stay'",
+      #   plotOutput("temporal_out_length_stay")
+      # ),
+      
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
