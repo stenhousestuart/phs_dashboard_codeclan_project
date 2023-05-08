@@ -59,15 +59,9 @@ ui <- fluidPage(
       column( width = 6,
               selectInput(inputId = "age_input",
                           label = "Select Age Range",
-                          choices = age_choice,
+                          choices = age_choices,
                           multiple = TRUE,
                           selected = "All ages")
-      ),
-      column(width = 6,
-             selectInput(inputId = "year_input_demo",
-                         label = "Select Year",
-                         choices = year_choice,
-                         selected = "2020")
       ),
       
       fluidRow(
@@ -75,7 +69,7 @@ ui <- fluidPage(
                      label = "Update dashboard")
       ),
       
-      plotOutput("demo_output"),
+      plotOutput("demo_age_output"),
       
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
