@@ -6,8 +6,6 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 library(janitor)
-library(ggbreak)
-library(viridis)
 library(ggpubr)
 library(broom)
 library(AICcmodavg)
@@ -230,7 +228,7 @@ clean_hosp_admissions %>%
   geom_vline(xintercept = 1.5, linetype = "dashed") +
   geom_vline(xintercept = 3.5, linetype = "dashed") +
   labs(
-    title = "Average Number of Inpatient Stays per Month",
+    title = "Total Number of Inpatient Stays per Month",
     subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
     x = "Quarter",
     y = "Inpatient Stays")
@@ -241,7 +239,8 @@ clean_hosp_admissions %>%
 ```{r}
 #av stays per month per quarter for all inpatients, pre/post covid
 clean_hosp_admissions %>% 
-  filter(admission_type == "All Inpatients") %>% 
+  filter(admission_type == "All Inpatients",
+  nhs_health_board %in% "All of Scotland") %>% 
   group_by(pre_post_covid, quarter) %>% 
   summarise(av_stay = mean(stays)) %>% 
   ggplot() +
@@ -250,7 +249,7 @@ clean_hosp_admissions %>%
   geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
   stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
   stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
-  ylim(6000, 10000) +
+  ylim(120000, 180000) +
   theme_bw() +
   scale_colour_brewer(palette = "Dark2") +
   geom_label(
@@ -280,7 +279,7 @@ clean_hosp_admissions %>%
   geom_vline(xintercept = 1.5, linetype = "dashed") +
   geom_vline(xintercept = 3.5, linetype = "dashed") +
   labs(
-    title = "Average Number of Inpatient Stays per Month",
+    title = "Mean Number of Inpatient Stays per Month",
     subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
     x = "Quarter",
     y = "Inpatient Stays")
@@ -289,16 +288,21 @@ clean_hosp_admissions %>%
 ```{r}
 #av eps per month per quarter for all inpatients
 clean_hosp_admissions %>% 
-  filter(admission_type == "All Inpatients") %>%
+  filter(admission_type == "All Inpatients",
+  nhs_health_board %in% "All of Scotland") %>% 
   group_by(pre_post_covid, quarter) %>% 
-  summarise(av_episodes = mean(episodes)) %>% 
+  summarise(av_episodes = mean(episodes),
+            sd_episodes = sd(episodes)) %>% 
   ggplot() +
   aes(x = quarter, y = av_episodes) +
   geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
   geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
   stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
   stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
-  ylim(10000, 18000) +
+  geom_errorbar(aes(ymin = av_episodes - sd_episodes, 
+                     ymax = av_episodes + sd_episodes,
+                     width = 0.25, colour = pre_post_covid)) +
+  ylim(220000, 280000) +
   theme_bw() +
   scale_colour_brewer(palette = "Dark2") +
   geom_label(
@@ -644,7 +648,8 @@ filter(admission_type == "Emergency Inpatients",
   geom_point(size = 4, shape = 17, colour = "red") +
   geom_line(aes(group = quarter)) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5),
+        legend) +
   scale_colour_brewer(palette = "Dark2") +
   geom_label(
     label = "Pre-Pandemic",
@@ -675,6 +680,7 @@ filter(admission_type == "Emergency Inpatients",
 
 ```{r}
 #mean number of inpatient episodes over time NOTE: do lockdowns affect this??
+#IGNORE THIS FOR NOW
 clean_hosp_admissions%>% 
 filter(admission_type == "Emergency Inpatients",
   nhs_health_board %in% "All of Scotland") %>%
@@ -694,7 +700,7 @@ filter(admission_type == "Emergency Inpatients",
   # theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5)) +
   # scale_colour_brewer(palette = "Dark2") +
   geom_label(
-    label = "Pre-Pandemic",
+    label = "Pre-2020",
     x = 2,
     y = 140000,
     label.padding = unit(0.15, "lines"),
@@ -702,7 +708,7 @@ filter(admission_type == "Emergency Inpatients",
     color = "black"
   ) +
   geom_label(
-    label = "Pandemic",
+    label = "Post-2020",
     x = 3,
     y = 140000,
     label.padding = unit(0.15, "lines"),
@@ -843,7 +849,8 @@ clean_hosp_admissions %>%
   # stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) +
   geom_errorbar(aes(ymin = av_episodes - sd_av_episodes, 
                               ymax = av_episodes + sd_av_episodes, 
-                              colour = pre_post_covid)
+                              colour = pre_post_covid,
+                    width = 0.25)
                 ) +
   theme_bw() +
   scale_colour_brewer(palette = "Dark2") +
