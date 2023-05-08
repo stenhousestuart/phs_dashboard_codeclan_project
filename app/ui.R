@@ -15,7 +15,7 @@ ui <- fluidPage(
         selectInput(inputId = "health_board_input_tempo",
                     label = "Select Health Board",
                     choices = health_board_choice,
-                    selected = "All Inpatients")
+                    selected = "All of Scotland")
         ),
       ),
       fluidRow(
