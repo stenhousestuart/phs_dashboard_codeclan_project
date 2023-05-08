@@ -22,7 +22,7 @@ ui <- fluidPage(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-      plotOutput("temporal_out"),
+      plotOutput("temporal_out_length_stay"),
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")

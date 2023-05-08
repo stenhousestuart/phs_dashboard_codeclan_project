@@ -9,9 +9,11 @@ server <- function(input, output, session) {
                                        clean_hosp_admissions_qyear %>% 
                                          filter(admission_type %in% input$admission_input_tempo,
                                                 nhs_health_board %in% input$health_board_input_tempo) %>%
-                                         group_by(quarter) %>% 
-                                         summarise(total_episodes = sum(episodes))
+                                         group_by(quarter)
+                                         
                                      })
+
+  
   
   filtered_geo <- eventReactive(eventExpr = input$update_geo,
                                 valueExpr = {
@@ -50,6 +52,7 @@ server <- function(input, output, session) {
                                           slice_max(total_episodes, n = 1) %>% 
                                           pull()
                                       })
+  
   # finds lowest percentage occupancy to set min limit for Y axis  
   min_beds <- eventReactive(eventExpr = input$update_geo,
                             valueExpr = {
@@ -71,8 +74,9 @@ server <- function(input, output, session) {
                             })
   
   
-  output$temporal_out <- renderPlot(
+  output$temporal_out_total_episodes <- renderPlot(
     filtered_temporal() %>% 
+      summarise(total_episodes = sum(episodes)) %>% 
       ggplot() +
       aes(x = quarter, y = total_episodes) +
       geom_line(aes(group = 1, colour = "red"),show.legend = FALSE) +
@@ -103,6 +107,42 @@ server <- function(input, output, session) {
         subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
         x = "Quarter",
         y = "Hospital Admissions")
+  )
+  
+  output$temporal_out_length_stay <- renderPlot(
+   filtered_temporal() %>% 
+      summarise(average_length_of_stay = mean(average_length_of_stay)) %>% 
+      ggplot() +
+      aes(x = quarter, y = average_length_of_stay) +
+      geom_line(aes(group = 1, colour = "red")) +
+      geom_point(size = 4, shape = 17, colour = "red") +
+      geom_line(aes(group = quarter)) +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust = 0.5)) +
+      scale_colour_brewer(palette = "Dark2") +
+      geom_label(
+        label = "Pre-Pandemic",
+        x = 2.5,
+        y = 140000,
+        label.padding = unit(0.15, "lines"),
+        label.size = 0.15,
+        color = "black"
+      ) +
+      geom_label(
+        label = "Pandemic",
+        x = 20,
+        y = 140000,
+        label.padding = unit(0.15, "lines"),
+        label.size = 0.15,
+        color = "black"
+      ) +
+      geom_vline(xintercept = 11.5, linetype = "dashed") +
+      # geom_vline(xintercept = 3.5, linetype = "dashed") +
+      labs(
+        title = "Total Number of Hospital Admissions",
+        subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+        x = "Quarter",
+        y = "Mean of Average Length of Stay") 
   )
   
   output$geo_output <- renderPlot(
