@@ -1,6 +1,4 @@
-
-
- ui <- fluidPage(
+ui <- fluidPage(
   titlePanel("Change me!"),
   tabsetPanel(
     tabPanel(
@@ -98,4 +96,4 @@
   tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
          "Public health Scotland")
 )
-  
+

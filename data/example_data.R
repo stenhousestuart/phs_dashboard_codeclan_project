@@ -1,6 +1,6 @@
 library(tidyverse)
 
-test_data <- read_csv("test_data/hospital_admissions_hb_agesex_20230504.csv")
+test_data <- read_csv("data/hospital_admissions_hb_agesex_20230504.csv")
 
 test_data_year <- test_data %>% 
   mutate(date = ymd(WeekEnding), .after = WeekEnding) %>% 

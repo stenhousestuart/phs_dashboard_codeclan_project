@@ -1,5 +1,6 @@
+
 server <- function(input, output, session) {
-  
+
   # These are test outputs - must be altered to fit real data set!
   # WARNING! THESE LOOK TERRIBLE!
   
