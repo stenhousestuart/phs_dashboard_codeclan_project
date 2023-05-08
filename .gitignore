@@ -2,3 +2,19 @@
 .Rhistory
 .RData
 .Ruserdata
+### Data Files###
+*.csv
+*.dat
+*.efx
+*.gbr
+*.key
+*.pps
+*.ppt
+*.pptx
+*.sdf
+*.tax2010
+*.vcf
+*.xlr
+*.xls
+*.xlsx
+*.xml
