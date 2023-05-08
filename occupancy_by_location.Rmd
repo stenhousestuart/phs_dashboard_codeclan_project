@@ -229,6 +229,7 @@ full_avg_occupancy_post_2020 %>%
 # Pre-Post
 
 pre_post_2020_avg_occupancy %>% 
+  filter(nhs_health_board == "Grampian")
   ggplot(aes(x = factor(quarter, 
                         level = c("Q3", "Q4", "Q1", "Q2")), 
              y = percentage_occupancy, 

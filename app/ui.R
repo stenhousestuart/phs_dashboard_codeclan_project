@@ -38,22 +38,21 @@ ui <- fluidPage(
                          label = "Select Health Board",
                          choices = health_board_choice,
                          multiple = TRUE,
-                         selected = "S08000015"),
+                         selected = "All of Scotland")
       ),
-      column(width = 6,
-             selectInput(inputId = "year_input_geo",
-                         label = "Select Year",
-                         choices = year_choice,
-                         selected = "2020"),
-      ),
+      # column(width = 6,
+      #        selectInput(inputId = "year_input_geo",
+      #                    label = "Select Year",
+      #                    choices = year_choice,
+      #                    selected = "2020"),
+      # ),
       fluidRow(
         actionButton(inputId = "update_geo",
                      label = "Update dashboard")
       ),
       plotOutput("geo_output"),
       fluidRow(
-        print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
-            This would be where some stats go, but good luck interpretting these nonsense graphs")
+        print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
       )
     ),
     

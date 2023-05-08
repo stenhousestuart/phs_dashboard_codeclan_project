@@ -15,9 +15,10 @@ server <- function(input, output, session) {
   
   filtered_geo <- eventReactive(eventExpr = input$update_geo,
                                 valueExpr = {
-                                  test_data_year %>% 
-                                    filter(HB %in% input$health_board_input,
-                                           year == input$year_input_geo)
+                                  pre_post_2020_avg_occupancy %>% 
+                                    filter(nhs_health_board %in% input$health_board_input_geo) %>% 
+                                    mutate(year = factor(year, levels = c("pre 2020", "post 2020")))
+                                           
                                 })
   
   filtered_age_demo <- eventReactive(eventExpr = input$update_demo,
@@ -36,6 +37,8 @@ server <- function(input, output, session) {
                                        title = "Mean Episodes of Care by Age & Quarter",
                                        colour = "Age:")
                                    })
+  
+# finds the highest value for total episodes to position labels correctly
   max_total_episodes <- eventReactive(eventExpr = input$update_temporal,
                                       valueExpr = {
                                         clean_hosp_admissions_qyear %>%
@@ -47,6 +50,27 @@ server <- function(input, output, session) {
                                           slice_max(total_episodes, n = 1) %>% 
                                           pull()
                                       })
+  # finds lowest percentage occupancy to set min limit for Y axis  
+  min_beds <- eventReactive(eventExpr = input$update_geo,
+                            valueExpr = {
+                              pre_post_2020_avg_occupancy %>% 
+                                filter(nhs_health_board %in% input$health_board_input_geo) %>% 
+                                select(percentage_occupancy) %>% 
+                                slice_min(percentage_occupancy, n = 1) %>% 
+                                pull()
+                              })
+  
+# finds highest percentage occupancy to set max limit for Y axis
+ max_beds <- eventReactive(eventExpr = input$update_geo,
+                            valueExpr = {
+                              pre_post_2020_avg_occupancy %>% 
+                                filter(nhs_health_board %in% input$health_board_input_geo) %>% 
+                                select(percentage_occupancy) %>% 
+                                slice_max(percentage_occupancy, n = 1) %>% 
+                                pull()
+                            })
+  
+  
   output$temporal_out <- renderPlot(
     filtered_temporal() %>% 
       ggplot() +
@@ -83,8 +107,20 @@ server <- function(input, output, session) {
   
   output$geo_output <- renderPlot(
     filtered_geo() %>% 
-      ggplot(aes(x = WeekEnding, y = NumberAdmissions)) +
-      geom_line(aes(colour = HB))
+      ggplot(aes(x = factor(quarter, 
+                            level = c("Q3", "Q4", "Q1", "Q2")), 
+                 y = percentage_occupancy, 
+                 group = nhs_health_board, 
+                 colour = nhs_health_board)) + 
+      geom_line() +
+      facet_wrap(~year) +
+      labs(
+        x = "Quarter", 
+        y = "Percentage of Occupied Beds",
+        title = "Average Hospital Bed Occupancy per Location and Quarter",
+        colour = "NHS Health Board"
+      ) +
+      ylim(min_beds(),max_beds())
   )
   
   output$demo_age_output <- renderPlot(

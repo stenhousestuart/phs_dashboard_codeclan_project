@@ -7,7 +7,7 @@ Ayrshire and Arran,Q1,86.87570446811355,pre 2020
 Ayrshire and Arran,Q2,84.67819777220846,pre 2020
 Ayrshire and Arran,Q3,84.26894128375997,pre 2020
 Ayrshire and Arran,Q4,85.0519339310534,pre 2020
-Borders,Q1,NA,pre 2020
+Borders,Q1,82.83834617682331,pre 2020
 Borders,Q2,79.22267552311374,pre 2020
 Borders,Q3,78.93972133233069,pre 2020
 Borders,Q4,81.33058557204178,pre 2020
@@ -23,9 +23,9 @@ Forth Valley,Q1,86.13684723141702,pre 2020
 Forth Valley,Q2,77.9204814482689,pre 2020
 Forth Valley,Q3,80.70931168214413,pre 2020
 Forth Valley,Q4,83.1146848001069,pre 2020
-Grampian,Q1,NA,pre 2020
+Grampian,Q1,72.6666945219881,pre 2020
 Grampian,Q2,72.15143304491146,pre 2020
-Grampian,Q3,NA,pre 2020
+Grampian,Q3,71.08300229333479,pre 2020
 Grampian,Q4,69.85916119135723,pre 2020
 Greater Glasgow and Clyde,Q1,82.94337216790169,pre 2020
 Greater Glasgow and Clyde,Q2,82.42502821586788,pre 2020
@@ -72,8 +72,8 @@ Ayrshire and Arran,Q2,76.75432583528072,post 2020
 Ayrshire and Arran,Q3,82.98100404451222,post 2020
 Ayrshire and Arran,Q4,81.08484063357555,post 2020
 Borders,Q1,77.53315313963101,post 2020
-Borders,Q2,NA,post 2020
-Borders,Q3,NA,post 2020
+Borders,Q2,77.14561656424084,post 2020
+Borders,Q3,77.8457193289686,post 2020
 Borders,Q4,76.24232826996258,post 2020
 Dumfries and Galloway,Q1,74.7369123378983,post 2020
 Dumfries and Galloway,Q2,71.86409467553787,post 2020
@@ -87,10 +87,10 @@ Forth Valley,Q1,74.95747841415464,post 2020
 Forth Valley,Q2,69.25285565766299,post 2020
 Forth Valley,Q3,75.52708176230631,post 2020
 Forth Valley,Q4,77.04437573103121,post 2020
-Grampian,Q1,NA,post 2020
-Grampian,Q2,NA,post 2020
-Grampian,Q3,NA,post 2020
-Grampian,Q4,NA,post 2020
+Grampian,Q1,68.69181955903665,post 2020
+Grampian,Q2,67.60274763375186,post 2020
+Grampian,Q3,71.81042240657813,post 2020
+Grampian,Q4,69.00547897617156,post 2020
 Greater Glasgow and Clyde,Q1,81.44628978085528,post 2020
 Greater Glasgow and Clyde,Q2,77.56436522462118,post 2020
 Greater Glasgow and Clyde,Q3,81.5281721199122,post 2020

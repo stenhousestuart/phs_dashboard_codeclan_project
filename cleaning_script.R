@@ -305,6 +305,7 @@ beds_data <- beds_data %>%
   )
 
 beds_data_year_quart <- beds_data %>% 
+  drop_na(percentage_occupancy) %>% 
   separate(quarter, c("year", "quarter"),"Q", remove = FALSE) %>% 
   mutate(quarter = paste0("Q", quarter)) %>% 
   mutate(three_yr_avg = ifelse(year %in% c(2017:2019), "17_19_avg", year))
