@@ -5,19 +5,24 @@ ui <- fluidPage(
       title = "Temporal",
       
       fluidRow(
-        # These inputs will need to be altered to fit real data set
-        # Currently allowing single input - might need changed
-        selectInput(inputId = "year_input",
-                    label = "Select Year",
-                    choices = year_choice,
-                    selected = "2020"),
-        
+        column(width = 6,
+        selectInput(inputId = "admission_input_tempo",
+                    label = "Select Admission Type",
+                    choices = admission_choice,
+                    selected = "All Inpatients")
+        ),
+        column(width = 6,
+        selectInput(inputId = "health_board_input_tempo",
+                    label = "Select Health Board",
+                    choices = health_board_choice,
+                    selected = "All of Scotland")
+        ),
       ),
       fluidRow(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-      plotOutput("temporal_out"),
+      plotOutput("temporal_out_length_stay"),
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
@@ -29,26 +34,25 @@ ui <- fluidPage(
       title = "Geographical",
       
       column(width = 6,
-             selectInput(inputId = "health_board_input",
+             selectInput(inputId = "health_board_input_geo",
                          label = "Select Health Board",
                          choices = health_board_choice,
                          multiple = TRUE,
-                         selected = "S08000015"),
+                         selected = "All of Scotland")
       ),
-      column(width = 6,
-             selectInput(inputId = "year_input_geo",
-                         label = "Select Year",
-                         choices = year_choice,
-                         selected = "2020"),
-      ),
+      # column(width = 6,
+      #        selectInput(inputId = "year_input_geo",
+      #                    label = "Select Year",
+      #                    choices = year_choice,
+      #                    selected = "2020"),
+      # ),
       fluidRow(
         actionButton(inputId = "update_geo",
                      label = "Update dashboard")
       ),
       plotOutput("geo_output"),
       fluidRow(
-        print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
-            This would be where some stats go, but good luck interpretting these nonsense graphs")
+        print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
       )
     ),
     
@@ -59,7 +63,7 @@ ui <- fluidPage(
       column( width = 6,
               selectInput(inputId = "age_input",
                           label = "Select Age Range",
-                          choices = age_choices,
+                          choices = age_choice,
                           multiple = TRUE,
                           selected = "All ages")
       ),
@@ -77,7 +81,11 @@ ui <- fluidPage(
         
       )
     ),
-    
+    tabPanel(
+      title = "Stats",
+      dataTableOutput("stats_table_output"),
+      
+    )
     
   ),  
   

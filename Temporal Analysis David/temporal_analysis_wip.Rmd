@@ -1,0 +1,974 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggpubr)
+library(broom)
+library(AICcmodavg)
+
+hospital_admissions <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment.csv")
+
+hospital_admissions_speciality <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
+```
+
+#cleaning
+```{r}
+#cleaning script 1
+clean_hosp_admissions <- hospital_admissions %>% 
+  clean_names() %>% 
+  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
+         -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
+         -admission_type_qf) %>% 
+  mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
+         hb = ifelse(hb == "S08000016", "Borders", hb),
+         hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
+         hb = ifelse(hb == "S08000018", "Fife", hb),
+         hb = ifelse(hb == "S08000019", "Forth Valley", hb),
+         hb = ifelse(hb == "S08000020", "Grampian", hb),
+         hb = ifelse(hb == "S08000021", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000022", "Highland", hb),
+         hb = ifelse(hb == "S08000023", "Lanarkshire", hb),
+         hb = ifelse(hb == "S08000024", "Lothian", hb),
+         hb = ifelse(hb == "S08000025", "Orkney", hb),
+         hb = ifelse(hb == "S08000026", "Shetland", hb),
+         hb = ifelse(hb == "S08000027", "Tayside", hb),
+         hb = ifelse(hb == "S08000028", "Western Isles", hb),
+         hb = ifelse(hb == "S08000029", "Fife", hb),
+         hb = ifelse(hb == "S08000030", "Tayside", hb),
+         hb = ifelse(hb == "S08000031", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000032", "Lanarkshire", hb),
+         hb = ifelse(hb == "S92000003", "All of Scotland", hb),
+         hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
+         hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
+         hb = ifelse(hb == "RA2703", "Outside the UK", hb),
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
+           ) %>%
+  rename(nhs_health_board = hb) %>% 
+  separate(quarter,into = c("year", "quarter"), sep = "Q" ) %>% 
+  mutate(pre_post_covid = ifelse(year %in% c("2017", "2018", "2019"), "pre", "post"))
+
+
+
+```
+
+# mean num episodes/quarter
+
+```{r}
+#mean_number of episodes
+
+clean_hosp_admissions %>% 
+  distinct(nhs_health_board)
+
+clean_hosp_admissions %>% 
+  filter(admission_type == "All Inpatients",
+  nhs_health_board != "All of Scotland") %>% 
+# nhs_health_board != "No Fixed Abode",
+# nhs_health_board != "Rest of the UK",
+# nhs_health_board != "Unknown Residency",
+# nhs_health_board != "Outside the UK") %>% 
+  arrange(episodes) %>% 
+  group_by(year, quarter) %>% 
+  summarise(av_episodes = mean(episodes),
+            sd_episodes = sd(episodes),
+            min_episodes = min(episodes),
+            max_episdoes = max(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = av_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = year)) +
+  geom_line(aes(group = year, colour = year), size = 1) +
+  geom_errorbar(aes(ymin = av_episodes - sd_episodes, 
+                    ymax = av_episodes + sd_episodes,
+                    width = 0.25, colour = year)) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black",  
+               aes(shape="")) +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), 
+               size = 1) + 
+  # ylim(150000, 350000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring\n (Jan-Mar)", 
+    x = 1,
+    y = 325000,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-Sep)", 
+    x = 2.5,
+    y = 325000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Dec)", 
+    x = 4,
+    y = 325000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Mean Number of Inpatient Episodes per Quarter",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")
+ 
+```
+
+
+
+
+#total num episdoes /quarter
+```{r}
+
+#total_number of episodes
+clean_hosp_admissions %>% 
+  filter(admission_type == "All Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(pre_post_covid, year, quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = total_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = year)) +
+  geom_line(aes(group = year, colour = year), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black",  aes(shape="")) +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  # ylim(500000, 18000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring\n (Jan-Mar)", 
+    x = 1,
+    y = 295000,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-Sep)", 
+    x = 2.5,
+    y = 295000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Dec)", 
+    x = 4,
+    y = 295000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Average Number of Inpatient Episodes per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes") +
+  ylim(200000, 300000)
+ 
+```
+
+# av stay per month all inpatients/quarter
+
+```{r}
+#av stay per month per quarter for all inpatients
+
+clean_hosp_admissions %>% 
+  filter(admission_type == "All Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  mutate(pre_post_covid = ifelse(year == c("2017", "2018", "2019"), "pre", "post")) %>% 
+  group_by(pre_post_covid, year, quarter) %>% 
+  summarise(av_stay = mean(stays)) %>% 
+  ggplot() +
+  aes(x = quarter, y = av_stay) +
+  geom_point(size = 4, shape = 17, aes(colour = year)) +
+  geom_line(aes(group = year, colour = year), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  scale_shape_manual("mean", values = "" ) +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  ylim(100000, 180000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring", 
+    x = 1,
+    y = 180000,
+    label.padding = unit(0.1, "lines"), 
+    label.size = 0.1,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring / Summer", 
+    x = 2.5,
+    y = 180000,
+    label.padding = unit(0.1, "lines"),
+    label.size = 0.1,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter", 
+    x = 4,
+    y = 180000,
+    label.padding = unit(0.1, "lines"),
+    label.size = 0.1,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+  labs(
+    title = "Total Number of Inpatient Stays per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Stays")
+```
+
+
+
+```{r}
+#av stays per month per quarter for all inpatients, pre/post covid
+clean_hosp_admissions %>% 
+  filter(admission_type == "All Inpatients",
+  nhs_health_board %in% "All of Scotland") %>% 
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_stay = mean(stays)) %>% 
+  ggplot() +
+  aes(x = quarter, y = av_stay) +
+  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
+  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  ylim(120000, 180000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring", 
+    x = 1,
+    y = 10000,
+    label.padding = unit(0.1, "lines"), 
+    label.size = 0.1,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring / Summer", 
+    x = 2.5,
+    y = 10000,
+    label.padding = unit(0.1, "lines"),
+    label.size = 0.1,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter", 
+    x = 4,
+    y = 10000,
+    label.padding = unit(0.1, "lines"),
+    label.size = 0.1,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+  labs(
+    title = "Mean Number of Inpatient Stays per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Stays")
+```
+#av eps per month per quarter for all inpatients
+```{r}
+#av eps per month per quarter for all inpatients
+clean_hosp_admissions %>% 
+  filter(admission_type == "All Inpatients",
+  nhs_health_board %in% "All of Scotland") %>% 
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_episodes = mean(episodes),
+            sd_episodes = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = av_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
+  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  geom_errorbar(aes(ymin = av_episodes - sd_episodes, 
+                     ymax = av_episodes + sd_episodes,
+                     width = 0.25, colour = pre_post_covid)) +
+  ylim(220000, 280000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring\n (Jan-Mar)", 
+    x = 1,
+    y = 17750,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-Sep)", 
+    x = 2.5,
+    y = 17750,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Dec)", 
+    x = 4,
+    y = 17750,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Average Number of Inpatient Episodes per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")
+ 
+```
+
+
+# episode number in emergency inpatients
+```{r}
+# episode number in emergency inpatients
+
+clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients") %>%
+  group_by(pre_post_covid, quarter, year) %>% 
+  summarise(av_episodes = mean(episodes)) %>% 
+   ggplot() +
+  aes(x = quarter, y = av_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = year)) +
+  geom_line(aes(group = year, colour = year), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black",  aes(shape="")) +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  ylim(5000, 9000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring\n (Jan-Mar)", 
+    x = 1,
+    y = 8750,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-Sep)", 
+    x = 2.5,
+    y = 8750,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Dec)", 
+    x = 4,
+    y = 8750,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Average Number of Emergency Inpatient Episodes per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")
+
+
+# factor(quarter, ordered = TRUE, levels = c("3", "4", "1", "2")),
+  
+
+```
+
+# average episode number in emergency inpatients pre and post vid
+```{r}
+
+# average episode number in emergency inpatients pre and post vid
+clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients") %>%
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_episodes = mean(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = av_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
+  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  ylim(6000, 8000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Winter/Spring\n (Jan-Mar)", 
+    x = 1,
+    y = 7900,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-Sep)", 
+    x = 2.5,
+    y = 7900,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Dec)", 
+    x = 4,
+    y = 7900,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Average Number of Emergency Inpatient Episodes per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")
+```
+# Q3 first
+# mean episode number in emergency inpatients pre and post vid
+```{r}
+# Q3 first
+# mean episode number in emergency inpatients pre and post vid
+clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients",
+         nhs_health_board == "All of Scotland") %>%
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_episodes = mean(episodes),
+            sd_episdoes = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(quarter, ordered = TRUE, levels = c("3", "4", "1", "2")), y = av_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
+  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
+  stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  ylim(90000, 160000) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Spring/Summer\n (Jul-Sep)", 
+    x = 1,
+    y = 150000,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Mar)", 
+    x = 2.5,
+    y = 150000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-June)", 
+    x = 4,
+    y = 150000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Average Number of Emergency Inpatient Episodes per Month",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")
+
+
+
+
+
+```
+# Q3 first
+# total episode number in emergency inpatients pre and post vid
+```{r}
+# Q3 first
+# total episode number in emergency inpatients pre and post vid
+clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients") %>%
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(quarter, ordered = TRUE, levels = c("3", "4", "1", "2")), y = total_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
+  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
+  # stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  # stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Spring/Summer\n (Jul-Sep)", 
+    x = 1,
+    y = 1250000,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Autumn/Winter\n (Oct-Mar)", 
+    x = 2.5,
+    y = 1250000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Spring/Summer\n (Apr-June)", 
+    x = 4,
+    y = 1250000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 1.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Total Number of Inpatient Episodes per Quarter",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes") +
+  ylim(600000, 1300000)
+
+```
+
+
+```{r}
+clean_hosp_admissions %>% 
+  filter(admission_type == "All Inpatients") %>% 
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_episodes = mean(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(quarter, ordered = TRUE, levels = c("3", "4", "1", "2")), y = av_episodes) +
+  geom_col()
+  # geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
+  # stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  # stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) + 
+  # theme_bw() +
+  # scale_colour_brewer(palette = "Dark2") +
+  # facet_wrap(~admission_type) +
+  # geom_label(
+  #   label = "Spring/Summer\n (Apr-Sep)", 
+  #   x = 1,
+  #   y = 7900,
+  #   label.padding = unit(0.15, "lines"), 
+  #   label.size = 0.15,
+  #   color = "black"
+  # ) +
+  # geom_label(
+  #   label = "Autumn/Winter\n (Jan-Mar)", 
+  #   x = 2.5,
+  #   y = 7900,
+  #   label.padding = unit(0.15, "lines"),
+  #   label.size = 0.15,
+  #   color = "black"
+  # ) +
+  # geom_label(
+  #   label = "Spring/Summer\n (Apr-Sep)", 
+  #   x = 4,
+  #   y = 7900,
+  #   label.padding = unit(0.15, "lines"),
+  #   label.size = 0.15,
+  #   color = "black"
+  # ) +
+  # geom_vline(xintercept = 1.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+  #  labs(
+  #   title = "Average Number of Emergency Inpatient Episodes per Month",
+  #   subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+  #   x = "Quarter",
+  #   y = "Inpatient Episodes")
+```
+
+#cleaning no separate quarters
+```{r}
+clean_hosp_admissions_qyear <- hospital_admissions %>% 
+  clean_names() %>% 
+  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
+         -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
+         -admission_type_qf) %>% 
+  mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
+         hb = ifelse(hb == "S08000016", "Borders", hb),
+         hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
+         hb = ifelse(hb == "S08000018", "Fife", hb),
+         hb = ifelse(hb == "S08000019", "Forth Valley", hb),
+         hb = ifelse(hb == "S08000020", "Grampian", hb),
+         hb = ifelse(hb == "S08000021", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000022", "Highland", hb),
+         hb = ifelse(hb == "S08000023", "Lanarkshire", hb),
+         hb = ifelse(hb == "S08000024", "Lothian", hb),
+         hb = ifelse(hb == "S08000025", "Orkney", hb),
+         hb = ifelse(hb == "S08000026", "Shetland", hb),
+         hb = ifelse(hb == "S08000027", "Tayside", hb),
+         hb = ifelse(hb == "S08000028", "Western Isles", hb),
+         hb = ifelse(hb == "S08000029", "Fife", hb),
+         hb = ifelse(hb == "S08000030", "Tayside", hb),
+         hb = ifelse(hb == "S08000031", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000032", "Lanarkshire", hb),
+         hb = ifelse(hb == "S92000003", "All of Scotland", hb),
+         hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
+         hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
+         hb = ifelse(hb == "RA2703", "Outside the UK", hb),
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
+           ) %>%
+  rename(nhs_health_board = hb) 
+  # separate(quarter,into = c("year", "quarter"), sep = "Q" ) %>% 
+  # mutate(pre_post_covid = ifelse(year %in% c("2017", "2018", "2019"), "pre", "post"))
+```
+
+
+```{r}
+
+#total number of inpatient episodes over time NOTE: do lockdowns affect this??
+clean_hosp_admissions_qyear %>% 
+filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = total_episodes) +
+  geom_line(aes(group = 1, colour = "red")) +
+  geom_point(size = 4, shape = 17, colour = "red") +
+  geom_line(aes(group = quarter)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Pre-Pandemic",
+    x = 2.5,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Pandemic",
+    x = 20,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 11.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Total Number of Inpatient Episodes",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes") 
+  # ylim(90000, 140000)
+################################################
+clean_hosp_admissions_qyear %>% 
+filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  select(total_episodes) %>% 
+  slice_max(total_episodes, n = 1)
+  ggplot() +
+  aes(x = quarter, y = total_episodes) +
+  geom_line(aes(group = 1, colour = "red"),show.legend = FALSE) +
+  geom_point(size = 4, shape = 17, colour = "red") +
+  geom_line(aes(group = quarter)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
+  theme() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Pre-Pandemic",
+    x = 2.5,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Pandemic",
+    x = 20,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 11.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Total Number of Inpatient Episodes",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes")# +
+ # ylim(80000, 140000)
+```
+
+
+```{r}
+#mean number of inpatient episodes over time NOTE: do lockdowns affect this??
+#IGNORE THIS FOR NOW
+clean_hosp_admissions%>% 
+filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(quarter) %>% 
+  summarise(mean_episodes = mean(episodes),
+            sd_episodes = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = mean_episodes) +
+  geom_line(aes(group = 1, colour = "red")) +
+  geom_point(size = 4, shape = 17, colour = "red") +
+  geom_line(aes(group = quarter)) +
+  geom_errorbar(mapping = aes(ymin = mean_episodes - sd_episodes, 
+                              ymax = mean_episodes + sd_episodes,
+                              width = 0.25),
+                colour = "red") +
+  theme_bw() +
+  # theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5)) +
+  # scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Pre-2020",
+    x = 2,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Post-2020",
+    x = 3,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 2.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Mean Number of Inpatient Episodes",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes") +
+  ylim(100000, 140000)
+```
+
+```{r}
+# anova test
+
+summary(clean_hosp_admissions)
+
+one_way <- aov(quarter ~ mean_episodes, sum_hosp_ad) # this does anova test
+
+#create table to be tested
+sum_hosp_ad <- clean_hosp_admissions%>% 
+filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(quarter) %>% 
+  summarise(mean_episodes = mean(episodes),
+            sd_episodes = sd(episodes))
+
+summary(one_way)
+
+## shows results of anova
+
+
+```
+
+#total number of emergency inpatient episodes over time
+```{r}
+
+#total number of emergency inpatient episodes over time
+clean_hosp_admissions_qyear %>% 
+filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(quarter) %>% 
+  summarise(total_episodes = sum(episodes)) %>% 
+  ggplot() +
+  aes(x = quarter, y = total_episodes) +
+  geom_line(aes(group = 1, colour = "red")) +
+  geom_point(size = 4, shape = 17, colour = "red") +
+  geom_line(aes(group = quarter)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Pre-Pandemic",
+    x = 2.5,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Pandemic",
+    x = 20,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 11.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Total Number of Inpatient Episodes",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes") +
+  ylim(80000, 140000)
+
+```
+
+#speciality cleaning script
+```{r}
+clean_hospital_admissions_speciality <- hospital_admissions_speciality %>% 
+  clean_names() %>% 
+  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
+         -average_length_of_episode_qf) %>% 
+  mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
+         hb = ifelse(hb == "S08000016", "Borders", hb),
+         hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
+         hb = ifelse(hb == "S08000018", "Fife", hb),
+         hb = ifelse(hb == "S08000019", "Forth Valley", hb),
+         hb = ifelse(hb == "S08000020", "Grampian", hb),
+         hb = ifelse(hb == "S08000021", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000022", "Highland", hb),
+         hb = ifelse(hb == "S08000023", "Lanarkshire", hb),
+         hb = ifelse(hb == "S08000024", "Lothian", hb),
+         hb = ifelse(hb == "S08000025", "Orkney", hb),
+         hb = ifelse(hb == "S08000026", "Shetland", hb),
+         hb = ifelse(hb == "S08000027", "Tayside", hb),
+         hb = ifelse(hb == "S08000028", "Western Isles", hb),
+         hb = ifelse(hb == "S08000029", "Fife", hb),
+         hb = ifelse(hb == "S08000030", "Tayside", hb),
+         hb = ifelse(hb == "S08000031", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000032", "Lanarkshire", hb),
+         hb = ifelse(hb == "S92000003", "All of Scotland", hb),
+         hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
+         hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
+         hb = ifelse(hb == "RA2703", "Outside the UK", hb),
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb)
+           ) %>%
+  rename(nhs_health_board = hb) %>% 
+  separate(quarter,into = c("year", "quarter"), sep = "Q" ) %>% 
+  mutate(pre_post_covid = ifelse(year %in% c("2017", "2018", "2019"), "pre", "post")) 
+
+
+clean_hospital_admissions_speciality %>% 
+  distinct(specialty_name) 
+  
+
+
+```
+
+
+# Mean Inpatient Episodes Pre- and During Pandemic
+```{r}
+clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_episodes = mean(episodes),
+            sd_av_episodes = sd(episodes),
+            min_av_episodes = min(episodes),
+            max_episodes = max(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(quarter, ordered = TRUE, levels = c("3", "4", "1", "2")), y = av_episodes) +
+  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
+  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), linewidth = 1) +
+  # stat_summary(fun.y = "mean", geom = "point", shape = 19, size = 4, color = "black") +
+  # stat_summary(fun.y = mean, color = "black", geom = "line", aes(group = 1), size = 1) +
+  geom_errorbar(aes(ymin = av_episodes - sd_av_episodes, 
+                              ymax = av_episodes + sd_av_episodes, 
+                              colour = pre_post_covid,
+                    width = 0.25)
+                ) +
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  geom_label(
+    label = "Pre-Pandemic",
+    x = 0.87,
+    y = 145000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_label(
+    label = "Pandemic",
+    x = 4.25,
+    y = 145000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black"
+  ) +
+  geom_vline(xintercept = 2.5, linetype = "dashed") +
+  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+   labs(
+    title = "Mean Inpatient Episodes Pre- and During Pandemic",
+    subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+    x = "Quarter",
+    y = "Inpatient Episodes") +
+    ylim(100000, 145000)
+  
+```
+```{r}
+
+# H0: mean_inpatient_episodes are the same
+# Ha: mean_inpatient_episodes are different
+
+# anova test
+
+summary(clean_hosp_admissions)
+
+one_way <- aov(av_episodes ~ quarter, sum_hosp_ad_v2) # this does anova test
+
+plot(episodes ~ quarter, sum_hosp_ad_v2)
+
+#create table to be tested
+sum_hosp_ad_v2 <- clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(pre_post_covid, quarter) %>% 
+  summarise(av_episodes = mean(episodes),
+            sd_av_episodes = sd(episodes),
+            min_av_episodes = min(episodes),
+            max_episodes = max(episodes))
+
+# shows results of anova
+summary(one_way)
+
+
+clean_hosp_admissions %>% 
+  filter(admission_type == "Emergency Inpatients",
+  nhs_health_board %in% "All of Scotland") %>%
+  group_by(pre_post_covid, quarter) %>% 
+  ggplot() +
+  geom_col(aes(x = quarter, y = episodes))
+
+  
+
+
+```
+
