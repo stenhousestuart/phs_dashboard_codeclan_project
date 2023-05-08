@@ -1,13 +1,3 @@
-# Reading in data files
-
-hospital_admissions_speciality <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
-
-inpatient_data <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment.csv")
-
-admission_demographics <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv")
-
-beds_data <- read_csv("data/beds_by_nhs_board_of_treatment_and_specialty.csv")
-
 # reading in libraries
 
 library(tidyverse) #SS
@@ -17,7 +7,17 @@ library(broom) # DC
 library(AICcmodavg) # DC
 library(here) # KA
 
+# Reading in data files
 
+hospital_admissions_speciality <- read_csv(here("data/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv"))
+
+inpatient_data <- read_csv(here("data/inpatient_and_daycase_by_nhs_board_of_treatment.csv"))
+
+admission_demographics <- read_csv(here("data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv"))
+
+admission_deprivation <- read_csv(here("data/activity_by_board_of_treatment_and_deprivation.csv"))
+
+beds_data <- read_csv(here("data/beds_by_nhs_board_of_treatment_and_specialty.csv"))
 
 
 # David's cleaning starts here
@@ -130,6 +130,8 @@ clean_hospital_admissions_speciality <- hospital_admissions_speciality %>%
 
 #stuarts cleaning starts here
 
+admission_deprivation_clean <- admission_deprivation %>% clean_names()
+
 admission_deprivation_clean <- admission_deprivation_clean %>% 
   mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
          hb = ifelse(hb == "S08000016", "Borders", hb),
@@ -157,6 +159,35 @@ admission_deprivation_clean <- admission_deprivation_clean %>%
   rename(nhs_health_board = hb)
 
 # demographics data cleaning
+
+admission_demographics_clean <- admission_demographics %>% clean_names()
+
+admission_demographics_clean <- admission_demographics_clean %>% 
+  mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
+         hb = ifelse(hb == "S08000016", "Borders", hb),
+         hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
+         hb = ifelse(hb == "S08000018", "Fife", hb),
+         hb = ifelse(hb == "S08000019", "Forth Valley", hb),
+         hb = ifelse(hb == "S08000020", "Grampian", hb),
+         hb = ifelse(hb == "S08000021", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000022", "Highland", hb),
+         hb = ifelse(hb == "S08000023", "Lanarkshire", hb),
+         hb = ifelse(hb == "S08000024", "Lothian", hb),
+         hb = ifelse(hb == "S08000025", "Orkney", hb),
+         hb = ifelse(hb == "S08000026", "Shetland", hb),
+         hb = ifelse(hb == "S08000027", "Tayside", hb),
+         hb = ifelse(hb == "S08000028", "Western Isles", hb),
+         hb = ifelse(hb == "S08000029", "Fife", hb),
+         hb = ifelse(hb == "S08000030", "Tayside", hb),
+         hb = ifelse(hb == "S08000031", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "S08000032", "Lanarkshire", hb),
+         hb = ifelse(hb == "S92000003", "All of Scotland", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb)
+  ) %>%
+  rename(nhs_health_board = hb)
+
 admission_demographics_clean <- admission_demographics_clean %>% 
   separate(quarter,into = c("year", "quarter"), sep = "Q" )
 
@@ -306,19 +337,17 @@ pre_post_2020_avg_occupancy <- rbind(three_year_avg_occupancy, avg_occupancy_aft
 
 # writing CSV files
 
-write_csv(clean_hosp_admissions, here("app/clean_data/clean_hosp_admissions"))
+write_csv(clean_hosp_admissions, here("app/clean_data/clean_hosp_admissions.csv"))
 
-write_csv(clean_hosp_admissions_qyear, here("app/clean_data/clean_hosp_admissions_qyear"))
+write_csv(clean_hosp_admissions_qyear, here("app/clean_data/clean_hosp_admissions_qyear.csv"))
 
-write_csv(clean_hospital_admissions_speciality, here("app/clean_data/clean_hospital_admissions_speciality"))
+write_csv(clean_hospital_admissions_speciality, here("app/clean_data/clean_hospital_admissions_speciality.csv"))
 
-write_csv(admission_deprivation_all, here("app/clean_data/admission_deprivation_all"))
+write_csv(admission_deprivation_all, here("app/clean_data/admission_deprivation_all.csv"))
 
-write_csv(admission_demographics_all, here("app/clean_data/admission_demographics_all"))
+write_csv(admission_demographics_all, here("app/clean_data/admission_demographics_all.csv"))
 
-write_csv(average_admissions_quart, here("app/clean_data/average_admissions_quart"))
-
-write_csv(pre_post_2020_avg_occupancy, here("app/clean_data/pre_post_2020_avg_occupancy"))
+write_csv(pre_post_2020_avg_occupancy, here("app/clean_data/pre_post_2020_avg_occupancy.csv"))
 
 
 

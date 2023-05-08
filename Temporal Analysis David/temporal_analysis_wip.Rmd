@@ -15,7 +15,7 @@ hospital_admissions <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment
 hospital_admissions_speciality <- read_csv("inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
 ```
 
-
+#cleaning
 ```{r}
 #cleaning script 1
 clean_hosp_admissions <- hospital_admissions %>% 
@@ -58,7 +58,7 @@ clean_hosp_admissions <- hospital_admissions %>%
 
 ```
 
-
+# mean num episodes/quarter
 
 ```{r}
 #mean_number of episodes
@@ -130,7 +130,7 @@ clean_hosp_admissions %>%
 
 
 
-
+#total num episdoes /quarter
 ```{r}
 
 #total_number of episodes
@@ -183,7 +183,7 @@ clean_hosp_admissions %>%
  
 ```
 
-
+# av stay per month all inpatients/quarter
 
 ```{r}
 #av stay per month per quarter for all inpatients
@@ -287,7 +287,7 @@ clean_hosp_admissions %>%
     x = "Quarter",
     y = "Inpatient Stays")
 ```
-
+#av eps per month per quarter for all inpatients
 ```{r}
 #av eps per month per quarter for all inpatients
 clean_hosp_admissions %>% 
@@ -343,7 +343,7 @@ clean_hosp_admissions %>%
 ```
 
 
-
+# episode number in emergency inpatients
 ```{r}
 # episode number in emergency inpatients
 
@@ -398,6 +398,7 @@ clean_hosp_admissions %>%
 
 ```
 
+# average episode number in emergency inpatients pre and post vid
 ```{r}
 
 # average episode number in emergency inpatients pre and post vid
@@ -446,7 +447,8 @@ clean_hosp_admissions %>%
     x = "Quarter",
     y = "Inpatient Episodes")
 ```
-
+# Q3 first
+# mean episode number in emergency inpatients pre and post vid
 ```{r}
 # Q3 first
 # mean episode number in emergency inpatients pre and post vid
@@ -502,7 +504,8 @@ clean_hosp_admissions %>%
 
 
 ```
-
+# Q3 first
+# total episode number in emergency inpatients pre and post vid
 ```{r}
 # Q3 first
 # total episode number in emergency inpatients pre and post vid
@@ -601,6 +604,7 @@ clean_hosp_admissions %>%
   #   y = "Inpatient Episodes")
 ```
 
+#cleaning no separate quarters
 ```{r}
 clean_hosp_admissions_qyear <- hospital_admissions %>% 
   clean_names() %>% 
@@ -752,7 +756,7 @@ summary(one_way)
 
 ```
 
-
+#total number of emergency inpatient episodes over time
 ```{r}
 
 #total number of emergency inpatient episodes over time
@@ -796,7 +800,7 @@ filter(admission_type == "Emergency Inpatients",
 
 ```
 
-
+#speciality cleaning script
 ```{r}
 clean_hospital_admissions_speciality <- hospital_admissions_speciality %>% 
   clean_names() %>% 
@@ -837,6 +841,9 @@ clean_hospital_admissions_speciality %>%
 
 
 ```
+
+
+# Mean Inpatient Episodes Pre- and During Pandemic
 ```{r}
 clean_hosp_admissions %>% 
   filter(admission_type == "Emergency Inpatients",
