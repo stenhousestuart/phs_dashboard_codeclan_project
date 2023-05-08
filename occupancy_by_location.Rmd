@@ -175,7 +175,7 @@ pre_post_2020_avg_occupancy <- rbind(three_year_avg_occupancy, avg_occupancy_aft
 
 # Line graphs
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 # <2020
 three_year_avg_occupancy %>% 
@@ -229,13 +229,17 @@ full_avg_occupancy_post_2020 %>%
 # Pre-Post
 
 pre_post_2020_avg_occupancy %>% 
-  ggplot(aes(x = quarter, y = percentage_occupancy, group = nhs_health_board, colour = nhs_health_board)) + 
+  ggplot(aes(x = factor(quarter, 
+                        level = c("Q3", "Q4", "Q1", "Q2")), 
+             y = percentage_occupancy, 
+             group = nhs_health_board, 
+             colour = nhs_health_board)) + 
   geom_line() +
   facet_wrap(~year) +
   labs(
     x = "Quarter", 
-    y = "Count of Hospital Admissions",
-    title = "Average Hospital Admissions per Location and Quarter",
+    y = "Percentage of Occupied Beds",
+    title = "Average Hospital Bed Occupancy per Location and Quarter",
     colour = "NHS Health Board"
   )
 ```
