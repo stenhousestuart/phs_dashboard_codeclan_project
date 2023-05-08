@@ -77,7 +77,7 @@ ui <- fluidPage(
     
     # using age for the demographic for testing purposes
     tabPanel(
-      title = "Demographic",
+      title = "Demographics",
       tabsetPanel(
         tabPanel(
           title = "Age",
