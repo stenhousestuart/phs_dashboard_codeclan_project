@@ -6,6 +6,7 @@ library(ggpubr) # DC
 library(broom) # DC
 library(AICcmodavg) # DC
 library(here) # KA
+library(leaflet) #KA
 
 # Reading in data files
 
@@ -18,6 +19,10 @@ admission_demographics <- read_csv(here("data/inpatient_and_daycase_by_nhs_board
 admission_deprivation <- read_csv(here("data/activity_by_board_of_treatment_and_deprivation.csv"))
 
 beds_data <- read_csv(here("data/beds_by_nhs_board_of_treatment_and_specialty.csv"))
+
+hospital_locations <- read_csv(here("data/current_hospital_locations.csv"))
+
+hospital_long_lat <- read_csv(here("data/hospital_long_lat.csv.csv"), col_names = FALSE)
 
 
 # David's cleaning starts here
@@ -234,8 +239,11 @@ admission_deprivation_all <- admission_deprivation_clean %>%
 
 # Kirsty's cleaning starts here
 
+# 1. clean occupancy data 
+
 beds_data <- beds_data %>% 
   clean_names() %>% 
+  # change health board codes to health board names
   mutate(hb = ifelse(hb == "S08000015", "Ayrshire and Arran", hb),
          hb = ifelse(hb == "S08000016", "Borders", hb),
          hb = ifelse(hb == "S08000017", "Dumfries and Galloway", hb),
@@ -259,15 +267,16 @@ beds_data <- beds_data %>%
          hb = ifelse(hb == "RA2703", "Outside the UK", hb),
          hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
          hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
-         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
-         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb),
-  ) %>%
-  rename(nhs_health_board = hb) 
-
-beds_data <- beds_data %>% 
+         hb = ifelse(hb == "SB0801", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "SN0811", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "Golden Jubilee National Hospital", "Greater Glasgow and Clyde", hb),
+         hb = ifelse(hb == "The Golden Jubilee National Hospital", "Greater Glasgow and Clyde", hb),
+         ) %>%
+  rename(nhs_health_board = hb) %>% 
+# change location codes to location names
   mutate(location = ifelse(location == "A210H", "University Hospital Ayr", location),
          location = ifelse(location == "A111H", "University Hospital Crosshouse", location),
-         location = ifelse(location == "B120H", "Borders Hospital", location),
+         location = ifelse(location == "B120H", "Borders General Hospital", location),
          location = ifelse(location == "Y146H", "Dumfries & Galloway Royal Infirmary", location),
          location = ifelse(location == "Y144H", "Galloway Community Hospital", location),
          location = ifelse(location == "F805H", "Queen Margaret Hospital", location),
@@ -281,7 +290,7 @@ beds_data <- beds_data %>%
          location = ifelse(location == "C418H", "Royal Alexandra Hospital", location),
          location = ifelse(location == "G207H", "Stobhill Hospital", location),
          location = ifelse(location == "C206H", "Vale of Leven General Hospital", location),
-         location = ifelse(location == "G516H", "West Glasgow", location),
+         location = ifelse(location == "G516H", "Gartnavel Royal Hospital", location),
          location = ifelse(location == "H212H", "Belford Hospital", location),
          location = ifelse(location == "H103H", "Caithness General Hospital", location),
          location = ifelse(location == "C121H", "Lorn & Islands Hospital", location),
@@ -302,13 +311,21 @@ beds_data <- beds_data %>%
          location = ifelse(location == "A101H", "Arran War Memorial Hospital", location),
          location = ifelse(location == "V217H", "Forth Valley Royal Hospital", location),
          location = ifelse(location == "Z102H", "Gilbert Bain Hospital", location),
-  )
+         location = ifelse(location == "SB0801", "Golden Jubilee National Hospital", location),
+         location = ifelse(location == "SN0811", "National Facility NHS Louisa Jordan", location),
+         location = ifelse(location == "G101Z", "National Facility NHS Louisa Jordan", location),
+         ) %>% # remove locations that are actually health board codes
+  filter(!(location %in% c("S08000015", "S08000016", "S08000017", "S08000029", 
+                           "S08000019", "S08000020", "S08000031", "S08000022", 
+                           "S08000032", "S08000024", "S08000025", "S08000026", 
+                           "S08000030", "S08000028", "S27000001", "S92000003")))
 
-beds_data_year_quart <- beds_data %>% 
+beds_data_year_quart <- beds_data %>% # separate date column into year & quarter, 
   separate(quarter, c("year", "quarter"),"Q", remove = FALSE) %>% 
   mutate(quarter = paste0("Q", quarter)) %>% 
   mutate(three_yr_avg = ifelse(year %in% c(2017:2019), "17_19_avg", year))
 
+# find average occupancy before covid (per quarter)
 three_year_avg_occupancy <- beds_data_year_quart %>% 
   filter(three_yr_avg == "17_19_avg") %>% # data set only goes 17-19
   group_by(nhs_health_board,year, quarter) %>% 
@@ -317,11 +334,8 @@ three_year_avg_occupancy <- beds_data_year_quart %>%
   summarise(percentage_occupancy = mean(percentage_occupancy)) %>% 
   mutate(year = "pre 2020")
 
-full_avg_occupancy_post_2020 <- beds_data_year_quart %>% 
-  filter(three_yr_avg != "17_19_avg") %>% 
-  group_by(nhs_health_board,year, quarter) %>% 
-  summarise(percentage_occupancy = mean(percentage_occupancy)) 
 
+# find average occupancy after covid (per quarter)
 avg_occupancy_after_2020 <- beds_data_year_quart %>% 
   filter(three_yr_avg != "17_19_avg") %>% # data set only goes 17-19
   group_by(nhs_health_board,year, quarter) %>% 
@@ -330,8 +344,42 @@ avg_occupancy_after_2020 <- beds_data_year_quart %>%
   summarise(percentage_occupancy = mean(percentage_occupancy)) %>% 
   mutate(year = "post 2020")
 
+# find average occupancy after covid (per quarter per year)
+full_avg_occupancy_post_2020 <- beds_data_year_quart %>% 
+  filter(three_yr_avg != "17_19_avg") %>% 
+  group_by(nhs_health_board,year, quarter) %>% 
+  summarise(percentage_occupancy = mean(percentage_occupancy)) 
+
+# join average occupancy tables for pre and post 2020, write this to CSV
 pre_post_2020_avg_occupancy <- rbind(three_year_avg_occupancy, avg_occupancy_after_2020) %>% 
   mutate(year = factor(year, levels = c("pre 2020", "post 2020")))
+
+# 2. clean location data
+
+# XY coordinates given by NHS:
+hospital_locations <- hospital_locations %>%  clean_names() %>%  drop_na(x_coordinate)
+# drops 1 location as don't have coordinate - fill in later? (Royal Hospital for Children and Young People S320H)
+
+# Long/Lat coordinates calculated from XY using https://gridreferencefinder.com/batchConvert/batchConvert.php
+hospital_long_lat <- hospital_long_lat %>% 
+  rename("x_coordinate" = X1,
+         "y_coordinate" = X2,
+         "grid_reference" = X3,
+         "latitude" = X4,
+         "longitude" = X5)
+
+# join long lat back with original XY table 
+hospital_locations_all <- left_join(hospital_locations, hospital_long_lat, by = "x_coordinate") %>% 
+  select(-c(y_coordinate.y, grid_reference)) %>% 
+  rename("y_coordinate" = y_coordinate.x)
+
+
+# Join occupancy data with full location data, save to new variable, write this to CSV
+locations_occupancy_full <-
+  hospital_locations_all %>% 
+  rename(location_code = location, location = location_name) %>% 
+  full_join(beds_data_year_quart, hospital_locations_all, by = "location")
+
 
 
 
@@ -349,6 +397,7 @@ write_csv(admission_demographics_all, here("app/clean_data/admission_demographic
 
 write_csv(pre_post_2020_avg_occupancy, here("app/clean_data/pre_post_2020_avg_occupancy.csv"))
 
+write_csv(locations_occupancy_full, here("app/clean_data/locations_occupancy_full.csv"))
 
 
 
