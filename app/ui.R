@@ -132,7 +132,7 @@ ui <- fluidPage(
                  label = "Please select Speciality(s)",
                  choices = speciality_choice,
                  multiple = TRUE,
-                 selected = "Allergy"
+                 selected = "General Surgery"
                ),
         )
       ),
@@ -160,7 +160,7 @@ ui <- fluidPage(
 
           fluidRow(
             tags$br(),
-            column(width = 4,
+            column(width = 3,
 
                    selectInput(inputId = "age_input",
                                label = "Select Age Range(s) To Compare:",
@@ -169,27 +169,35 @@ ui <- fluidPage(
                                selected = "All ages")
             ),
 
-            column(width = 4,
+            column(width = 3,
                    radioButtons(inputId = "age_plot_type_input",
                                 label = "View:",
                                 choices = c("Mean No. of Admissions", "Mean Length of Stay"))
             ),
+            column(width = 6,
+                   print("This is an example of putting text here. This shows the extent of the amount of text we can put in this part, please excuse the A's. AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA, AAAAAAAAAAA
+                         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA , AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 
+                         AAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAA ok so its basically as much space as the text needs, no worries.")
+                   )
+            ),
+            fluidRow(
 
             column(width = 4,
                    actionButton(inputId = "update_demo_age",
-                                label = "Update Dashboard")
-            )
-          ),
+                                label = "Update Dashboard"))
+            ),
+            
+          
           fluidRow(
-            plotOutput("demo_age_output")
-          ),
-
-          fluidRow(
+            plotOutput("demo_age_output"),
             print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
+          ),
 
-          )
-        ),
+         
+),
+        
+        
 
         tabPanel(
           title = "Deprivation",
