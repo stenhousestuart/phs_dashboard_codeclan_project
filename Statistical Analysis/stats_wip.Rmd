@@ -246,6 +246,7 @@ hosp_adm_q_split %>%
   coord_flip()
 
 ```
+
 ```{r}
 #null_dist removed missing variables
 null_distribution_alos <- hosp_adm_q_split %>% 
@@ -256,6 +257,7 @@ null_distribution_alos <- hosp_adm_q_split %>%
   generate(reps = 1000, type = "bootstrap") %>% 
   calculate(stat ="diff in means", order = c("Spring/Summer", "Autumn/Winter"))
 ```
+
 ```{r}
 #null_dist removed missing variables
 observed_stat_alos <- hosp_adm_q_split %>% 
@@ -270,7 +272,9 @@ null_distribution_alos %>%
   visualise() +
   shade_p_value(obs_stat = observed_stat_alos, direction = "both")
 
+
 ```
+
 ```{r}
 
 p_value <- null_distribution_alos %>%
@@ -279,6 +283,7 @@ p_value <- null_distribution_alos %>%
 p_value
 
 ```
+
 ```{r}
 
 hosp_adm_q_split %>% 
@@ -330,6 +335,8 @@ hosp_adm_q_split %>%
    labs(x = "Season",
         y = "Average Length of Stay") 
 ```
+
+
 ```{r}
 hosp_adm_q_split %>% 
   arrange(desc(average_length_of_stay))
