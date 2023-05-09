@@ -3,6 +3,7 @@
 library(tidyverse)
 library(here)
 library(janitor)
+library(leaflet)
 
 # Read In Data
 clean_hosp_admissions_qyear <- read_csv(here("app/clean_data/clean_hosp_admissions_qyear.csv"))
@@ -33,3 +34,6 @@ geo_year_choice <- locations_occupancy_full %>%
 
 geo_quarter_choice <- locations_occupancy_full %>% 
   distinct(quarter)
+
+geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
+  distinct(nhs_health_board)

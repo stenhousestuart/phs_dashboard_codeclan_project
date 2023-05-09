@@ -17,9 +17,35 @@ server <- function(input, output, session) {
                                 valueExpr = {
                                   pre_post_2020_avg_occupancy %>% 
                                     filter(nhs_health_board %in% input$health_board_input_geo) %>% 
-                                    mutate(year = factor(year, levels = c("pre 2020", "post 2020")))
+                                    mutate(year = factor(year, levels = c("pre 2020", "post 2020"))) %>% 
+                                  ggplot(aes(x = factor(quarter, 
+                                                        level = c("Q1", "Q2", "Q3", "Q4")), 
+                                             y = percentage_occupancy, 
+                                             group = nhs_health_board, 
+                                             colour = nhs_health_board)) + 
+                                    geom_line() +
+                                    facet_wrap(~year) +
+                                    labs(
+                                      x = "Quarter", 
+                                      y = "Percentage of Occupied Beds",
+                                      title = "Average Hospital Bed Occupancy per Location and Quarter",
+                                      colour = "NHS Health Board"
+                                    ) #+
+                                  #ylim(min_beds, max_beds)
                                            
                                 })
+  filtered_geo_date <- eventReactive(eventExpr = input$update_geo_date,
+                                     valueExpr = {
+                                         locations_occupancy_full %>% 
+                                         filter(year == input$year_input_geo & quarter == input$quarter_input_geo) %>% 
+                                         leaflet() %>% 
+                                         addTiles() %>% 
+                                         addCircleMarkers(lng = ~longitude,
+                                                          lat = ~latitude,
+                                                          color = ~geo_palette(percentage_occupancy),
+                                                          stroke = FALSE)
+                                       
+                                     })
   
   filtered_age_gender_demo <- eventReactive(eventExpr = input$update_demo_gender_age,
                                              valueExpr = {
@@ -208,21 +234,16 @@ server <- function(input, output, session) {
 
 
   output$geo_output <- renderPlot(
-    filtered_geo() %>% 
-      ggplot(aes(x = factor(quarter, 
-                            level = c("Q3", "Q4", "Q1", "Q2")), 
-                 y = percentage_occupancy, 
-                 group = nhs_health_board, 
-                 colour = nhs_health_board)) + 
-      geom_line() +
-      facet_wrap(~year) +
-      labs(
-        x = "Quarter", 
-        y = "Percentage of Occupied Beds",
-        title = "Average Hospital Bed Occupancy per Location and Quarter",
-        colour = "NHS Health Board"
-      ) +
-      ylim(min_beds(),max_beds())
+    filtered_geo()
+      
+  )
+  
+  geo_palette <- colorNumeric(
+    palette = "Reds",
+    domain = locations_occupancy_full$percentage_occupancy)
+  
+  output$geo_map_output <- renderLeaflet(
+    filtered_geo_date()
   )
   
   output$demo_age_output <- renderPlot(
