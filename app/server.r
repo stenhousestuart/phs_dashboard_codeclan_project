@@ -362,5 +362,56 @@ output$stats_table_output <- renderDataTable(
               sd_hospital_admissions = sd(episodes),
               iqr_hospital_admissions = IQR(episodes))
 )
+
+filtered_speciality <- eventReactive(eventExpr = input$update_speciality,
+                                     valueExpr = {
+                                       clean_hospital_admissions_speciality %>% 
+                                         filter(specialty_name %in% input$speciality_input) %>% 
+                                         mutate(pre_post_covid = case_when(
+                                           pre_post_covid == "pre" ~ "Pre-2020",
+                                           pre_post_covid == "post" ~ "Post-2020",
+                                           TRUE ~ ""
+                                         ))
+                                     })
+
+speciality_output_selection <- eventReactive(eventExpr = input$update_speciality,
+                                             valueExpr = {
+                                               
+                                               if (input$speciality_plot_type_input == "Mean Admissions") {
+                                                 filtered_speciality() %>% 
+                                                   group_by(quarter, specialty_name, pre_post_covid) %>% 
+                                                   summarise(mean_episodes = mean(episodes)) %>% 
+                                                   ggplot(aes(x = quarter, y = mean_episodes, colour = specialty_name)) +
+                                                   geom_line() +
+                                                   facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
+                                                   labs(
+                                                     title = "Mean number of episodes by Quarter for Specialities",
+                                                     x = "Quarter",
+                                                     y = "Hospital Admissions",
+                                                     col = "Speciality Name"
+                                                   )
+                                               }
+                                               
+                                               else{
+                                                 filtered_speciality() %>% 
+                                                   group_by(quarter, specialty_name, pre_post_covid) %>% 
+                                                   drop_na(average_length_of_spell) %>% 
+                                                   summarise(avg_length_of_stay = mean(average_length_of_spell)) %>% 
+                                                   ggplot(aes(x = quarter, y = avg_length_of_stay, colour = specialty_name)) +
+                                                   geom_line() +
+                                                   facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
+                                                   labs(
+                                                     title = "Mean length of episodes by Quarter for Specialities",
+                                                     x = "Quarter",
+                                                     y = "Mean of Average Length of Stay (In Days)",
+                                                     col = "Speciality Name"
+                                                   )
+                                                 
+                                               }
+                                             })
+
+output$speciality_output <-renderPlot(
+  speciality_output_selection()
+)
   
 }

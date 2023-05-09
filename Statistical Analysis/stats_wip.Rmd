@@ -14,7 +14,9 @@ library(knitr)
 library(kableExtra)
 
 
-hospital_admissions <- read_csv("../app/clean_data/clean_hosp_admissions_qyear.csv")
+hospital_admissions_qyear <- read_csv("../app/clean_data/clean_hosp_admissions_qyear.csv")
+
+hosp_adm_q_split <- read_csv("../app/clean_data/clean_hosp_admissions.csv")
 
 ```
 
@@ -55,18 +57,20 @@ hospital_admissions %>%
   geom_boxplot() +
   aes(x = quarter, y = episodes) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
-  geom_jitter(aes(colour = quarter))
+  geom_jitter(aes(colour = quarter)) +
+  coord_flip()
   
 
 
-# shapiro-wilk results suggests data is not normally distributed, took away arran hospital with no data provided.
-# hospital_admissions_shapiro <- hospital_admissions %>%
-#   filter(location != "A101H") %>% 
-#   group_by(quarter) %>% 
-#   summarise(shapiro_test = shapiro.test(episodes)$p.value)
+shapiro-wilk results suggests data is not normally distributed, took away arran hospital with no data provided.
+
+hospital_admissions_shapiro <- hospital_admissions %>%
+   filter(location != "A101H") %>% 
+   group_by(quarter) %>% 
+   summarise(shapiro_test = shapiro.test(episodes)$p.value)
   
 # H0 all mean are equal
-# there is a differentce of means in one of these groups
+# Ha there is a differentce of means in one of these groups
 
 model_aov_hosp_adm <- aov(episodes ~ quarter, hospital_admissions)
 
@@ -89,5 +93,245 @@ shapiro.test(residuals(model_aov_hosp_adm))
 # step 3 get confidence intervals
 
 
+```
+
+Two way Test
+
+"Is there a difference in the mean number of hospital admissions from Spring/Summer (Q2+Q3) vs Autumn/Winter (Q1+Q4) for all years?"
+
+H0: mean_hosp_adm_aw - mean_hosp_adm_ss = 0 ie there is no difference in the means.
+
+Ha: mean_hosp_adm_aw - mean_hosp_adm_ss != 0 ie there is a difference in the means.
+
+
+
+
+
+```{r}
+# This analysis combines all of our available data set years and calculates the total and the mean in tabular form
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  summarise(total_hospital_admissions = sum(episodes),
+            mean_number_of_hospital_admissions = mean(episodes))
+
+```
+
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  ggplot() +
+  aes(x = season, y = episodes) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+```{r}
+null_distribution <- hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(episodes ~ season) %>% 
+  hypothesise(null = "independence") %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat ="diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+  
+```
+
+```{r}
+observed_stat <- hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(episodes ~ season) %>% 
+  calculate(stat = "diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+
+```{r}
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+```{r}
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value
+```
+
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  # summarise(total_hospital_admissions = sum(episodes),
+  #           mean_hospital_admissions = mean(episodes),
+  #           sd_hospital_admissions = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = season, y = episodes) +
+  geom_jitter(colour = "red") +
+  geom_boxplot(outlier.colour = NA, colour = "red") +
+  stat_summary(fun.y = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..),
+                 width = .75, linetype = "dashed") +
+  ylim(0, 130000) 
+
+```
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  summarise(total_hospital_admissions = sum(episodes),
+             mean_hospital_admissions = mean(episodes),
+             sd = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = season, y = mean_hospital_admissions) +
+  geom_col(fill = "red", color = "black") +
+  geom_errorbar(aes(ymin = mean_hospital_admissions, ymax = mean_hospital_admissions+sd), width = 0.2) +
+  ylim(0, 20000) +
+  theme_bw() +
+  geom_segment(aes(x = 1, y = 17500, xend = 2, yend = 17500), color = "black", linewidth = 1) +
+  geom_label(label = "p = 0.984", 
+    x = 1.5,
+    y = 18500,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black")
+
+```
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  # summarise(total_hospital_admissions = sum(episodes),
+  #            mean_hospital_admissions = mean(episodes),
+  #            sd = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(season, ordered = TRUE, levels = c("Spring/Summer", "Autumn/Winter")), 
+      y = episodes) +
+  geom_violin(fill = "grey", color = "black", trim = FALSE) +
+  stat_summary(fun.data = "mean_sdl", fun.args = list(
+                 mult = 2
+               ), 
+                 geom ="pointrange", width= 0.05, size = 0.5, colour = "black", linewidth = 1) +
+  theme_bw() +
+  ylim(0, 140000) +
+  geom_label(label = "p = 0.984",
+    x = 1.5,
+    y = 140000,
+    label.padding = unit(0.15, "lines"),
+    label.size = 0.15,
+    color = "black") +
+  geom_segment(aes(x = 1, y = 135000, xend = 2, yend = 135000), color = "black", linewidth = 1) +
+  labs(x = "Season",
+       y = "Number of Hospital Admissions") 
+```
+
+
+# average_length of stay
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  ggplot() +
+  aes(x = season, y = average_length_of_stay) +
+  geom_boxplot() +
+  coord_flip()
+
+```
+```{r}
+#null_dist removed missing variables
+null_distribution_alos <- hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(average_length_of_stay ~ season) %>% 
+  hypothesise(null = "independence") %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat ="diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+```{r}
+#null_dist removed missing variables
+observed_stat_alos <- hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(average_length_of_stay ~ season) %>% 
+  calculate(stat = "diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+
+```{r}
+null_distribution_alos %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat_alos, direction = "both")
+
+```
+```{r}
+
+p_value <- null_distribution_alos %>%
+  get_p_value(obs_stat = observed_stat_alos, direction = "both")
+
+p_value
+
+```
+```{r}
+
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  summarise(total_hospital_admissions = sum(episodes, na.rm = TRUE),
+             mean_av_los = mean(average_length_of_stay, na.rm = TRUE),
+             sd = sd(average_length_of_stay, na.rm = TRUE),
+             ci = 2 * sem) %>% 
+  ggplot() +
+  aes(x = season, y = mean_av_los) +
+  geom_col(fill = "red", color = "black") +
+  geom_errorbar(aes(ymin = mean_av_los, ymax = mean_av_los + sd), width = 0.2) +
+  ylim(0, 15) +
+  theme_bw() +
+  geom_segment(aes(x = 1, y = 14.25, xend = 2, yend = 14.25), color = "black", linewidth = 1) +
+  geom_label(label = "p = 0.976", 
+    x = 1.5,
+    y = 15,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black")
+
+```
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  # summarise(total_hospital_admissions = sum(episodes),
+  #            mean_hospital_admissions = mean(episodes),
+  #            sd = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(season, ordered = TRUE, levels = c("Spring/Summer", "Autumn/Winter")), y = average_length_of_stay) +
+  geom_violin(fill = "grey", color = "black", trim = FALSE) +
+  stat_summary(fun.data = "mean_sdl", mult = 2, 
+                 geom ="pointrange", width= 0.1, size = 0.5, colour = "black", linewidth = 1) +
+  theme_bw() +
+  ylim(0, 220) +
+  geom_label(label = "p = 0.984",
+     x = 1.5,
+     y = 220,
+     label.padding = unit(0.15, "lines"),
+     label.size = 0.15,
+     color = "black") +
+   geom_segment(aes(x = 1, y = 200, xend = 2, yend = 200), color = "black", linewidth = 1) +
+   labs(x = "Season",
+        y = "Average Length of Stay") 
+```
+```{r}
+hosp_adm_q_split %>% 
+  arrange(desc(average_length_of_stay))
 ```
 

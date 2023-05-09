@@ -117,7 +117,39 @@ ui <- fluidPage(
       leafletOutput("geo_map_output")
     ),
     ),
-
+    
+    tabPanel(
+      title = "Speciality",
+      fluidRow(
+        radioButtons(inputId = "speciality_plot_type_input",
+                     label = "View:",
+                     choices = c("Mean Admissions", "Mean Length of Stay"),
+        ),
+        
+        column(width = 6,
+               selectInput(
+                 inputId = "speciality_input",
+                 label = "Please select Speciality(s)",
+                 choices = speciality_choice,
+                 multiple = TRUE,
+                 selected = "Allergy"
+               ),
+        )
+      ),
+      actionButton(inputId = "update_speciality",
+                   label = "Update Dashboard"),
+      
+      
+      
+      fluidRow(
+        plotOutput("speciality_output"),
+        
+      ),
+      fluidRow(
+        print("Please note that in the dataset used to produce these visualisations, there were a number of NA values for length of stay - 
+        These have been dropped, and therefore may affect results.")
+      ),
+),
 
     # using age for the demographic for testing purposes
     tabPanel(
