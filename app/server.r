@@ -38,17 +38,17 @@ server <- function(input, output, session) {
                                   #ylim(min_beds, max_beds)
                                            
                                 })
+  
   filtered_geo_date <- eventReactive(eventExpr = input$update_geo_date,
                                      valueExpr = {
-                                         locations_occupancy_full %>% 
-                                         filter(year == input$year_input_geo & quarter == input$quarter_input_geo) %>% 
+                                       locations_occupancy_full_combine_year_quarter %>% 
+                                         filter(year_quarter == input$year_input_geo) %>% 
                                          leaflet() %>% 
                                          addTiles() %>% 
                                          addCircleMarkers(lng = ~longitude,
                                                           lat = ~latitude,
                                                           color = ~geo_palette(percentage_occupancy),
                                                           stroke = FALSE)
-                                       
                                      })
   
   filtered_age_gender_demo <- eventReactive(eventExpr = input$update_demo_gender_age,
@@ -247,7 +247,14 @@ server <- function(input, output, session) {
     domain = locations_occupancy_full$percentage_occupancy)
   
   output$geo_map_output <- renderLeaflet(
-    filtered_geo_date()
+    locations_occupancy_full_combine_year_quarter %>% 
+      filter(year_quarter == input$year_input_geo) %>% 
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(lng = ~longitude,
+                       lat = ~latitude,
+                       color = ~geo_palette(percentage_occupancy),
+                       stroke = FALSE)
   )
   
   output$demo_age_output <- renderPlot(

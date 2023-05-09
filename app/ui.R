@@ -6,11 +6,14 @@ ui <- fluidPage(
       title = ".README",
 
       fluidRow(
+        column(width = 10,
+               offset = 0.5,
         tags$br(),
-        print("This is space for us to put some introductory text - explaining the
-              purpose of the app, a short description of each tab along with details and rational
-              behind any assumptions/decisions.")
-      )
+        p("Add .README text here. For example, definitions used, contents of each section etc.", 
+          style="text-align:justify;color:black;background-color:papayawhip;padding:15px;border-radius:10px"
+        )
+      ),
+      ),
 
     ),
 
@@ -97,24 +100,24 @@ ui <- fluidPage(
         print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
       ),
       fluidRow(
-        column(width = 4,
-               selectInput(inputId = "year_input_geo",
-                           label = "Select Year",
-                           choices = geo_year_choice,
-                           selected = 2020)
+        column(width = 11,
+               offset = 0.5,
+               sliderTextInput(inputId = "year_input_geo",
+                           label = "Select Year/Quarter",
+                           choices = c("2017Q3", "2017Q4", "2018Q1", "2018Q2", 
+                                       "2018Q3", "2018Q4", "2019Q1", "2019Q2", 
+                                       "2019Q3", "2019Q4", "2020Q1", "2020Q2", 
+                                       "2020Q3", "2020Q4", "2021Q1", "2021Q2", 
+                                       "2021Q3", "2021Q4", "2022Q1", "2022Q2", 
+                                       "2022Q3"),
+                           grid = TRUE))
         ),
-        column(width = 4,
-               selectInput(inputId = "quarter_input_geo",
-                           label = "Select Quarter",
-                           choices = geo_quarter_choice,
-                           selected = "Q1")
-        ),
-        column(width = 4,
-               actionButton(inputId = "update_geo_date",
-                              label = "Update dashboard"))
-    ),
+        
     fluidRow(
+      column(width = 12,
+             offset = 0.5,
       leafletOutput("geo_map_output")
+      ),
     ),
     ),
     
@@ -199,7 +202,7 @@ ui <- fluidPage(
             column(width = 4,
 
                    selectInput(inputId = "deprivation_input",
-                               label = "Select Deprivation Categoris To Compare:",
+                               label = "Select Deprivation Categories To Compare:",
                                choices = deprivation_choice,
                                multiple = TRUE)
             ),
@@ -221,11 +224,11 @@ ui <- fluidPage(
           ),
 
           fluidRow(
-            print("The above plots use the Scottish Index of Multiple Deprivation, where SIMD 1
-                  is considered the most deprived and SIMD 5 being least deprived.")
-
+            p("The above plots use the Scottish Index of Multiple Deprivation, where SIMD 1
+                  is considered the most deprived and SIMD 5 being least deprived.", 
+              style="text-align:justify;color:black;background-color:papayawhip;padding:15px;border-radius:10px"
+              )),
           ),
-        ),
 
         tabPanel(
           title = "Gender & Age",
@@ -264,7 +267,8 @@ ui <- fluidPage(
         ),
       ),
     ),
-  ),
+),
+  
     # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
     # Testing a "footer" that mentions where data was taken from
     # Will need to alter link and title for actual dataset used
