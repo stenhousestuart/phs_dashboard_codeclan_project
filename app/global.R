@@ -34,10 +34,15 @@ deprivation_choice <- admission_deprivation_all %>%
   distinct(simd)
 
 geo_year_choice <- locations_occupancy_full %>% 
-  distinct(year)
+  arrange(year) %>% 
+  distinct(year) %>%
+  drop_na(year)
+  
 
 geo_quarter_choice <- locations_occupancy_full %>% 
-  distinct(quarter)
+  arrange(quarter) %>% 
+  distinct(quarter) %>% 
+  drop_na(quarter)
 
 geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
   distinct(nhs_health_board)
