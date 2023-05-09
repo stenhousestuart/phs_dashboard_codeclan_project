@@ -5,6 +5,7 @@ library(here)
 library(janitor)
 library(leaflet)
 library(DT)
+library(Hmisc)
 
 
 # Read In Data
@@ -43,4 +44,7 @@ geo_healthboard_choice <- pre_post_2020_avg_occupancy %>%
   distinct(nhs_health_board)
 
 speciality_choice <- clean_hospital_admissions_speciality %>% 
+  distinct(specialty_name)
+
+speciality_choice_longer <- locations_occupancy_full %>% 
   distinct(specialty_name)

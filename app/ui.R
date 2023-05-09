@@ -153,6 +153,14 @@ ui <- fluidPage(
       
       fluidRow(
         plotOutput("speciality_output"),
+        plotOutput("testing_occupancy"),
+        selectInput(
+          inputId = "speciality_input_longer",
+          label = "Please select Speciality(s)",
+          choices = speciality_choice_longer,
+          multiple = TRUE,
+          selected = "General Surgery"
+        ),
         
       ),
       fluidRow(

@@ -413,5 +413,37 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
 output$speciality_output <-renderPlot(
   speciality_output_selection()
 )
+
+testing_occupancy_filter <- eventReactive(eventExpr = input$update_speciality,
+                                          valueExpr = {
+                                            locations_occupancy_full %>% 
+                                              mutate(year = case_when(
+                                                year >= 2020 ~ "Post-2020",
+                                                year < 2020 ~ "Pre-2020",
+                                                TRUE ~ "")) %>% 
+                                              drop_na(percentage_occupancy) %>% 
+                                              filter(specialty_name %in% input$speciality_input_longer) %>% 
+                                              group_by(quarter, specialty_name, year)
+                                          })
+
+output$testing_occupancy <- renderPlot(
+testing_occupancy_filter() %>% 
+    ggplot() +
+    aes(x = quarter, y = percentage_occupancy, colour = specialty_name) + 
+    stat_summary(fun.data = "mean_cl_normal",
+                 geom = "errorbar",
+                 width = .1) +
+    stat_summary(fun = "mean", geom = "point", size = 4) +
+    stat_summary(fun = "mean",
+                 geom = "line",
+                 color = "black") +
+    facet_wrap(~factor(year, level = c("Pre-2020", "Post-2020"))) +
+    labs(
+      title = "Mean Hospital Admission by Quarter for Specialities",
+      x = "Quarter",
+      y = "Hospital Admissions",
+      col = "Speciality Name"
+    )
+)
   
 }
