@@ -192,17 +192,18 @@ admission_demographics_clean <- admission_demographics_clean %>%
   separate(quarter,into = c("year", "quarter"), sep = "Q" )
 
 admission_demographics_clean <- admission_demographics_clean %>% 
-  mutate(pre_post_2020 = ifelse(year %in% c("2017", "2018", "2019"),
-                                "pre 2020", "post 2020"),
-         pre_post_2020 = factor(pre_post_2020, 
-                                levels = c("pre 2020", 
-                                           "post 2020")))
+  mutate(pre_post_2020 = ifelse(year %in% c("2017", "2018", "2019"), "pre 2020", "post 2020")) %>% 
+  mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020")))
 
 admission_demographics_clean <- admission_demographics_clean %>% 
   mutate(age = str_remove(age, "years"),
          age = str_remove(age, "and over"),
          age = str_trim(age),
          age = recode(age, "90" = "90 Plus"))
+
+admission_demographics_all <- admission_demographics_clean %>%
+  filter(nhs_health_board == "All of Scotland",
+         admission_type == "All Inpatients")
 
 # deprivation data cleaning
 admission_deprivation_clean <- admission_deprivation_clean %>% 
@@ -215,22 +216,12 @@ admission_deprivation_clean <- admission_deprivation_clean %>%
   mutate(simd = factor(simd, levels = c(1, 2, 3, 4, 5)))
 
 admission_deprivation_clean <- admission_deprivation_clean %>% 
-  mutate(pre_post_2020 = ifelse(year %in% c("2017", "2018", "2019"),
-                                "pre 2020", "post 2020"),
-         pre_post_2020 = factor(pre_post_2020, 
-                                levels = c("pre 2020",
-                                           "post 2020")))
-
-admission_demographics_all <- admission_demographics_clean %>%
-  filter(nhs_health_board == "All of Scotland",
-         admission_type == "All Inpatients")
+  mutate(pre_post_2020 = ifelse(year %in% c("2017", "2018", "2019"), "pre 2020", "post 2020")) %>% 
+  mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020")))
 
 admission_deprivation_all <- admission_deprivation_clean %>%
   filter(nhs_health_board == "All of Scotland",
          admission_type == "All Inpatients")
-
-
-
 
 # Kirsty's cleaning starts here
 

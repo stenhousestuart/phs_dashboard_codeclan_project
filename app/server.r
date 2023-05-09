@@ -23,22 +23,94 @@ server <- function(input, output, session) {
                                            
                                 })
   
-  filtered_age_demo <- eventReactive(eventExpr = input$update_demo,
+  filtered_deprivation_demo <- eventReactive(eventExpr = input$update_demo_deprivation,
                                  valueExpr = {
-                                   admission_demographics_all %>%
-                                     filter(age %in% input$age_input) %>% 
-                                     group_by(quarter, age, pre_post_2020) %>% 
-                                     summarise(mean_admissions = mean(episodes)) %>% 
-                                     ggplot(aes(x = quarter, y = mean_admissions)) +
-                                     geom_point(aes(colour = age)) +
-                                     geom_line(aes(group = age, colour = age)) +
-                                     facet_wrap(~pre_post_2020) +
-                                     labs(
-                                       x = "\n Quarter",
-                                       y = "Mean Episodes of Care \n",
-                                       title = "Mean Episodes of Care by Age & Quarter",
-                                       colour = "Age:")
-                                   })
+                                  
+                                   if (input$deprivation_plot_type_input == "Mean No. of Admissions") {
+                                     
+                                     admission_deprivation_all %>%
+                                       filter(simd %in% input$deprivation_input) %>%
+                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                       group_by(quarter, simd, pre_post_2020) %>% 
+                                       summarise(mean_episodes = mean(episodes)) %>% 
+                                       ggplot(aes(x = quarter, y = mean_episodes)) +
+                                       geom_point(aes(colour = simd)) +
+                                       geom_line(aes(group = simd, colour = simd)) +
+                                       facet_wrap(~pre_post_2020) +
+                                       labs(
+                                         x = "\n Quarter",
+                                         y = "Mean Episodes of Care \n",
+                                         title = "Mean Episodes of Care by SIMD & Quarter",
+                                         colour = "SIMD:")
+                                   
+                                   }
+                                   
+                                   else {
+                                    
+                                     admission_deprivation_all %>%
+                                       filter(simd %in% input$deprivation_input) %>% 
+                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                       group_by(quarter, simd, pre_post_2020) %>% 
+                                       summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
+                                       ggplot(aes(x = quarter, y = mean_length_of_stay)) +
+                                       geom_point(aes(colour = simd)) +
+                                       geom_line(aes(group = simd, colour = simd)) +
+                                       facet_wrap(~pre_post_2020) +
+                                       labs(
+                                         x = "\n Quarter",
+                                         y = "Mean Length of Stay \n",
+                                         title = "Mean Length of Stay by SIMD & Quarter",
+                                         colour = "SIMD:")
+                                     
+                                     
+                                   }
+                                     })
+  
+
+  filtered_age_demo <- eventReactive(eventExpr = input$update_demo_age,
+                                     valueExpr = {
+                                       
+                                       if (input$age_plot_type_input == "Mean No. of Admissions") {
+                                         
+                                         admission_demographics_all %>%
+                                           filter(age %in% input$age_input) %>% 
+                                           mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                           group_by(quarter, age, pre_post_2020) %>% 
+                                           summarise(mean_admissions = mean(episodes)) %>% 
+                                           ggplot(aes(x = quarter, y = mean_admissions)) +
+                                           geom_point(aes(colour = age)) +
+                                           geom_line(aes(group = age, colour = age)) +
+                                           facet_wrap(~pre_post_2020) +
+                                           labs(
+                                             x = "\n Quarter",
+                                             y = "Mean Episodes of Care \n",
+                                             title = "Mean Episodes of Care by Age & Quarter",
+                                             colour = "Age:")
+                                         
+                                       }
+                                       
+                                       else {
+                                         
+                                         admission_demographics_all %>%
+                                           filter(age %in% input$age_input) %>%
+                                           mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                           group_by(quarter, age, pre_post_2020) %>% 
+                                           summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
+                                           ggplot(aes(x = quarter, y = mean_length_of_stay)) +
+                                           geom_point(aes(colour = age)) +
+                                           geom_line(aes(group = age, colour = age)) +
+                                           facet_wrap(~pre_post_2020) +
+                                           labs(
+                                             x = "\n Quarter",
+                                             y = "Mean Length of Stay \n",
+                                             title = "Mean Length of Stay by Age & Quarter",
+                                             colour = "Age:")  
+                                         
+                                         
+                                       }
+                                     })
+                                       
+    
   
 # finds the highest value for total episodes to position labels correctly
   max_total_episodes <- eventReactive(eventExpr = input$update_temporal,
@@ -174,6 +246,11 @@ server <- function(input, output, session) {
   output$demo_age_output <- renderPlot(
     filtered_age_demo()
   )
+  
+  output$demo_deprivation_output <- renderPlot(
+    filtered_deprivation_demo()
+  )
+  
   output$stats_table_output <- renderDataTable(
     
     clean_hosp_admissions_qyear %>% 
@@ -187,9 +264,5 @@ server <- function(input, output, session) {
                 iqr_hospital_admissions = IQR(episodes)) %>% 
       separate(quarter,into = c("year", "quarter"), sep = "Q" )
   )
-  
-  
-  
-  
   
 }
