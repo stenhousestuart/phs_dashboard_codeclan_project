@@ -197,7 +197,8 @@ server <- function(input, output, session) {
       separate(quarter,into = c("year", "quarter"), sep = "Q" )
   )
   
-filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
+  
+temporal_output_selection <- eventReactive(eventExpr = input$update_temporal,
                                      valueExpr = {
                                        
                                        if (input$temporal_plot_type_input == "Total Number of Admissions") {
@@ -276,7 +277,7 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                      })
 
 output$temporal_output <- renderPlot(
-  filtered_temporal_output()
+  temporal_output_selection()
   )
   
 }
