@@ -18,6 +18,8 @@ admission_deprivation_all <- read_csv(here("app/clean_data/admission_deprivation
 
 locations_occupancy_full <- read_csv(here("app/clean_data/locations_occupancy_full.csv"))
 
+clean_hospital_admissions_speciality <- read_csv(here("app/clean_data/clean_hospital_admissions_speciality.csv"))
+
 # Set Input Choices
 age_choice <- admission_demographics_all %>% 
   distinct(age)
@@ -39,3 +41,6 @@ geo_quarter_choice <- locations_occupancy_full %>%
 
 geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
   distinct(nhs_health_board)
+
+speciality_choice <- clean_hospital_admissions_speciality %>% 
+  distinct(specialty_name)
