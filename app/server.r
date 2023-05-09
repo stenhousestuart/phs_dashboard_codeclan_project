@@ -2,6 +2,10 @@
 server <- function(input, output, session) {
 
 
+
+  
+  
+  
   filtered_temporal <- eventReactive(eventExpr = input$update_temporal,
                                      valueExpr = {
                                        clean_hosp_admissions_qyear %>% 
@@ -258,19 +262,6 @@ server <- function(input, output, session) {
     filtered_age_gender_demo()
   )
   
-  output$stats_table_output <- renderDataTable(
-    
-    clean_hosp_admissions_qyear %>% 
-      filter(nhs_health_board != "All of Scotland",
-             nhs_health_board != "Non-NHS Provider",
-             admission_type == "All Inpatients") %>% 
-      group_by(quarter) %>%
-      summarise(mean_hospital_admissions = mean(episodes),
-                median_hospital_admissions = median(episodes),
-                sd_hospital_admissions = sd(episodes),
-                iqr_hospital_admissions = IQR(episodes)) %>% 
-      separate(quarter,into = c("year", "quarter"), sep = "Q" )
-  )
   
 filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                      valueExpr = {
@@ -353,5 +344,23 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
 output$temporal_output <- renderPlot(
   filtered_temporal_output()
   )
+
+output$stats_table_output <- renderDataTable(
+  
+  colnames = c('Quarter', 'Mean', 'Median', 'Standard Deviation', 'IQR'),
+  options = list(dom = 't'),
+  
+  clean_hosp_admissions_qyear %>% 
+    separate(quarter, into = c("year", "quarter"), sep = "Q") %>% 
+    filter (year == input$stats_year_input) %>% 
+    filter(nhs_health_board != "All of Scotland",
+           nhs_health_board != "Non-NHS Provider",
+           admission_type == "All Inpatients") %>%
+    group_by(quarter) %>%
+    summarise(mean_hospital_admissions = mean(episodes),
+              median_hospital_admissions = median(episodes),
+              sd_hospital_admissions = sd(episodes),
+              iqr_hospital_admissions = IQR(episodes))
+)
   
 }
