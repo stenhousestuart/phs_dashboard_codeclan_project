@@ -23,12 +23,59 @@ server <- function(input, output, session) {
                                            
                                 })
   
+  filtered_age_gender_demo <- eventReactive(eventExpr = input$update_demo_gender_age,
+                                             valueExpr = {
+                                               
+                                               if (input$age_gender_plot_type_input == "No. of Admissions") {
+                                               
+                                               admission_demographics_all %>%
+                                                 mutate(year = factor(year, levels = c("2017", "2018", "2019", "2020", "2021", "2022"))) %>% 
+                                                 filter(age %in% input$gender_age_input,
+                                                        year != "2017",
+                                                        year != "2022") %>% 
+                                                 group_by(sex, age, year) %>% 
+                                                 summarise(total_admissions = sum(episodes)) %>% 
+                                                 ggplot(aes(x = age, y = total_admissions, fill = year)) +
+                                                 geom_col(aes(x = age, y = total_admissions, fill = year), position = "dodge") +
+                                                 facet_wrap(~sex) +
+                                                 labs(
+                                                   x = "\n Age",
+                                                   y = "Number of Admissions \n",
+                                                   title = "Number of Admissions by Age & Gender") +
+                                                 theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
+                                                 scale_y_continuous(labels = scales::comma)
+                                               
+                                             }
+                                            
+                                            else {
+                                              
+                                              admission_demographics_all %>%
+                                                mutate(year = factor(year, levels = c("2017", "2018", "2019", "2020", "2021", "2022"))) %>%
+                                                filter(age %in% input$gender_age_input,
+                                                       year != "2017",
+                                                       year != "2022") %>% 
+                                                group_by(sex, age, year) %>% 
+                                                ggplot(aes(x = age, y = average_length_of_stay, fill = year)) +
+                                                geom_col(aes(x = age, y = average_length_of_stay, fill = year), position = "dodge") +
+                                                facet_wrap(~sex) +
+                                                labs(
+                                                  x = "\n Age",
+                                                  y = "Average Length of Stay \n",
+                                                  title = "Average Length of Stay by Age & Gender") +
+                                                theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+                                              
+                                              
+                                            }
+                                            })
+  
+  
   filtered_deprivation_demo <- eventReactive(eventExpr = input$update_demo_deprivation,
                                  valueExpr = {
                                   
                                    if (input$deprivation_plot_type_input == "Mean No. of Admissions") {
                                      
                                      admission_deprivation_all %>%
+                                       mutate(simd = factor(simd, levels = c("1", "2", "3", "4", "5"))) %>%
                                        filter(simd %in% input$deprivation_input) %>%
                                        mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
                                        group_by(quarter, simd, pre_post_2020) %>% 
@@ -48,6 +95,7 @@ server <- function(input, output, session) {
                                    else {
                                     
                                      admission_deprivation_all %>%
+                                       mutate(simd = factor(simd, levels = c("1", "2", "3", "4", "5"))) %>%
                                        filter(simd %in% input$deprivation_input) %>% 
                                        mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
                                        group_by(quarter, simd, pre_post_2020) %>% 
@@ -241,6 +289,10 @@ server <- function(input, output, session) {
   
   output$demo_deprivation_output <- renderPlot(
     filtered_deprivation_demo()
+  )
+  
+  output$demo_age_gender_output <- renderPlot(
+    filtered_age_gender_demo()
   )
   
   output$stats_table_output <- renderDataTable(

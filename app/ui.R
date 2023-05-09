@@ -87,7 +87,7 @@ ui <- fluidPage(
             column(width = 4,
                    
                    selectInput(inputId = "age_input",
-                               label = "Select Age Range",
+                               label = "Select Age Range(s) To Compare:",
                                choices = age_choice,
                                multiple = TRUE,
                                selected = "All ages"),
@@ -123,7 +123,7 @@ ui <- fluidPage(
             column(width = 4,
                    
                    selectInput(inputId = "deprivation_input",
-                               label = "Select Deprivation Index",
+                               label = "Select Deprivation Categoris To Compare:",
                                choices = deprivation_choice,
                                multiple = TRUE),
             ),
@@ -145,8 +145,44 @@ ui <- fluidPage(
           ),
           
           fluidRow(
-            print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
-            This would be where some stats go, but good luck interpretting these nonsense graphs")
+            print("The above plots use the Scottish Index of Multiple Deprivation, where SIMD 1 
+                  is considered the most deprived and SIMD 5 being least deprived.")
+            
+          ),
+        ),
+        
+        tabPanel(
+          title = "Gender & Age",
+          
+          fluidRow(
+            tags$br(),
+            column(width = 4,
+                   
+                   selectInput(inputId = "gender_age_input",
+                               label = "Select Age Range(s) To Compare:",
+                               choices = age_choice,
+                               multiple = TRUE),
+            ),
+            
+            column(width = 4,
+                   radioButtons(inputId = "age_gender_plot_type_input",
+                                label = "View:",
+                                choices = c("No. of Admissions", "Average Length of Stay")),
+            ),
+            
+            
+            column(width = 4,
+                   actionButton(inputId = "update_demo_gender_age",
+                                label = "Update Dashboard"),
+            ),
+          ),
+          
+          fluidRow(
+            plotOutput("demo_age_gender_output"),
+          ),
+          
+          fluidRow(
+            print("Only years where complete data is available have been included.")
             
           ),
         ),
