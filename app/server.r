@@ -29,15 +29,16 @@ server <- function(input, output, session) {
                                                if (input$age_gender_plot_type_input == "No. of Admissions") {
                                                
                                                admission_demographics_all %>%
-                                                 mutate(year = factor(year, levels = c("2017", "2018", "2019", "2020", "2021", "2022"))) %>% 
+                                                 mutate(year = factor(year, levels = c("2017", "2018", "2019", "2020", "2021", "2022")),
+                                                        season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
                                                  filter(age %in% input$gender_age_input,
                                                         year != "2017",
                                                         year != "2022") %>% 
-                                                 group_by(sex, age, year) %>% 
+                                                 group_by(sex, age, year, season) %>% 
                                                  summarise(total_admissions = sum(episodes)) %>% 
                                                  ggplot(aes(x = age, y = total_admissions, fill = year)) +
                                                  geom_col(aes(x = age, y = total_admissions, fill = year), position = "dodge") +
-                                                 facet_wrap(~sex) +
+                                                 facet_grid(season~sex) +
                                                  labs(
                                                    x = "\n Age",
                                                    y = "Number of Admissions \n",
@@ -50,14 +51,15 @@ server <- function(input, output, session) {
                                             else {
                                               
                                               admission_demographics_all %>%
-                                                mutate(year = factor(year, levels = c("2017", "2018", "2019", "2020", "2021", "2022"))) %>%
+                                                mutate(year = factor(year, levels = c("2017", "2018", "2019", "2020", "2021", "2022")),
+                                                       season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>%
                                                 filter(age %in% input$gender_age_input,
                                                        year != "2017",
                                                        year != "2022") %>% 
-                                                group_by(sex, age, year) %>% 
+                                                group_by(sex, age, year, season) %>% 
                                                 ggplot(aes(x = age, y = average_length_of_stay, fill = year)) +
                                                 geom_col(aes(x = age, y = average_length_of_stay, fill = year), position = "dodge") +
-                                                facet_wrap(~sex) +
+                                                facet_grid(season~sex) +
                                                 labs(
                                                   x = "\n Age",
                                                   y = "Average Length of Stay \n",
