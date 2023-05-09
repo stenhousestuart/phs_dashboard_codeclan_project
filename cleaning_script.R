@@ -22,7 +22,9 @@ beds_data <- read_csv(here("data/beds_by_nhs_board_of_treatment_and_specialty.cs
 
 hospital_locations <- read_csv(here("data/current_hospital_locations.csv"))
 
+<<<<<<< Updated upstream
 hospital_long_lat <- read_csv(here("data/hospital_long_lat.csv.csv"), col_names = FALSE)
+hospital_long_lat <- read_csv(here("data/hospital_long_lat.csv"), col_names = FALSE)
 
 
 # David's cleaning starts here
