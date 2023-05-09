@@ -10,18 +10,23 @@ ui <- fluidPage(
         print("This is space for us to put some introductory text - explaining the 
               purpose of the app, a short description of each tab along with details and rational
               behind any assumptions/decisions.")
-      ),
+      )
       
     ),  
     
     tabPanel(
       title = "Stats",
-      dataTableOutput("stats_table_output"),
+      dataTableOutput("stats_table_output")
       
     ),  
     tabPanel(
       title = "Temporal",
-      
+      fluidRow(
+               radioButtons(inputId = "temporal_plot_type_input",
+                            label = "View:",
+                            choices = c("Total Number of Admissions", "Mean Length of Stay")
+                            )
+      ),
       fluidRow(
         column(width = 6,
                selectInput(inputId = "admission_input_tempo",
@@ -34,13 +39,16 @@ ui <- fluidPage(
                            label = "Select Health Board",
                            choices = health_board_choice,
                            selected = "All of Scotland")
-        ),
+        )
       ),
       fluidRow(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-      plotOutput("temporal_out_length_stay"),
+
+      plotOutput("temporal_output"),
+  
+      
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
@@ -90,29 +98,29 @@ ui <- fluidPage(
                                label = "Select Age Range",
                                choices = age_choice,
                                multiple = TRUE,
-                               selected = "All ages"),
+                               selected = "All ages")
             ),
             
             column(width = 4,
                    radioButtons(inputId = "age_plot_type_input",
                                 label = "View:",
-                                choices = c("Mean No. of Admissions", "Mean Length of Stay")),
+                                choices = c("Mean No. of Admissions", "Mean Length of Stay"))
             ),
             
             column(width = 4,
                    actionButton(inputId = "update_demo_age",
-                                label = "Update Dashboard"),
-            ),
+                                label = "Update Dashboard")
+            )
           ),
           fluidRow(
-            plotOutput("demo_age_output"),
+            plotOutput("demo_age_output")
           ),
           
           fluidRow(
             print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
-            This would be where some stats go, but good luck interpretting these nonsense graphs"),
+            This would be where some stats go, but good luck interpretting these nonsense graphs")
             
-          ),
+          )
         ),
         
         tabPanel(
@@ -125,33 +133,34 @@ ui <- fluidPage(
                    selectInput(inputId = "deprivation_input",
                                label = "Select Deprivation Index",
                                choices = deprivation_choice,
-                               multiple = TRUE),
+                               multiple = TRUE)
             ),
             
             column(width = 4,
                    radioButtons(inputId = "deprivation_plot_type_input",
                                 label = "View:",
-                                choices = c("Mean No. of Admissions", "Mean Length of Stay")),
+                                choices = c("Mean No. of Admissions", "Mean Length of Stay"))
             ),
             
             column(width = 4,
                    actionButton(inputId = "update_demo_deprivation",
-                                label = "Update Dashboard"),
-            ),
+                                label = "Update Dashboard")
+            )
           ),
           
           fluidRow(
-            plotOutput("demo_deprivation_output"),
+            plotOutput("demo_deprivation_output")
           ),
           
           fluidRow(
             print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
-            
-          ),
-        ),
-      ),
-    ),
+          )
+          )
+        )
+      )
+    
+  
   ),
     # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
     # Testing a "footer" that mentions where data was taken from
@@ -161,5 +170,5 @@ ui <- fluidPage(
     print("Data taken from "),
     tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
            "Public health Scotland")
-  )
   
+) 
