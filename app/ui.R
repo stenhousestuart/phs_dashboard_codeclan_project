@@ -156,19 +156,42 @@ ui <- fluidPage(
             print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
           )
+          
           )
+          )
+        ),
+    tabPanel(
+      title = "Speciality",
+      fluidRow(
+        column(width = 6,
+               selectInput(
+                 inputId = "speciality_input",
+                 label = "Please select Speciality(s)",
+                 choices = speciality_choice,
+                 multiple = TRUE,
+                 selected = "Allergy"
+               ),
+               
+               actionButton(inputId = "update_speciality",
+                            label = "Update Dashboard")
         )
+      ),
+      
+      fluidRow(
+        plotOutput("speciality_output")
       )
+    )
     
-  
+    
   ),
     # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
     # Testing a "footer" that mentions where data was taken from
     # Will need to alter link and title for actual dataset used
     # Could be shifted into individual tabs if we end up using different datasets for different outputs
+  fluidRow(
     hr(),
     print("Data taken from "),
     tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
            "Public health Scotland")
-  
+ ) 
 ) 
