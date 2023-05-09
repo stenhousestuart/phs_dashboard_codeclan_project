@@ -38,11 +38,11 @@ server <- function(input, output, session) {
                                                  summarise(total_admissions = sum(episodes)) %>% 
                                                  ggplot(aes(x = age, y = total_admissions, fill = year)) +
                                                  geom_col(aes(x = age, y = total_admissions, fill = year), position = "dodge") +
-                                                 facet_grid(season~sex) +
+                                                 facet_grid(sex~season) +
                                                  labs(
                                                    x = "\n Age",
                                                    y = "Number of Admissions \n",
-                                                   title = "Number of Admissions by Age & Gender") +
+                                                   title = "Number of Admissions by Age, Gender & Season") +
                                                  theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
                                                  scale_y_continuous(labels = scales::comma)
                                                
@@ -59,11 +59,11 @@ server <- function(input, output, session) {
                                                 group_by(sex, age, year, season) %>% 
                                                 ggplot(aes(x = age, y = average_length_of_stay, fill = year)) +
                                                 geom_col(aes(x = age, y = average_length_of_stay, fill = year), position = "dodge") +
-                                                facet_grid(season~sex) +
+                                                facet_grid(sex~season) +
                                                 labs(
                                                   x = "\n Age",
                                                   y = "Average Length of Stay \n",
-                                                  title = "Average Length of Stay by Age & Gender") +
+                                                  title = "Average Length of Stay by Age, Gender & Season") +
                                                 theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
                                               
                                               
