@@ -76,11 +76,13 @@ ui <- fluidPage(
       title = "Geographical",
 
       column(width = 6,
-             selectInput(inputId = "health_board_input_geo",
+             pickerInput(inputId = "health_board_input_geo",
                          label = "Select Health Board",
                          choices = geo_healthboard_choice,
-                         multiple = TRUE,
-                         selected = "All of Scotland")
+                        selected = "All of Scotland",
+                       pickerOptions(actionsBox = TRUE),
+                        multiple = TRUE),
+                        
       ),
       # column(width = 6,
       #        selectInput(inputId = "year_input_geo",
