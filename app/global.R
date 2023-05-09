@@ -3,6 +3,7 @@
 library(tidyverse)
 library(here)
 library(janitor)
+library(DT)
 
 # Read In Data
 clean_hosp_admissions_qyear <- read_csv(here("app/clean_data/clean_hosp_admissions_qyear.csv"))

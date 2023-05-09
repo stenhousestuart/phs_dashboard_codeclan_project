@@ -16,7 +16,23 @@ ui <- fluidPage(
 
     tabPanel(
       title = "Stats",
-      dataTableOutput("stats_table_output")
+      tags$br(),
+      tags$h3("Number of Hospital Admissions"),
+      tags$br(),
+      print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+      tags$br(),
+      tags$br(),
+      fluidRow(
+        selectInput(inputId = "stats_year_input",
+                     label = "Select Year:",
+                     choices = c("2017", "2018", "2019", "2020", "2021", "2022")
+      ),
+      ),    
+      
+      fluidRow(
+        dataTableOutput("stats_table_output")
+      ),
+      
 
     ),
     tabPanel(
