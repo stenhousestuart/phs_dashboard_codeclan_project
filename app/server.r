@@ -9,9 +9,11 @@ server <- function(input, output, session) {
                                        clean_hosp_admissions_qyear %>% 
                                          filter(admission_type %in% input$admission_input_tempo,
                                                 nhs_health_board %in% input$health_board_input_tempo) %>%
-                                         group_by(quarter) %>% 
-                                         summarise(total_episodes = sum(episodes))
+                                         group_by(quarter)
+                                         
                                      })
+
+  
   
   filtered_geo <- eventReactive(eventExpr = input$update_geo,
                                 valueExpr = {
@@ -21,22 +23,94 @@ server <- function(input, output, session) {
                                            
                                 })
   
-  filtered_age_demo <- eventReactive(eventExpr = input$update_demo,
+  filtered_deprivation_demo <- eventReactive(eventExpr = input$update_demo_deprivation,
                                  valueExpr = {
-                                   admission_demographics_all %>%
-                                     filter(age %in% input$age_input) %>% 
-                                     group_by(quarter, age, pre_post_2020) %>% 
-                                     summarise(mean_admissions = mean(episodes)) %>% 
-                                     ggplot(aes(x = quarter, y = mean_admissions)) +
-                                     geom_point(aes(colour = age)) +
-                                     geom_line(aes(group = age, colour = age)) +
-                                     facet_wrap(~pre_post_2020) +
-                                     labs(
-                                       x = "\n Quarter",
-                                       y = "Mean Episodes of Care \n",
-                                       title = "Mean Episodes of Care by Age & Quarter",
-                                       colour = "Age:")
-                                   })
+                                  
+                                   if (input$deprivation_plot_type_input == "Mean No. of Admissions") {
+                                     
+                                     admission_deprivation_all %>%
+                                       filter(simd %in% input$deprivation_input) %>%
+                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                       group_by(quarter, simd, pre_post_2020) %>% 
+                                       summarise(mean_episodes = mean(episodes)) %>% 
+                                       ggplot(aes(x = quarter, y = mean_episodes)) +
+                                       geom_point(aes(colour = simd)) +
+                                       geom_line(aes(group = simd, colour = simd)) +
+                                       facet_wrap(~pre_post_2020) +
+                                       labs(
+                                         x = "\n Quarter",
+                                         y = "Mean Episodes of Care \n",
+                                         title = "Mean Episodes of Care by SIMD & Quarter",
+                                         colour = "SIMD:")
+                                   
+                                   }
+                                   
+                                   else {
+                                    
+                                     admission_deprivation_all %>%
+                                       filter(simd %in% input$deprivation_input) %>% 
+                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                       group_by(quarter, simd, pre_post_2020) %>% 
+                                       summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
+                                       ggplot(aes(x = quarter, y = mean_length_of_stay)) +
+                                       geom_point(aes(colour = simd)) +
+                                       geom_line(aes(group = simd, colour = simd)) +
+                                       facet_wrap(~pre_post_2020) +
+                                       labs(
+                                         x = "\n Quarter",
+                                         y = "Mean Length of Stay \n",
+                                         title = "Mean Length of Stay by SIMD & Quarter",
+                                         colour = "SIMD:")
+                                     
+                                     
+                                   }
+                                     })
+  
+
+  filtered_age_demo <- eventReactive(eventExpr = input$update_demo_age,
+                                     valueExpr = {
+                                       
+                                       if (input$age_plot_type_input == "Mean No. of Admissions") {
+                                         
+                                         admission_demographics_all %>%
+                                           filter(age %in% input$age_input) %>% 
+                                           mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                           group_by(quarter, age, pre_post_2020) %>% 
+                                           summarise(mean_admissions = mean(episodes)) %>% 
+                                           ggplot(aes(x = quarter, y = mean_admissions)) +
+                                           geom_point(aes(colour = age)) +
+                                           geom_line(aes(group = age, colour = age)) +
+                                           facet_wrap(~pre_post_2020) +
+                                           labs(
+                                             x = "\n Quarter",
+                                             y = "Mean Episodes of Care \n",
+                                             title = "Mean Episodes of Care by Age & Quarter",
+                                             colour = "Age:")
+                                         
+                                       }
+                                       
+                                       else {
+                                         
+                                         admission_demographics_all %>%
+                                           filter(age %in% input$age_input) %>%
+                                           mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                           group_by(quarter, age, pre_post_2020) %>% 
+                                           summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
+                                           ggplot(aes(x = quarter, y = mean_length_of_stay)) +
+                                           geom_point(aes(colour = age)) +
+                                           geom_line(aes(group = age, colour = age)) +
+                                           facet_wrap(~pre_post_2020) +
+                                           labs(
+                                             x = "\n Quarter",
+                                             y = "Mean Length of Stay \n",
+                                             title = "Mean Length of Stay by Age & Quarter",
+                                             colour = "Age:")  
+                                         
+                                         
+                                       }
+                                     })
+                                       
+    
   
 # finds the highest value for total episodes to position labels correctly
   max_total_episodes <- eventReactive(eventExpr = input$update_temporal,
@@ -50,6 +124,7 @@ server <- function(input, output, session) {
                                           slice_max(total_episodes, n = 1) %>% 
                                           pull()
                                       })
+  
   # finds lowest percentage occupancy to set min limit for Y axis  
   min_beds <- eventReactive(eventExpr = input$update_geo,
                             valueExpr = {
@@ -71,8 +146,9 @@ server <- function(input, output, session) {
                             })
   
   
-  output$temporal_out <- renderPlot(
+  output$temporal_out_total_episodes <- renderPlot(
     filtered_temporal() %>% 
+      summarise(total_episodes = sum(episodes)) %>% 
       ggplot() +
       aes(x = quarter, y = total_episodes) +
       geom_line(aes(group = 1, colour = "red"),show.legend = FALSE) +
@@ -105,6 +181,42 @@ server <- function(input, output, session) {
         y = "Hospital Admissions")
   )
   
+  output$temporal_out_length_stay <- renderPlot(
+   filtered_temporal() %>% 
+      summarise(average_length_of_stay = mean(average_length_of_stay)) %>% 
+      ggplot() +
+      aes(x = quarter, y = average_length_of_stay) +
+      geom_line(aes(group = 1, colour = "red")) +
+      geom_point(size = 4, shape = 17, colour = "red") +
+      geom_line(aes(group = quarter)) +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust = 0.5)) +
+      scale_colour_brewer(palette = "Dark2") +
+      geom_label(
+        label = "Pre-Pandemic",
+        x = 2.5,
+        y = 140000,
+        label.padding = unit(0.15, "lines"),
+        label.size = 0.15,
+        color = "black"
+      ) +
+      geom_label(
+        label = "Pandemic",
+        x = 20,
+        y = 140000,
+        label.padding = unit(0.15, "lines"),
+        label.size = 0.15,
+        color = "black"
+      ) +
+      geom_vline(xintercept = 11.5, linetype = "dashed") +
+      # geom_vline(xintercept = 3.5, linetype = "dashed") +
+      labs(
+        title = "Total Number of Hospital Admissions",
+        subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+        x = "Quarter",
+        y = "Mean of Average Length of Stay") 
+  )
+  
   output$geo_output <- renderPlot(
     filtered_geo() %>% 
       ggplot(aes(x = factor(quarter, 
@@ -126,6 +238,11 @@ server <- function(input, output, session) {
   output$demo_age_output <- renderPlot(
     filtered_age_demo()
   )
+  
+  output$demo_deprivation_output <- renderPlot(
+    filtered_deprivation_demo()
+  )
+  
   output$stats_table_output <- renderDataTable(
     
     clean_hosp_admissions_qyear %>% 
@@ -139,9 +256,5 @@ server <- function(input, output, session) {
                 iqr_hospital_admissions = IQR(episodes)) %>% 
       separate(quarter,into = c("year", "quarter"), sep = "Q" )
   )
-  
-  
-  
-  
   
 }
