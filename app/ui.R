@@ -16,7 +16,23 @@ ui <- fluidPage(
 
     tabPanel(
       title = "Stats",
-      dataTableOutput("stats_table_output")
+      tags$br(),
+      tags$h3("Number of Hospital Admissions"),
+      tags$br(),
+      print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+      tags$br(),
+      tags$br(),
+      fluidRow(
+        selectInput(inputId = "stats_year_input",
+                     label = "Select Year:",
+                     choices = c("2017", "2018", "2019", "2020", "2021", "2022")
+      ),
+      ),    
+      
+      fluidRow(
+        dataTableOutput("stats_table_output")
+      ),
+      
 
     ),
     tabPanel(
@@ -62,7 +78,7 @@ ui <- fluidPage(
       column(width = 6,
              selectInput(inputId = "health_board_input_geo",
                          label = "Select Health Board",
-                         choices = health_board_choice,
+                         choices = geo_healthboard_choice,
                          multiple = TRUE,
                          selected = "All of Scotland")
       ),
@@ -79,7 +95,27 @@ ui <- fluidPage(
       plotOutput("geo_output"),
       fluidRow(
         print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
-      )
+      ),
+      fluidRow(
+        column(width = 4,
+               selectInput(inputId = "year_input_geo",
+                           label = "Select Year",
+                           choices = geo_year_choice,
+                           selected = 2020)
+        ),
+        column(width = 4,
+               selectInput(inputId = "quarter_input_geo",
+                           label = "Select Quarter",
+                           choices = geo_quarter_choice,
+                           selected = "Q1")
+        ),
+        column(width = 4,
+               actionButton(inputId = "update_geo_date",
+                              label = "Update dashboard"))
+    ),
+    fluidRow(
+      leafletOutput("geo_map_output")
+    ),
     ),
 
 
