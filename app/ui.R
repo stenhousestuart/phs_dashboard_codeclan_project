@@ -22,10 +22,10 @@ ui <- fluidPage(
     tabPanel(
       title = "Temporal",
       fluidRow(
-               radioButtons(inputId = "temporal_plot_type_input",
-                            label = "View:",
-                            choices = c("Total Number of Admissions", "Mean Length of Stay")
-                            )
+        radioButtons(inputId = "temporal_plot_type_input",
+                     label = "View:",
+                     choices = c("Total Number of Admissions", "Mean Length of Stay")
+        )
       ),
       fluidRow(
         column(width = 6,
@@ -45,9 +45,9 @@ ui <- fluidPage(
         actionButton(inputId = "update_temporal",
                      label = "Update dashboard")
       ),
-
+      
       plotOutput("temporal_output"),
-  
+      
       
       fluidRow(
         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
@@ -157,12 +157,17 @@ ui <- fluidPage(
             This would be where some stats go, but good luck interpretting these nonsense graphs")
           )
           
-          )
-          )
-        ),
+        )
+      )
+    ),
     tabPanel(
       title = "Speciality",
       fluidRow(
+        radioButtons(inputId = "speciality_plot_type_input",
+                     label = "View:",
+                     choices = c("Mean Admissions", "Mean Length of Stay")
+        ),
+        
         column(width = 6,
                selectInput(
                  inputId = "speciality_input",
@@ -171,27 +176,34 @@ ui <- fluidPage(
                  multiple = TRUE,
                  selected = "Allergy"
                ),
-               
-               actionButton(inputId = "update_speciality",
-                            label = "Update Dashboard")
         )
       ),
+      actionButton(inputId = "update_speciality",
+                   label = "Update Dashboard"),
+      
+      
       
       fluidRow(
-        plotOutput("speciality_output")
-      )
+        plotOutput("speciality_output"),
+        
+        )
+        
+      ),
+    fluidRow(
+      print("Please note that in the dataset used to produce these visualisations, there were a number of NA values for length of stay - These have been dropped, and therefore may affect results.")
     )
+      
     
     
   ),
-    # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
-    # Testing a "footer" that mentions where data was taken from
-    # Will need to alter link and title for actual dataset used
-    # Could be shifted into individual tabs if we end up using different datasets for different outputs
+  # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
+  # Testing a "footer" that mentions where data was taken from
+  # Will need to alter link and title for actual dataset used
+  # Could be shifted into individual tabs if we end up using different datasets for different outputs
   fluidRow(
     hr(),
     print("Data taken from "),
     tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
            "Public health Scotland")
- ) 
+  ) 
 ) 
