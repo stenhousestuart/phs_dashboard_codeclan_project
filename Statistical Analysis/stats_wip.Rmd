@@ -1,0 +1,93 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggpubr)
+library(broom)
+library(AICcmodavg)
+library(infer)
+library(knitr)
+library(kableExtra)
+
+
+hospital_admissions <- read_csv("../app/clean_data/clean_hosp_admissions_qyear.csv")
+
+```
+
+```{r}
+
+hospital_admissions %>% 
+  filter(nhs_health_board != "All of Scotland",
+          nhs_health_board != "Non-NHS Provider",
+          admission_type == "All Inpatients",
+          location != "A101H") %>% 
+  group_by(quarter) %>%
+  summarise(mean_hospital_admissions = mean(episodes),
+            median_hospital_admissions = median(episodes),
+            sd_hospital_admissions = sd(episodes),
+            iqr_hospital_admissions = IQR(episodes),
+            number_of_admissions = sum(episodes)) 
+
+hospital_admissions %>% 
+  filter(nhs_health_board != "All of Scotland",
+          nhs_health_board != "Non-NHS Provider",
+          admission_type == "All Inpatients",
+          location != "A101H") %>% 
+  arrange(desc(episodes))
+
+
+
+  # separate(quarter,into = c("year", "quarter"), sep = "Q")
+  
+            # sem_hospital_admissions = sd(mean_hospital_admissions))
+
+hospital_admissions %>% 
+  filter(nhs_health_board != "All of Scotland",
+         nhs_health_board != "Non-NHS Provider",
+         admission_type == "All Inpatients",
+         location != "A101H") %>% 
+  group_by(quarter) %>% 
+  ggplot() +
+  geom_boxplot() +
+  aes(x = quarter, y = episodes) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
+  geom_jitter(aes(colour = quarter))
+  
+
+
+# shapiro-wilk results suggests data is not normally distributed, took away arran hospital with no data provided.
+# hospital_admissions_shapiro <- hospital_admissions %>%
+#   filter(location != "A101H") %>% 
+#   group_by(quarter) %>% 
+#   summarise(shapiro_test = shapiro.test(episodes)$p.value)
+  
+# H0 all mean are equal
+# there is a differentce of means in one of these groups
+
+model_aov_hosp_adm <- aov(episodes ~ quarter, hospital_admissions)
+
+summary(model_aov_hosp_adm)
+
+confint(model_aov_hosp_adm)
+
+# We fail to reject our null hypothesis and say that episode means are similar between each quarter. 
+
+TukeyHSD(model_aov_hosp_adm)
+
+car::leveneTest(episodes ~ quarter, hospital_admissions) # no difference in variance across groups
+
+autoplot(model_aov_hosp_adm, label.size = 21)
+
+shapiro.test(residuals(model_aov_hosp_adm))
+
+# step 1 anova visualize the data
+# step 2 perform ANOVA and get summary ststs
+# step 3 get confidence intervals
+
+
+```
+
