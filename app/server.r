@@ -447,4 +447,20 @@ speciality_occupancy_filter() %>%
 output$icon_cat <- renderUI(
   htmltools::HTML('<i class="fa-solid fa-cat fa-bounce"></i>'))
  
+
+
+
+
+hosp_adm_q_split %>% 
+  filter(!is.na(episodes)) %>% 
+  group_by(nhs_health_board, quarter, year) %>% 
+  filter(nhs_health_board %in% input$stats_health_board,
+         quarter %in% input$stats_quarter,
+         year %in% input$stats_year) %>% 
+  summarise(mean_hosp_adm = mean(episodes),
+            median_hosp_adm = median(episodes),
+            sd_hosp_adm = sd(episodes),
+            sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
+            ci_hosp_adm = 2 * sd(episodes),
+  )
 }

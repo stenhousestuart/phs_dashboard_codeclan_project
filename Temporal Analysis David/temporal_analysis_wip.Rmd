@@ -916,14 +916,20 @@ filter(admission_type == "Emergency Inpatients",
     label.size = 0.15,
     color = "black"
   ) +
-  geom_vline(xintercept = 11.5, linetype = "dashed") +
-  # geom_vline(xintercept = 3.5, linetype = "dashed") +
+  geom_vline(xintercept = 10.5, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, linetype = "dashed", colour = "grey") +
    labs(
     title = "Total Number of Inpatient Episodes",
     subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
     x = "Quarter",
     y = "Inpatient Episodes") +
-  ylim(80000, 140000)
+  ylim(80000, 140000) +
+  annotate("rect", xmin = 11.25, xmax = 12.75, ymin = 80000, ymax = 140000, 
+           alpha = .25) +
+  annotate("rect", xmin = 14, xmax = 17, ymin = 80000, ymax = 140000, 
+           alpha = .25) 
+  # annotate("rect", xmin = 13.25, xmax = 13.75, ymin = 80000, ymax = 140000, 
+  #          alpha = .25)
 
 ```
 

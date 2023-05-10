@@ -16,11 +16,17 @@ library(kableExtra)
 
 hospital_admissions_qyear <- read_csv("../app/clean_data/clean_hosp_admissions_qyear.csv")
 
-hosp_adm_q_split <- read_csv("../app/clean_data/clean_hosp_admissions.csv")
+hosp_adm_q_split <- read_csv("../app/clean_data/clean_hosp_admissions.csv") 
+
+hospital_beds <- read_csv("../app/clean_data/pre_post_2020_avg_occupancy.csv")
+
+
 
 ```
 
 ```{r}
+hosp_adm_q_split %>% 
+distinct(nhs_health_board)
 
 hospital_admissions %>% 
   filter(nhs_health_board != "All of Scotland",
@@ -31,6 +37,7 @@ hospital_admissions %>%
   summarise(mean_hospital_admissions = mean(episodes),
             median_hospital_admissions = median(episodes),
             sd_hospital_admissions = sd(episodes),
+            sem = sd(sd_hospital_admissions),
             iqr_hospital_admissions = IQR(episodes),
             number_of_admissions = sum(episodes)) 
 
@@ -246,6 +253,7 @@ hosp_adm_q_split %>%
   coord_flip()
 
 ```
+
 ```{r}
 #null_dist removed missing variables
 null_distribution_alos <- hosp_adm_q_split %>% 
@@ -256,6 +264,7 @@ null_distribution_alos <- hosp_adm_q_split %>%
   generate(reps = 1000, type = "bootstrap") %>% 
   calculate(stat ="diff in means", order = c("Spring/Summer", "Autumn/Winter"))
 ```
+
 ```{r}
 #null_dist removed missing variables
 observed_stat_alos <- hosp_adm_q_split %>% 
@@ -270,7 +279,9 @@ null_distribution_alos %>%
   visualise() +
   shade_p_value(obs_stat = observed_stat_alos, direction = "both")
 
+
 ```
+
 ```{r}
 
 p_value <- null_distribution_alos %>%
@@ -279,6 +290,7 @@ p_value <- null_distribution_alos %>%
 p_value
 
 ```
+
 ```{r}
 
 hosp_adm_q_split %>% 
@@ -288,11 +300,11 @@ hosp_adm_q_split %>%
   summarise(total_hospital_admissions = sum(episodes, na.rm = TRUE),
              mean_av_los = mean(average_length_of_stay, na.rm = TRUE),
              sd = sd(average_length_of_stay, na.rm = TRUE),
-             ci = 2 * sem) %>% 
+             ci = 2 * sd) %>% 
   ggplot() +
   aes(x = season, y = mean_av_los) +
   geom_col(fill = "red", color = "black") +
-  geom_errorbar(aes(ymin = mean_av_los, ymax = mean_av_los + sd), width = 0.2) +
+  geom_errorbar(aes(ymin = mean_av_los, ymax = mean_av_los + ci), width = 0.2) +
   ylim(0, 15) +
   theme_bw() +
   geom_segment(aes(x = 1, y = 14.25, xend = 2, yend = 14.25), color = "black", linewidth = 1) +
@@ -316,7 +328,7 @@ hosp_adm_q_split %>%
   ggplot() +
   aes(x = factor(season, ordered = TRUE, levels = c("Spring/Summer", "Autumn/Winter")), y = average_length_of_stay) +
   geom_violin(fill = "grey", color = "black", trim = FALSE) +
-  stat_summary(fun.data = "mean_sdl", mult = 2, 
+  stat_summary(fun.data = "mean_se", 
                  geom ="pointrange", width= 0.1, size = 0.5, colour = "black", linewidth = 1) +
   theme_bw() +
   ylim(0, 220) +
@@ -330,8 +342,119 @@ hosp_adm_q_split %>%
    labs(x = "Season",
         y = "Average Length of Stay") 
 ```
+
+
 ```{r}
 hosp_adm_q_split %>% 
-  arrange(desc(average_length_of_stay))
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  group_by(quarter) %>% 
+  ggplot() +
+  aes(x = quarter, y = episodes) + 
+<<<<<<< Updated upstream
+  stat_summary(fun.data = "mean_se",
+=======
+  stat_summary(fun.data = "mean_cl_normal",
+>>>>>>> Stashed changes
+               geom = "errorbar",
+               width = .1) +
+  stat_summary(fun = "mean", geom = "point", size = 4) +
+  stat_summary(fun = "mean",
+               geom = "line",
+               color = "black") +
+  ylim(6000, 8000) +
+  theme_bw() +
+  labs(
+    x = "Quarter",
+    y = "Hospital Admissions",
+    title = "Mean Hospital Admissions per Quarter"
+  )
+<<<<<<< Updated upstream
+```
+# bed occupancy
+
+```{r}
+
+#Ho: There is no difference in the means SS vs AW
+#ho mean_bed_occ_aw - mean_bed_occ_ss = 0
+#ha: mean_bed_aw - mean_bed_occ_ss !=0
+
+# beds_data_year_quart %>% 
+#   distinct(percentage_occupancy)
+
+beds_data_year_quart %>% 
+  mutate(season = ifelse(quarter %in% c("Q2","Q3"), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  ggplot() +
+  aes(x = season, y = percentage_occupancy) +
+  geom_boxplot() +
+  coord_flip()
+
+```
+
+```{r}
+#null_dist removed missing variables
+null_distribution_beds_occ <- beds_data_year_quart %>% 
+  mutate(season = ifelse(quarter %in% c("Q2", "Q3"), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(percentage_occupancy ~ season) %>% 
+  hypothesise(null = "independence") %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat ="diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+
+```{r}
+#null_dist removed missing variables
+observed_stat_beds_occ <- beds_data_year_quart %>% 
+  mutate(season = ifelse(quarter %in% c("Q2", "Q3"), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(percentage_occupancy ~ season) %>% 
+  calculate(stat = "diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+
+```{r}
+null_distribution_beds_occ %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat_beds_occ, direction = "both")
+
+
+```
+
+```{r}
+
+p_value <- null_distribution_beds_occ %>%
+  get_p_value(obs_stat = observed_stat_beds_occ, direction = "both")
+
+p_value
+
+```
+```{r}
+
+beds_data_year_quart %>% 
+  mutate(season = ifelse(quarter %in% c("Q2","Q3"), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  # summarise(total_hospital_admissions = sum(episodes),
+  #            mean_hospital_admissions = mean(episodes),
+  #            sd = sd(episodes)) %>% 
+  ggplot() +
+  aes(x = factor(season, ordered = TRUE, levels = c("Spring/Summer", "Autumn/Winter")), y = percentage_occupancy) +
+  geom_violin(fill = "grey", color = "black", trim = FALSE) +
+  stat_summary(fun.data = "mean_se", 
+                 geom ="pointrange", width= 0.1, size = 0.5, colour = "black", linewidth = 1) +
+  theme_bw() +
+  ylim(0, 150) +
+  geom_label(label = "p = 0.986",
+     x = 1.5,
+     y = 150,
+     label.padding = unit(0.15, "lines"),
+     label.size = 0.15,
+     color = "black") +
+   geom_segment(aes(x = 1, y = 140, xend = 2, yend = 140), color = "black", linewidth = 1) +
+   labs(x = "Season",
+        y = "Average Percentage of Bed Occupancy") 
+
+=======
+>>>>>>> Stashed changes
 ```
 

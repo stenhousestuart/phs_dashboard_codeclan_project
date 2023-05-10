@@ -1754,1118 +1754,193 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGphbml0b3IpXG5saWJyYXJ5KGdncHVicilcbmxpYnJhcnkoYnJvb20pXG5saWJyYXJ5KEFJQ2Ntb2RhdmcpXG5cbmhvc3BpdGFsX2FkbWlzc2lvbnMgPC0gcmVhZF9jc3YoXCJpbnBhdGllbnRfYW5kX2RheWNhc2VfYnlfbmhzX2JvYXJkX29mX3RyZWF0bWVudC5jc3ZcIilcblxuaG9zcGl0YWxfYWRtaXNzaW9uc19zcGVjaWFsaXR5IDwtIHJlYWRfY3N2KFwiaW5wYXRpZW50X2FuZF9kYXljYXNlX2J5X25oc19ib2FyZF9vZl90cmVhdG1lbnRfYW5kX3NwZWNpYWx0eS5jc3ZcIilcbmBgYCJ9 -->
-<pre class="r"><code>library(tidyverse)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGphbml0b3IpXG5saWJyYXJ5KGdncHVicilcbmxpYnJhcnkoYnJvb20pXG5saWJyYXJ5KEFJQ2Ntb2RhdmcpXG5saWJyYXJ5KGluZmVyKVxubGlicmFyeShrbml0cilcbmxpYnJhcnkoa2FibGVFeHRyYSlcblxuXG5ob3NwaXRhbF9hZG1pc3Npb25zX3F5ZWFyIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyLmNzdlxcKVxuXG5ob3NwX2FkbV9xX3NwbGl0IDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zLmNzdlxcKSBcblxuaG9zcGl0YWxfYmVkcyA8LSByZWFkX2NzdihcXGFwcC9jbGVhbl9kYXRhL3ByZV9wb3N0XzIwMjBfYXZnX29jY3VwYW5jeS5jc3ZcXClcblxuZGVwcml2YXRpb25zIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlcHJpdmF0aW9uX2FsbC5jc3ZcXClcblxuZGVtb2dyYXBoaWNzIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlbW9ncmFwaGljc19hbGwuY3N2XFwpXG5cbnByZV9wb3N0XzIwMjBfYXZfb2NjIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvcHJlX3Bvc3RfMjAyMF9hdmdfb2NjdXBhbmN5LmNzdlxcKVxuYGBgXG5gYGAifQ== -->
+<pre class="r"><code>```r
+library(tidyverse)
 library(janitor)
 library(ggpubr)
 library(broom)
 library(AICcmodavg)
+library(infer)
+library(knitr)
+library(kableExtra)
 
-hospital_admissions &lt;- read_csv(&quot;inpatient_and_daycase_by_nhs_board_of_treatment.csv&quot;)
 
-hospital_admissions_speciality &lt;- read_csv(&quot;inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>#cleaning</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NsZWFuaW5nIHNjcmlwdCAxXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgPC0gaG9zcGl0YWxfYWRtaXNzaW9ucyAlPiUgXG4gIGNsZWFuX25hbWVzKCkgJT4lIFxuICBzZWxlY3QoLSBxdWFydGVyX3FmLCAtIGhicWYsIC1sb2NhdGlvbl9xZiwgLWFkbWlzc2lvbl90eXBlX3FmLCBcbiAgICAgICAgIC1hdmVyYWdlX2xlbmd0aF9vZl9lcGlzb2RlX3FmLCAtYXZlcmFnZV9sZW5ndGhfb2Zfc3RheV9xZiwgLWxvY2F0aW9uX3FmLFxuICAgICAgICAgLWFkbWlzc2lvbl90eXBlX3FmKSAlPiUgXG4gIG11dGF0ZShoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAxNVwiLCBcIkF5cnNoaXJlIGFuZCBBcnJhblwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAxNlwiLCBcIkJvcmRlcnNcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMTdcIiwgXCJEdW1mcmllcyBhbmQgR2FsbG93YXlcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMThcIiwgXCJGaWZlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDE5XCIsIFwiRm9ydGggVmFsbGV5XCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDIwXCIsIFwiR3JhbXBpYW5cIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjFcIiwgXCJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDIyXCIsIFwiSGlnaGxhbmRcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjNcIiwgXCJMYW5hcmtzaGlyZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyNFwiLCBcIkxvdGhpYW5cIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjVcIiwgXCJPcmtuZXlcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjZcIiwgXCJTaGV0bGFuZFwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyN1wiLCBcIlRheXNpZGVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjhcIiwgXCJXZXN0ZXJuIElzbGVzXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDI5XCIsIFwiRmlmZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAzMFwiLCBcIlRheXNpZGVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMzFcIiwgXCJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDMyXCIsIFwiTGFuYXJrc2hpcmVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTOTIwMDAwMDNcIiwgXCJBbGwgb2YgU2NvdGxhbmRcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJSQTI3MDFcIiwgXCJObyBGaXhlZCBBYm9kZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlJBMjcwMlwiLCBcIlJlc3Qgb2YgdGhlIFVLXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUkEyNzAzXCIsIFwiT3V0c2lkZSB0aGUgVUtcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJSQTI3MDRcIiwgXCJVbmtub3duIFJlc2lkZW5jeVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMyNzAwMDAwMVwiLCBcIk5vbi1OSFMgUHJvdmlkZXJcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTQjA4MDFcIiwgXCJUaGUgR29sZGVuIEp1YmlsZWUgTmF0aW9uYWwgSG9zcGl0YWxcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTTjA4MTFcIiwgXCJOYXRpb25hbCBGYWNpbGl0eSBOSFMgTG91aXNhIEpvcmRhblwiLCBoYiksXG4gICAgICAgICAgICkgJT4lXG4gIHJlbmFtZShuaHNfaGVhbHRoX2JvYXJkID0gaGIpICU+JSBcbiAgc2VwYXJhdGUocXVhcnRlcixpbnRvID0gYyhcInllYXJcIiwgXCJxdWFydGVyXCIpLCBzZXAgPSBcIlFcIiApICU+JSBcbiAgbXV0YXRlKHByZV9wb3N0X2NvdmlkID0gaWZlbHNlKHllYXIgJWluJSBjKFwiMjAxN1wiLCBcIjIwMThcIiwgXCIyMDE5XCIpLCBcInByZVwiLCBcInBvc3RcIikpXG5gYGAifQ== -->
-<pre class="r"><code>#cleaning script 1
-clean_hosp_admissions &lt;- hospital_admissions %&gt;% 
-  clean_names() %&gt;% 
-  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
-         -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
-         -admission_type_qf) %&gt;% 
-  mutate(hb = ifelse(hb == &quot;S08000015&quot;, &quot;Ayrshire and Arran&quot;, hb),
-         hb = ifelse(hb == &quot;S08000016&quot;, &quot;Borders&quot;, hb),
-         hb = ifelse(hb == &quot;S08000017&quot;, &quot;Dumfries and Galloway&quot;, hb),
-         hb = ifelse(hb == &quot;S08000018&quot;, &quot;Fife&quot;, hb),
-         hb = ifelse(hb == &quot;S08000019&quot;, &quot;Forth Valley&quot;, hb),
-         hb = ifelse(hb == &quot;S08000020&quot;, &quot;Grampian&quot;, hb),
-         hb = ifelse(hb == &quot;S08000021&quot;, &quot;Greater Glasgow and Clyde&quot;, hb),
-         hb = ifelse(hb == &quot;S08000022&quot;, &quot;Highland&quot;, hb),
-         hb = ifelse(hb == &quot;S08000023&quot;, &quot;Lanarkshire&quot;, hb),
-         hb = ifelse(hb == &quot;S08000024&quot;, &quot;Lothian&quot;, hb),
-         hb = ifelse(hb == &quot;S08000025&quot;, &quot;Orkney&quot;, hb),
-         hb = ifelse(hb == &quot;S08000026&quot;, &quot;Shetland&quot;, hb),
-         hb = ifelse(hb == &quot;S08000027&quot;, &quot;Tayside&quot;, hb),
-         hb = ifelse(hb == &quot;S08000028&quot;, &quot;Western Isles&quot;, hb),
-         hb = ifelse(hb == &quot;S08000029&quot;, &quot;Fife&quot;, hb),
-         hb = ifelse(hb == &quot;S08000030&quot;, &quot;Tayside&quot;, hb),
-         hb = ifelse(hb == &quot;S08000031&quot;, &quot;Greater Glasgow and Clyde&quot;, hb),
-         hb = ifelse(hb == &quot;S08000032&quot;, &quot;Lanarkshire&quot;, hb),
-         hb = ifelse(hb == &quot;S92000003&quot;, &quot;All of Scotland&quot;, hb),
-         hb = ifelse(hb == &quot;RA2701&quot;, &quot;No Fixed Abode&quot;, hb),
-         hb = ifelse(hb == &quot;RA2702&quot;, &quot;Rest of the UK&quot;, hb),
-         hb = ifelse(hb == &quot;RA2703&quot;, &quot;Outside the UK&quot;, hb),
-         hb = ifelse(hb == &quot;RA2704&quot;, &quot;Unknown Residency&quot;, hb),
-         hb = ifelse(hb == &quot;S27000001&quot;, &quot;Non-NHS Provider&quot;, hb),
-         hb = ifelse(hb == &quot;SB0801&quot;, &quot;The Golden Jubilee National Hospital&quot;, hb),
-         hb = ifelse(hb == &quot;SN0811&quot;, &quot;National Facility NHS Louisa Jordan&quot;, hb),
-           ) %&gt;%
-  rename(nhs_health_board = hb) %&gt;% 
-  separate(quarter,into = c(&quot;year&quot;, &quot;quarter&quot;), sep = &quot;Q&quot; ) %&gt;% 
-  mutate(pre_post_covid = ifelse(year %in% c(&quot;2017&quot;, &quot;2018&quot;, &quot;2019&quot;), &quot;pre&quot;, &quot;post&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYHNlbGVjdCgpYDpcbiEgQ2FuJ3Qgc3Vic2V0IGNvbHVtbnMgdGhhdCBkb24ndCBleGlzdC5cbuKcliBDb2x1bW4gYHF1YXJ0ZXJfcWZgIGRvZXNuJ3QgZXhpc3QuXG5CYWNrdHJhY2U6XG4gMS4gLi4uICU+JSAuLi5cbiA3LiBkcGx5cjo6OnNlbGVjdC5kYXRhLmZyYW1lKC4uLilcbiJ9 -->
-<pre><code>Error in `select()`:
-! Can&#39;t subset columns that don&#39;t exist.
-✖ Column `quarter_qf` doesn&#39;t exist.
-Backtrace:
- 1. ... %&gt;% ...
- 7. dplyr:::select.data.frame(...)</code></pre>
+hospital_admissions_qyear &lt;- read_csv(\app/clean_data/clean_hosp_admissions_qyear.csv\)
+
+hosp_adm_q_split &lt;- read_csv(\app/clean_data/clean_hosp_admissions.csv\) 
+
+hospital_beds &lt;- read_csv(\app/clean_data/pre_post_2020_avg_occupancy.csv\)
+
+deprivations &lt;- read_csv(\app/clean_data/admission_deprivation_all.csv\)
+
+demographics &lt;- read_csv(\app/clean_data/admission_demographics_all.csv\)
+
+pre_post_2020_av_occ &lt;- read_csv(\app/clean_data/pre_post_2020_avg_occupancy.csv\)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBob3NwX2FkbWlzc2lvbnNfc3VtbWFyeSB0YWJsZSBcblxuaG9zcF9hZG1fcV9zcGxpdCAlPiUgXG4gIGZpbHRlcighaXMubmEoZXBpc29kZXMpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcXExvdGhpYW5cXCxcbiAgICAgICAgIHF1YXJ0ZXIgPT0gMSxcbiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9ob3NwX2FkbSA9IG1lYW4oZXBpc29kZXMpLFxuICAgICAgICAgICAgbWVkaWFuX2hvc3BfYWRtID0gbWVkaWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpLFxuICAgICAgICAgICAgc2VtX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpL3NxcnQobGVuZ3RoKGVwaXNvZGVzKSksXG4gICAgICAgICAgICBjaV9ob3NwX2FkbSA9IDIgKiBzZChlcGlzb2RlcyksXG4gICAgICAgICAgICApXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# hosp_admissions_summary table 
+
+hosp_adm_q_split %&gt;% 
+  filter(!is.na(episodes)) %&gt;% 
+  group_by(nhs_health_board, quarter, year) %&gt;% 
+  filter(nhs_health_board %in% \Lothian\,
+         quarter == 1,
+         year == 2018) %&gt;% 
+  summarise(mean_hosp_adm = mean(episodes),
+            median_hosp_adm = median(episodes),
+            sd_hosp_adm = sd(episodes),
+            sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
+            ci_hosp_adm = 2 * sd(episodes),
+            )</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> has grouped output by ‘nhs_health_board’,
+‘quarter’. You can override using the <code>.groups</code> argument.</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOiIxIMOXIDgiLCJHcm91cHMiOiJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJ9fSwicmRmIjoiSDRzSUFBQUFBQUFBQm1WUnNVN0RNQkIxMDRTMmdiWVIvQUtNelVBSHVpQVlFQklTRXdLcFlvbmN4QkNMeEE2MksyQmpaRVppWUFMeEVTeU1MSWd2NERQNGdwWkxHb2ZXUGNuSmUrOHVsN3ZuazROaDN4MjZDS0U2c2kwTDFSMkF5RGs3UGV3TkVDaEFhc2hHcmZ4OUMwVWJBSnB3dkxsRTQ1aXJtR0lHc0pQTGU3OUlSOEgzWHg0VytlY3IzWHc4MnFyNCs5TmkvbXQ5K3VHZjA0cS9iWDkzbjNjSEZmL1IrWVg1bkREQlVocXp1UkZXMkw4UU9DVkdlVXZ3RzUrQm5uL1NobVBkdzJNS1lmYlZSVjZ4KzB6MFdDeURtT0JFeGNHSVl4RnBMNjdIV0NnaVNtcmZFYXh4T3lXWUJUR1hXWUNqdEJTN0tZbm9zcndxSTFOYWt5UmRLZ3ZwdjRUUXhKaTh3VE5GT1lQWnJmemVITU9ibWpBRWI4enlYYU5lR0kvWlZhKy9reHRZNUdmUkxuRnREamRuLzdTblpTK243TFZDMkNWbFJIdVk0QkZKU3RJQjV3dFAvVXhRcHZSTmdTcDl4UlhXZFc3SUU2MFV5NkhKSHdVeHc1S3ZBZ0FBIn0= --&gt;
+
+&lt;div data-pagedtable=&quot;false&quot;&gt;
+  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
+{&quot;columns&quot;:[{&quot;label&quot;:[&quot;nhs_health_board&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;chr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;quarter&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;year&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;mean_hosp_adm&quot;],&quot;name&quot;:[4],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;median_hosp_adm&quot;],&quot;name&quot;:[5],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sd_hosp_adm&quot;],&quot;name&quot;:[6],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sem_hosp_adm&quot;],&quot;name&quot;:[7],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;ci_hosp_adm&quot;],&quot;name&quot;:[8],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;Lothian&quot;,&quot;2&quot;:&quot;1&quot;,&quot;3&quot;:&quot;2018&quot;,&quot;4&quot;:&quot;10048.82&quot;,&quot;5&quot;:&quot;5781&quot;,&quot;6&quot;:&quot;12326&quot;,&quot;7&quot;:&quot;2329.395&quot;,&quot;8&quot;:&quot;24652&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[8]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[1]},&quot;pages&quot;:{}}}
+  &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;!-- rnb-frame-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBhdmdfbG9zX3N1bW1hcnkgdGFibGUgXG5cbmhvc3BfYWRtX3Ffc3BsaXQgJT4lIFxuICBmaWx0ZXIoIWlzLm5hKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcXExvdGhpYW5cXCxcbiAgICAgICAgIHF1YXJ0ZXIgPT0gMSxcbiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9hdmxvcyA9IG1lYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBtZWRpYW5fYXZsb3MgPSBtZWRpYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBzZF9ob3NwX2F2bG9zID0gc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBzZW1faG9zcF9hdmxvcyA9IHNkKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpL3NxcnQobGVuZ3RoKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpKSxcbiAgICAgICAgICAgIGNpX2hvc3BfYXZsb3MgPSAyICogc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICApXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# avg_los_summary table 
+
+hosp_adm_q_split %&gt;% 
+  filter(!is.na(average_length_of_stay)) %&gt;% 
+  group_by(nhs_health_board, quarter, year) %&gt;% 
+  filter(nhs_health_board %in% \Lothian\,
+         quarter == 1,
+         year == 2018) %&gt;% 
+  summarise(mean_avlos = mean(average_length_of_stay),
+            median_avlos = median(average_length_of_stay),
+            sd_hosp_avlos = sd(average_length_of_stay),
+            sem_hosp_avlos = sd(average_length_of_stay)/sqrt(length(average_length_of_stay)),
+            ci_hosp_avlos = 2 * sd(average_length_of_stay),
+            )</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> has grouped output by ‘nhs_health_board’,
+‘quarter’. You can override using the <code>.groups</code> argument.</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOiIxIMOXIDgiLCJHcm91cHMiOiJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJ9fSwicmRmIjoiSDRzSUFBQUFBQUFBQm1WUnZVN0RNQkIyMDRTMkVha2lNYkR5QUcyRTFDVWJESWdGSkNnQ3FVeVJteGdTa2RqRmR2bWIyRUFDSkI0QWlRZGc0VVY0RWhZbUJvYVdTeHFYeHB6azVMdnZ1MXp1UGg5c0RYcjJ3RVlJMVpGcEdLaHVBVVRXMGVGMjEwZkFRRkpESm1ybDd5c29XZ0hRaE9NdUNJMWRKdU1FVTREdG5ONzRRaXFLZlBQMXZwcXY5ZnMzVC9zZjgzeDFzTmQ1UDM3NTB4dSs4L3o5TU8vMzA3bmJlWHY4bk92clNxL01aNFVwRmtLYnpZNnd4TjRKeHhuUnlsdWNYWG9VK1B3VEI0NXhDNDhwaE41WEZibkY3alBTcGJFSVlvSlRHUWREaG5ta3ZEZ2ZZeTRKTDFQem1tQ0Y3WXhnR3VDTGxJbVNXYzVJbEdpY0k2SWdabUpVSWR1Q1pQOVpKMHdXU1lRbTJ1UU5OcElKb3lBWitiMVptamMxcmhIdW1PYTdSdDB3SHRPemJzL1BweTcwV1RnbHJpM2c1dXlmNXJUc1paVzlsZ2c5VFNoUkhxWjRTRksxRFRoZmVPcU5lRUtsc2dkWTRVa21zYXF6UTVZcXBsZ09UWDRCbVhZVmFxOENBQUE9In0= --&gt;
+
+&lt;div data-pagedtable=&quot;false&quot;&gt;
+  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
+{&quot;columns&quot;:[{&quot;label&quot;:[&quot;nhs_health_board&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;chr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;quarter&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;year&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;mean_avlos&quot;],&quot;name&quot;:[4],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;median_avlos&quot;],&quot;name&quot;:[5],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sd_hosp_avlos&quot;],&quot;name&quot;:[6],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sem_hosp_avlos&quot;],&quot;name&quot;:[7],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;ci_hosp_avlos&quot;],&quot;name&quot;:[8],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;Lothian&quot;,&quot;2&quot;:&quot;1&quot;,&quot;3&quot;:&quot;2018&quot;,&quot;4&quot;:&quot;8.158825&quot;,&quot;5&quot;:&quot;5.83624&quot;,&quot;6&quot;:&quot;8.0141&quot;,&quot;7&quot;:&quot;1.635871&quot;,&quot;8&quot;:&quot;16.0282&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[8]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[1]},&quot;pages&quot;:{}}}
+  &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;!-- rnb-frame-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5iZWRzX2RhdGFfeWVhcl9xdWFydCAlPiUgXG4gIGZpbHRlcighaXMubmEocGVyY2VudGFnZV9vY2N1cGFuY3kpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcXExvdGhpYW5cXCxcbiAgICAgICAgIHF1YXJ0ZXIgJWluJSBcXFExXFwsXG4gICAgICAgICB5ZWFyID09IDIwMTgpICU+JSBcbiAgc3VtbWFyaXNlKG1lYW5fcGVyX29jYyA9IG1lYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgbWVkaWFuX3Blcl9vY2MgPSBtZWRpYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgc2RfaG9zcF9wZXJfb2NjID0gc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgc2VtX2hvc3BfcGVyX29jYyA9IHNkKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KS9zcXJ0KGxlbmd0aChwZXJjZW50YWdlX29jY3VwYW5jeSkpLFxuICAgICAgICAgICAgY2lfaG9zcF9wZXJfb2NjPSAyICogc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+
+beds_data_year_quart %&gt;% 
+  filter(!is.na(percentage_occupancy)) %&gt;% 
+  group_by(nhs_health_board, quarter, year) %&gt;% 
+  filter(nhs_health_board %in% \Lothian\,
+         quarter %in% \Q1\,
+         year == 2018) %&gt;% 
+  summarise(mean_per_occ = mean(percentage_occupancy),
+            median_per_occ = median(percentage_occupancy),
+            sd_hosp_per_occ = sd(percentage_occupancy),
+            sem_hosp_per_occ = sd(percentage_occupancy)/sqrt(length(percentage_occupancy)),
+            ci_hosp_per_occ= 2 * sd(percentage_occupancy),
+            )</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> has grouped output by ‘nhs_health_board’,
+‘quarter’. You can override using the <code>.groups</code> argument.
+```</p>
 <!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="mean-num-episodesquarter" class="section level1">
-<h1>mean num episodes/quarter</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI21lYW5fbnVtYmVyIG9mIGVwaXNvZGVzXG5cbmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgXG4gIGRpc3RpbmN0KG5oc19oZWFsdGhfYm9hcmQpXG5gYGAifQ== -->
-<pre class="r"><code>#mean_number of episodes
-
-clean_hosp_admissions %&gt;% 
-  distinct(nhs_health_board)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MTgsIm5jb2wiOjEsInN1bW1hcnkiOnsiQSB0aWJibGUiOlsiMTggw5cgMSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJsMVNUWFBUTUJCVjNKaTBnZEpNR1E3Y05BUFg1QUFYcnFHZE9IUXlnU0VCZXV0c2JDWFdSSkV5SzVuZ1czOXhmMExEMnBXUzRvUHMzYmU3Yno5L1hOOSs2dDUyR1dNbnJCMUY3Q1Fta2NVLzU2UCtaMFlJS1MzV1ptZlYveTg1dmFrQnhucjBMcjNod3p3WFBERXFFNXJmRkF1cGhPQlRjTkpvVUh4czdGWTZVTjczY2xpaXpTVUtEanJqUTBUUTN0TDVZakFUYUwzNjlycllMRkVLV3pzbW9KVFpRZW1ON1pGY0NpKy9HaGwwT2Y5RkhpTFlUeE9FelZZZXVOOGxLTUFKNUlrQ3V6Szdtdk5LbFZrZ09SM0xWYTRJOWZyTENXakFkVjFwcUc5aVhINmtmUEVOMS9xWWNKWUw5eXkrTTRmU3lnUDkrVzloS2IzbVg2MFNvY1BlMU9qK2REemozOUg4SVYvMCtNVlFLVzZXZkphYTU1VHZEeU1kUVNxVmRDV3ZnaWVta0JiNERRMlBhdnQvWTdHR0RhVjcybFlBZXpxM2Q3a0E1Zks3aFFITUdrRm5hSGFERUhoT0w3cW56MzYvZjJpeXB6VE1KbnMzQXdlREpZMWZrUGJZQ09tWWJkVURCVVhWSWNXTjRCWTJnSXRDVjVWay9UUXY5THIvc1VyZ0Q1RDU2bHIxSVI3bDFsUEthTytwNHJBdm9WZFNoNFhFQ2hZaTNPUnI2cmh1ZUxCRnFWM29oRkE3Y09aNHU5M1VxSURVdmJISGY2aHg2UmcvQXdBQSJ9 -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOiIxIMOXIDgiLCJHcm91cHMiOiJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJ9fSwicmRmIjoiSDRzSUFBQUFBQUFBQm0yUnZVN0RNQkRIM1RTaGJkU1BJRVpteE5TSWxnNndNU0FrSkJaUUVkMGkxekZOUkdJSDJ4VWdGaVJHbm9IWDZJREV3QXN4TXJiWVNSeTFCa3VKNzM1M1B2dC9kM1U2T1hRbkxnQ2dEbXpMQW5WSG1zQzVIcC8xajRBazBxa0JHN1RVL2lpVGRxVFJsSiszRm1oY1VCSEZrQmpZdWh3WXhCNGVER1JWMEZYc1pBeDNoOXY1cWNLL2FjOWVSd3RVK2NmNzF0djN4MTdsTnhaZm44L3ZQNVYvcnVNYnIzUlFBamszTG5aREtLQi95MkNLamZRV293OCtrVndkNmFoWHY4amZTaTZ6cms3eThnNFUwQ01SRHlJTUV4RUZVd3BacUR0eVA0ZE1ZS1oxUDJHbzdYYUtJUWt5ekFLS1VNbTZLUTdqUDdUSHd5Q2lQRE93eDNINkgrK2hlQk1Ec0RRME5HZ21Za3FrQ2t2TjBURzZWR01HOE9aRXFRNzdLSnFUdS81SXpkUE40OFhxbEhadHpXNFdkOXFyc3BaVDF0ckNaQllUckx1WndDbE90SHc1Zzd5N2ZzWmlJdlRNSk9XK29BTHFQQmZSUkpOY0hGaitBbVlzTFFDL0FnQUEifQ== -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["nhs_health_board"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"The Golden Jubilee National Hospital"},{"1":"Ayrshire and Arran"},{"1":"Borders"},{"1":"Dumfries and Galloway"},{"1":"Fife"},{"1":"Forth Valley"},{"1":"Grampian"},{"1":"Greater Glasgow and Clyde"},{"1":"Highland"},{"1":"Lanarkshire"},{"1":"Lothian"},{"1":"Orkney"},{"1":"Shetland"},{"1":"Tayside"},{"1":"Western Isles"},{"1":"Non-NHS Provider"},{"1":"All of Scotland"},{"1":"National Facility NHS Louisa Jordan"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[18]},"pages":{}}}
+{"columns":[{"label":["nhs_health_board"],"name":[1],"type":["chr"],"align":["left"]},{"label":["quarter"],"name":[2],"type":["chr"],"align":["left"]},{"label":["year"],"name":[3],"type":["chr"],"align":["left"]},{"label":["mean_per_occ"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["median_per_occ"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["sd_hosp_per_occ"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sem_hosp_per_occ"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["ci_hosp_per_occ"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"Lothian","2":"Q1","3":"2018","4":"81.51728","5":"92.19382","6":"25.15238","7":"2.964237","8":"50.30477"}],"options":{"columns":{"min":{},"max":[10],"total":[8]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
   </script>
 </div>
 <!-- rnb-frame-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJBbGwgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICE9IFwiQWxsIG9mIFNjb3RsYW5kXCIpICU+JSBcbiMgbmhzX2hlYWx0aF9ib2FyZCAhPSBcIk5vIEZpeGVkIEFib2RlXCIsXG4jIG5oc19oZWFsdGhfYm9hcmQgIT0gXCJSZXN0IG9mIHRoZSBVS1wiLFxuIyBuaHNfaGVhbHRoX2JvYXJkICE9IFwiVW5rbm93biBSZXNpZGVuY3lcIixcbiMgbmhzX2hlYWx0aF9ib2FyZCAhPSBcIk91dHNpZGUgdGhlIFVLXCIpICU+JSBcbiAgYXJyYW5nZShlcGlzb2RlcykgJT4lIFxuICBncm91cF9ieSh5ZWFyLCBxdWFydGVyKSAlPiUgXG4gIHN1bW1hcmlzZShhdl9lcGlzb2RlcyA9IG1lYW4oZXBpc29kZXMpLFxuICAgICAgICAgICAgc2RfZXBpc29kZXMgPSBzZChlcGlzb2RlcyksXG4gICAgICAgICAgICBtaW5fZXBpc29kZXMgPSBtaW4oZXBpc29kZXMpLFxuICAgICAgICAgICAgbWF4X2VwaXNkb2VzID0gbWF4KGVwaXNvZGVzKSkgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gcXVhcnRlciwgeSA9IGF2X2VwaXNvZGVzKSArXG4gIGdlb21fcG9pbnQoc2l6ZSA9IDQsIHNoYXBlID0gMTcsIGFlcyhjb2xvdXIgPSB5ZWFyKSkgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0geWVhciwgY29sb3VyID0geWVhciksIHNpemUgPSAxKSArXG4gIGdlb21fZXJyb3JiYXIoYWVzKHltaW4gPSBhdl9lcGlzb2RlcyAtIHNkX2VwaXNvZGVzLCBcbiAgICAgICAgICAgICAgICAgICAgeW1heCA9IGF2X2VwaXNvZGVzICsgc2RfZXBpc29kZXMsXG4gICAgICAgICAgICAgICAgICAgIHdpZHRoID0gMC4yNSwgY29sb3VyID0geWVhcikpICtcbiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gXCJtZWFuXCIsIGdlb20gPSBcInBvaW50XCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9IFwiYmxhY2tcIiwgIFxuICAgICAgICAgICAgICAgYWVzKHNoYXBlPVwiXCIpKSArXG4gIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gXCJibGFja1wiLCBnZW9tID0gXCJsaW5lXCIsIGFlcyhncm91cCA9IDEpLCBcbiAgICAgICAgICAgICAgIHNpemUgPSAxKSArIFxuICAjIHlsaW0oMTUwMDAwLCAzNTAwMDApICtcbiAgdGhlbWVfYncoKSArXG4gIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9IFwiRGFyazJcIikgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJXaW50ZXIvU3ByaW5nXFxuIChKYW4tTWFyKVwiLCBcbiAgICB4ID0gMSxcbiAgICB5ID0gMzI1MDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksIFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJTcHJpbmcvU3VtbWVyXFxuIChBcHItU2VwKVwiLCBcbiAgICB4ID0gMi41LFxuICAgIHkgPSAzMjUwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiQXV0dW1uL1dpbnRlclxcbiAoT2N0LURlYylcIiwgXG4gICAgeCA9IDQsXG4gICAgeSA9IDMyNTAwMCxcbiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCBcImxpbmVzXCIpLFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICAgbGFicyhcbiAgICB0aXRsZSA9IFwiTWVhbiBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBRdWFydGVyXCIsXG4gICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICAgeCA9IFwiUXVhcnRlclwiLFxuICAgIHkgPSBcIklucGF0aWVudCBFcGlzb2Rlc1wiKVxuYGBgIn0= -->
-<pre class="r"><code>
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;All Inpatients&quot;,
-  nhs_health_board != &quot;All of Scotland&quot;) %&gt;% 
-# nhs_health_board != &quot;No Fixed Abode&quot;,
-# nhs_health_board != &quot;Rest of the UK&quot;,
-# nhs_health_board != &quot;Unknown Residency&quot;,
-# nhs_health_board != &quot;Outside the UK&quot;) %&gt;% 
-  arrange(episodes) %&gt;% 
-  group_by(year, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes),
-            sd_episodes = sd(episodes),
-            min_episodes = min(episodes),
-            max_episdoes = max(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = av_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = year)) +
-  geom_line(aes(group = year, colour = year), size = 1) +
-  geom_errorbar(aes(ymin = av_episodes - sd_episodes, 
-                    ymax = av_episodes + sd_episodes,
-                    width = 0.25, colour = year)) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;,  
-               aes(shape=&quot;&quot;)) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), 
-               size = 1) + 
-  # ylim(150000, 350000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring\n (Jan-Mar)&quot;, 
-    x = 1,
-    y = 325000,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-    x = 2.5,
-    y = 325000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Dec)&quot;, 
-    x = 4,
-    y = 325000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Mean Number of Inpatient Episodes per Quarter&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3llYXInLiBZb3UgY2FuIG92ZXJyaWRlIHVzaW5nIHRoZSBgLmdyb3Vwc2AgYXJndW1lbnQuXG4ifQ== -->
-<pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
-<p><img src="data:image/png;base64,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" /></p>
-<!-- rnb-plot-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkFcbmBgYCJ9 -->
-<pre class="r"><code>NA</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>#total num episdoes /quarter</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jdG90YWxfbnVtYmVyIG9mIGVwaXNvZGVzXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJBbGwgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4gIGdyb3VwX2J5KHByZV9wb3N0X2NvdmlkLCB5ZWFyLCBxdWFydGVyKSAlPiUgXG4gIHN1bW1hcmlzZSh0b3RhbF9lcGlzb2RlcyA9IHN1bShlcGlzb2RlcykpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHF1YXJ0ZXIsIHkgPSB0b3RhbF9lcGlzb2RlcykgK1xuICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBhZXMoY29sb3VyID0geWVhcikpICtcbiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHllYXIsIGNvbG91ciA9IHllYXIpLCBzaXplID0gMSkgK1xuICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBcIm1lYW5cIiwgZ2VvbSA9IFwicG9pbnRcIiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gXCJibGFja1wiLCAgYWVzKHNoYXBlPVwiXCIpKSArXG4gIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gXCJibGFja1wiLCBnZW9tID0gXCJsaW5lXCIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKyBcbiAgIyB5bGltKDUwMDAwMCwgMTgwMDApICtcbiAgdGhlbWVfYncoKSArXG4gIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9IFwiRGFyazJcIikgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJXaW50ZXIvU3ByaW5nXFxuIChKYW4tTWFyKVwiLCBcbiAgICB4ID0gMSxcbiAgICB5ID0gMjk1MDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksIFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJTcHJpbmcvU3VtbWVyXFxuIChBcHItU2VwKVwiLCBcbiAgICB4ID0gMi41LFxuICAgIHkgPSAyOTUwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiQXV0dW1uL1dpbnRlclxcbiAoT2N0LURlYylcIiwgXG4gICAgeCA9IDQsXG4gICAgeSA9IDI5NTAwMCxcbiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCBcImxpbmVzXCIpLFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICAgbGFicyhcbiAgICB0aXRsZSA9IFwiQXZlcmFnZSBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBNb250aFwiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJJbnBhdGllbnQgRXBpc29kZXNcIikgK1xuICB5bGltKDIwMDAwMCwgMzAwMDAwKVxuIFxuYGBgIn0= -->
-<pre class="r"><code>
-#total_number of episodes
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;All Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(pre_post_covid, year, quarter) %&gt;% 
-  summarise(total_episodes = sum(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = total_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = year)) +
-  geom_line(aes(group = year, colour = year), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;,  aes(shape=&quot;&quot;)) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  # ylim(500000, 18000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring\n (Jan-Mar)&quot;, 
-    x = 1,
-    y = 295000,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-    x = 2.5,
-    y = 295000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Dec)&quot;, 
-    x = 4,
-    y = 295000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Average Number of Inpatient Episodes per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;) +
-  ylim(200000, 300000)
- </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="av-stay-per-month-all-inpatientsquarter" class="section level1">
-<h1>av stay per month all inpatients/quarter</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2F2IHN0YXkgcGVyIG1vbnRoIHBlciBxdWFydGVyIGZvciBhbGwgaW5wYXRpZW50c1xuXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJBbGwgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4gIG11dGF0ZShwcmVfcG9zdF9jb3ZpZCA9IGlmZWxzZSh5ZWFyID09IGMoXCIyMDE3XCIsIFwiMjAxOFwiLCBcIjIwMTlcIiksIFwicHJlXCIsIFwicG9zdFwiKSkgJT4lIFxuICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgeWVhciwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoYXZfc3RheSA9IG1lYW4oc3RheXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfc3RheSkgK1xuICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBhZXMoY29sb3VyID0geWVhcikpICtcbiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHllYXIsIGNvbG91ciA9IHllYXIpLCBzaXplID0gMSkgK1xuICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBcIm1lYW5cIiwgZ2VvbSA9IFwicG9pbnRcIiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gXCJibGFja1wiKSArXG4gIHNjYWxlX3NoYXBlX21hbnVhbChcIm1lYW5cIiwgdmFsdWVzID0gXCJcIiApICtcbiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSBcImJsYWNrXCIsIGdlb20gPSBcImxpbmVcIiwgYWVzKGdyb3VwID0gMSksIHNpemUgPSAxKSArIFxuICB5bGltKDEwMDAwMCwgMTgwMDAwKSArXG4gIHRoZW1lX2J3KCkgK1xuICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSBcIkRhcmsyXCIpICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiV2ludGVyL1NwcmluZ1wiLCBcbiAgICB4ID0gMSxcbiAgICB5ID0gMTgwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgXCJsaW5lc1wiKSwgXG4gICAgbGFiZWwuc2l6ZSA9IDAuMSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiU3ByaW5nIC8gU3VtbWVyXCIsIFxuICAgIHggPSAyLjUsXG4gICAgeSA9IDE4MDAwMCxcbiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjEsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiQXV0dW1uL1dpbnRlclwiLCBcbiAgICB4ID0gNCxcbiAgICB5ID0gMTgwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xLFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuICBsYWJzKFxuICAgIHRpdGxlID0gXCJUb3RhbCBOdW1iZXIgb2YgSW5wYXRpZW50IFN0YXlzIHBlciBNb250aFwiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJJbnBhdGllbnQgU3RheXNcIilcbmBgYCJ9 -->
-<pre class="r"><code>#av stay per month per quarter for all inpatients
-
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;All Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  mutate(pre_post_covid = ifelse(year == c(&quot;2017&quot;, &quot;2018&quot;, &quot;2019&quot;), &quot;pre&quot;, &quot;post&quot;)) %&gt;% 
-  group_by(pre_post_covid, year, quarter) %&gt;% 
-  summarise(av_stay = mean(stays)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = av_stay) +
-  geom_point(size = 4, shape = 17, aes(colour = year)) +
-  geom_line(aes(group = year, colour = year), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  scale_shape_manual(&quot;mean&quot;, values = &quot;&quot; ) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  ylim(100000, 180000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring&quot;, 
-    x = 1,
-    y = 180000,
-    label.padding = unit(0.1, &quot;lines&quot;), 
-    label.size = 0.1,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring / Summer&quot;, 
-    x = 2.5,
-    y = 180000,
-    label.padding = unit(0.1, &quot;lines&quot;),
-    label.size = 0.1,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter&quot;, 
-    x = 4,
-    y = 180000,
-    label.padding = unit(0.1, &quot;lines&quot;),
-    label.size = 0.1,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-  labs(
-    title = &quot;Total Number of Inpatient Stays per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Stays&quot;)</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2F2IHN0YXlzIHBlciBtb250aCBwZXIgcXVhcnRlciBmb3IgYWxsIGlucGF0aWVudHMsIHByZS9wb3N0IGNvdmlkXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJBbGwgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lIFxuICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoYXZfc3RheSA9IG1lYW4oc3RheXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfc3RheSkgK1xuICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBhZXMoY29sb3VyID0gcHJlX3Bvc3RfY292aWQpKSArXG4gIGdlb21fbGluZShhZXMoZ3JvdXAgPSBwcmVfcG9zdF9jb3ZpZCwgY29sb3VyID0gcHJlX3Bvc3RfY292aWQpLCBzaXplID0gMSkgK1xuICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBcIm1lYW5cIiwgZ2VvbSA9IFwicG9pbnRcIiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gXCJibGFja1wiKSArXG4gIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gXCJibGFja1wiLCBnZW9tID0gXCJsaW5lXCIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKyBcbiAgeWxpbSgxMjAwMDAsIDE4MDAwMCkgK1xuICB0aGVtZV9idygpICtcbiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIldpbnRlci9TcHJpbmdcIiwgXG4gICAgeCA9IDEsXG4gICAgeSA9IDEwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgXCJsaW5lc1wiKSwgXG4gICAgbGFiZWwuc2l6ZSA9IDAuMSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiU3ByaW5nIC8gU3VtbWVyXCIsIFxuICAgIHggPSAyLjUsXG4gICAgeSA9IDEwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xLFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJBdXR1bW4vV2ludGVyXCIsIFxuICAgIHggPSA0LFxuICAgIHkgPSAxMDAwMCxcbiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjEsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMS41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgbGFicyhcbiAgICB0aXRsZSA9IFwiTWVhbiBOdW1iZXIgb2YgSW5wYXRpZW50IFN0YXlzIHBlciBNb250aFwiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJJbnBhdGllbnQgU3RheXNcIilcbmBgYCJ9 -->
-<pre class="r"><code>#av stays per month per quarter for all inpatients, pre/post covid
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;All Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;% 
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_stay = mean(stays)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = av_stay) +
-  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
-  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  ylim(120000, 180000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring&quot;, 
-    x = 1,
-    y = 10000,
-    label.padding = unit(0.1, &quot;lines&quot;), 
-    label.size = 0.1,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring / Summer&quot;, 
-    x = 2.5,
-    y = 10000,
-    label.padding = unit(0.1, &quot;lines&quot;),
-    label.size = 0.1,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter&quot;, 
-    x = 4,
-    y = 10000,
-    label.padding = unit(0.1, &quot;lines&quot;),
-    label.size = 0.1,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-  labs(
-    title = &quot;Mean Number of Inpatient Stays per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Stays&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>#av eps per month per quarter for all inpatients</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2F2IGVwcyBwZXIgbW9udGggcGVyIHF1YXJ0ZXIgZm9yIGFsbCBpbnBhdGllbnRzXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJBbGwgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lIFxuICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoYXZfZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2VwaXNvZGVzID0gc2QoZXBpc29kZXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICtcbiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSkgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcHJlX3Bvc3RfY292aWQsIGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSwgc2l6ZSA9IDEpICtcbiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gXCJtZWFuXCIsIGdlb20gPSBcInBvaW50XCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9IFwiYmxhY2tcIikgK1xuICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9IFwiYmxhY2tcIiwgZ2VvbSA9IFwibGluZVwiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgXG4gIGdlb21fZXJyb3JiYXIoYWVzKHltaW4gPSBhdl9lcGlzb2RlcyAtIHNkX2VwaXNvZGVzLCBcbiAgICAgICAgICAgICAgICAgICAgIHltYXggPSBhdl9lcGlzb2RlcyArIHNkX2VwaXNvZGVzLFxuICAgICAgICAgICAgICAgICAgICAgd2lkdGggPSAwLjI1LCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCkpICtcbiAgeWxpbSgyMjAwMDAsIDI4MDAwMCkgK1xuICB0aGVtZV9idygpICtcbiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIldpbnRlci9TcHJpbmdcXG4gKEphbi1NYXIpXCIsIFxuICAgIHggPSAxLFxuICAgIHkgPSAxNzc1MCxcbiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCBcImxpbmVzXCIpLCBcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiU3ByaW5nL1N1bW1lclxcbiAoQXByLVNlcClcIiwgXG4gICAgeCA9IDIuNSxcbiAgICB5ID0gMTc3NTAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiQXV0dW1uL1dpbnRlclxcbiAoT2N0LURlYylcIiwgXG4gICAgeCA9IDQsXG4gICAgeSA9IDE3NzUwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICBsYWJzKFxuICAgIHRpdGxlID0gXCJBdmVyYWdlIE51bWJlciBvZiBJbnBhdGllbnQgRXBpc29kZXMgcGVyIE1vbnRoXCIsXG4gICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICAgeCA9IFwiUXVhcnRlclwiLFxuICAgIHkgPSBcIklucGF0aWVudCBFcGlzb2Rlc1wiKVxuIFxuYGBgIn0= -->
-<pre class="r"><code>#av eps per month per quarter for all inpatients
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;All Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;% 
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes),
-            sd_episodes = sd(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = av_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
-  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  geom_errorbar(aes(ymin = av_episodes - sd_episodes, 
-                     ymax = av_episodes + sd_episodes,
-                     width = 0.25, colour = pre_post_covid)) +
-  ylim(220000, 280000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring\n (Jan-Mar)&quot;, 
-    x = 1,
-    y = 17750,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-    x = 2.5,
-    y = 17750,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Dec)&quot;, 
-    x = 4,
-    y = 17750,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Average Number of Inpatient Episodes per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;)
- </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="episode-number-in-emergency-inpatients" class="section level1">
-<h1>episode number in emergency inpatients</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBlcGlzb2RlIG51bWJlciBpbiBlbWVyZ2VuY3kgaW5wYXRpZW50c1xuXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJFbWVyZ2VuY3kgSW5wYXRpZW50c1wiKSAlPiVcbiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcykpICU+JSBcbiAgIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICtcbiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHllYXIpKSArXG4gIGdlb21fbGluZShhZXMoZ3JvdXAgPSB5ZWFyLCBjb2xvdXIgPSB5ZWFyKSwgc2l6ZSA9IDEpICtcbiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gXCJtZWFuXCIsIGdlb20gPSBcInBvaW50XCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9IFwiYmxhY2tcIiwgIGFlcyhzaGFwZT1cIlwiKSkgK1xuICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9IFwiYmxhY2tcIiwgZ2VvbSA9IFwibGluZVwiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgXG4gIHlsaW0oNTAwMCwgOTAwMCkgK1xuICB0aGVtZV9idygpICtcbiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIldpbnRlci9TcHJpbmdcXG4gKEphbi1NYXIpXCIsIFxuICAgIHggPSAxLFxuICAgIHkgPSA4NzUwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksIFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJTcHJpbmcvU3VtbWVyXFxuIChBcHItU2VwKVwiLCBcbiAgICB4ID0gMi41LFxuICAgIHkgPSA4NzUwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIkF1dHVtbi9XaW50ZXJcXG4gKE9jdC1EZWMpXCIsIFxuICAgIHggPSA0LFxuICAgIHkgPSA4NzUwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICBsYWJzKFxuICAgIHRpdGxlID0gXCJBdmVyYWdlIE51bWJlciBvZiBFbWVyZ2VuY3kgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBNb250aFwiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJJbnBhdGllbnQgRXBpc29kZXNcIilcblxuXG4jIGZhY3RvcihxdWFydGVyLCBvcmRlcmVkID0gVFJVRSwgbGV2ZWxzID0gYyhcIjNcIiwgXCI0XCIsIFwiMVwiLCBcIjJcIikpLFxuICBcblxuYGBgIn0= -->
-<pre class="r"><code># episode number in emergency inpatients
 
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;) %&gt;%
-  group_by(pre_post_covid, quarter, year) %&gt;% 
-  summarise(av_episodes = mean(episodes)) %&gt;% 
-   ggplot() +
-  aes(x = quarter, y = av_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = year)) +
-  geom_line(aes(group = year, colour = year), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;,  aes(shape=&quot;&quot;)) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  ylim(5000, 9000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring\n (Jan-Mar)&quot;, 
-    x = 1,
-    y = 8750,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-    x = 2.5,
-    y = 8750,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Dec)&quot;, 
-    x = 4,
-    y = 8750,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Average Number of Emergency Inpatient Episodes per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;)
-
-
-# factor(quarter, ordered = TRUE, levels = c(&quot;3&quot;, &quot;4&quot;, &quot;1&quot;, &quot;2&quot;)),
-  
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="average-episode-number-in-emergency-inpatients-pre-and-post-vid" class="section level1">
-<h1>average episode number in emergency inpatients pre and post vid</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIGF2ZXJhZ2UgZXBpc29kZSBudW1iZXIgaW4gZW1lcmdlbmN5IGlucGF0aWVudHMgcHJlIGFuZCBwb3N0IHZpZFxuY2xlYW5faG9zcF9hZG1pc3Npb25zICU+JSBcbiAgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09IFwiRW1lcmdlbmN5IElucGF0aWVudHNcIikgJT4lXG4gIGdyb3VwX2J5KHByZV9wb3N0X2NvdmlkLCBxdWFydGVyKSAlPiUgXG4gIHN1bW1hcmlzZShhdl9lcGlzb2RlcyA9IG1lYW4oZXBpc29kZXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICtcbiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSkgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcHJlX3Bvc3RfY292aWQsIGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSwgc2l6ZSA9IDEpICtcbiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gXCJtZWFuXCIsIGdlb20gPSBcInBvaW50XCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9IFwiYmxhY2tcIikgK1xuICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9IFwiYmxhY2tcIiwgZ2VvbSA9IFwibGluZVwiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgXG4gIHlsaW0oNjAwMCwgODAwMCkgK1xuICB0aGVtZV9idygpICtcbiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIldpbnRlci9TcHJpbmdcXG4gKEphbi1NYXIpXCIsIFxuICAgIHggPSAxLFxuICAgIHkgPSA3OTAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksIFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJTcHJpbmcvU3VtbWVyXFxuIChBcHItU2VwKVwiLCBcbiAgICB4ID0gMi41LFxuICAgIHkgPSA3OTAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIkF1dHVtbi9XaW50ZXJcXG4gKE9jdC1EZWMpXCIsIFxuICAgIHggPSA0LFxuICAgIHkgPSA3OTAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICBsYWJzKFxuICAgIHRpdGxlID0gXCJBdmVyYWdlIE51bWJlciBvZiBFbWVyZ2VuY3kgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBNb250aFwiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJJbnBhdGllbnQgRXBpc29kZXNcIilcbmBgYCJ9 -->
-<pre class="r"><code>
-# average episode number in emergency inpatients pre and post vid
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;) %&gt;%
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = av_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
-  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  ylim(6000, 8000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Winter/Spring\n (Jan-Mar)&quot;, 
-    x = 1,
-    y = 7900,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-    x = 2.5,
-    y = 7900,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Dec)&quot;, 
-    x = 4,
-    y = 7900,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Average Number of Emergency Inpatient Episodes per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="q3-first" class="section level1">
-<h1>Q3 first</h1>
-</div>
-<div id="mean-episode-number-in-emergency-inpatients-pre-and-post-vid" class="section level1">
-<h1>mean episode number in emergency inpatients pre and post vid</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBRMyBmaXJzdFxuIyBtZWFuIGVwaXNvZGUgbnVtYmVyIGluIGVtZXJnZW5jeSBpbnBhdGllbnRzIHByZSBhbmQgcG9zdCB2aWRcbmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgXG4gIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSBcIkVtZXJnZW5jeSBJbnBhdGllbnRzXCIsXG4gICAgICAgICBuaHNfaGVhbHRoX2JvYXJkID09IFwiQWxsIG9mIFNjb3RsYW5kXCIpICU+JVxuICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoYXZfZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2VwaXNkb2VzID0gc2QoZXBpc29kZXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBmYWN0b3IocXVhcnRlciwgb3JkZXJlZCA9IFRSVUUsIGxldmVscyA9IGMoXCIzXCIsIFwiNFwiLCBcIjFcIiwgXCIyXCIpKSwgeSA9IGF2X2VwaXNvZGVzKSArXG4gIGdlb21fcG9pbnQoc2l6ZSA9IDQsIHNoYXBlID0gMTcsIGFlcyhjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCkpICtcbiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHByZV9wb3N0X2NvdmlkLCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCksIHNpemUgPSAxKSArXG4gIHN0YXRfc3VtbWFyeShmdW4ueSA9IFwibWVhblwiLCBnZW9tID0gXCJwb2ludFwiLCBzaGFwZSA9IDE5LCBzaXplID0gNCwgY29sb3IgPSBcImJsYWNrXCIpICtcbiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSBcImJsYWNrXCIsIGdlb20gPSBcImxpbmVcIiwgYWVzKGdyb3VwID0gMSksIHNpemUgPSAxKSArIFxuICB5bGltKDkwMDAwLCAxNjAwMDApICtcbiAgdGhlbWVfYncoKSArXG4gIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9IFwiRGFyazJcIikgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJTcHJpbmcvU3VtbWVyXFxuIChKdWwtU2VwKVwiLCBcbiAgICB4ID0gMSxcbiAgICB5ID0gMTUwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksIFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJBdXR1bW4vV2ludGVyXFxuIChPY3QtTWFyKVwiLCBcbiAgICB4ID0gMi41LFxuICAgIHkgPSAxNTAwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiU3ByaW5nL1N1bW1lclxcbiAoQXByLUp1bmUpXCIsIFxuICAgIHggPSA0LFxuICAgIHkgPSAxNTAwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMS41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgIGxhYnMoXG4gICAgdGl0bGUgPSBcIkF2ZXJhZ2UgTnVtYmVyIG9mIEVtZXJnZW5jeSBJbnBhdGllbnQgRXBpc29kZXMgcGVyIE1vbnRoXCIsXG4gICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICAgeCA9IFwiUXVhcnRlclwiLFxuICAgIHkgPSBcIklucGF0aWVudCBFcGlzb2Rlc1wiKVxuXG5cblxuXG5cbmBgYCJ9 -->
-<pre class="r"><code># Q3 first
-# mean episode number in emergency inpatients pre and post vid
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;,
-         nhs_health_board == &quot;All of Scotland&quot;) %&gt;%
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes),
-            sd_episdoes = sd(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = factor(quarter, ordered = TRUE, levels = c(&quot;3&quot;, &quot;4&quot;, &quot;1&quot;, &quot;2&quot;)), y = av_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
-  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
-  stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  ylim(90000, 160000) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Jul-Sep)&quot;, 
-    x = 1,
-    y = 150000,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Mar)&quot;, 
-    x = 2.5,
-    y = 150000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-June)&quot;, 
-    x = 4,
-    y = 150000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Average Number of Emergency Inpatient Episodes per Month&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="q3-first-1" class="section level1">
-<h1>Q3 first</h1>
-</div>
-<div id="total-episode-number-in-emergency-inpatients-pre-and-post-vid" class="section level1">
-<h1>total episode number in emergency inpatients pre and post vid</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBRMyBmaXJzdFxuIyB0b3RhbCBlcGlzb2RlIG51bWJlciBpbiBlbWVyZ2VuY3kgaW5wYXRpZW50cyBwcmUgYW5kIHBvc3QgdmlkXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJFbWVyZ2VuY3kgSW5wYXRpZW50c1wiKSAlPiVcbiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSBcbiAgc3VtbWFyaXNlKHRvdGFsX2VwaXNvZGVzID0gc3VtKGVwaXNvZGVzKSkgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gZmFjdG9yKHF1YXJ0ZXIsIG9yZGVyZWQgPSBUUlVFLCBsZXZlbHMgPSBjKFwiM1wiLCBcIjRcIiwgXCIxXCIsIFwiMlwiKSksIHkgPSB0b3RhbF9lcGlzb2RlcykgK1xuICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBhZXMoY29sb3VyID0gcHJlX3Bvc3RfY292aWQpKSArXG4gIGdlb21fbGluZShhZXMoZ3JvdXAgPSBwcmVfcG9zdF9jb3ZpZCwgY29sb3VyID0gcHJlX3Bvc3RfY292aWQpLCBzaXplID0gMSkgK1xuICAjIHN0YXRfc3VtbWFyeShmdW4ueSA9IFwibWVhblwiLCBnZW9tID0gXCJwb2ludFwiLCBzaGFwZSA9IDE5LCBzaXplID0gNCwgY29sb3IgPSBcImJsYWNrXCIpICtcbiAgIyBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9IFwiYmxhY2tcIiwgZ2VvbSA9IFwibGluZVwiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgXG4gIHRoZW1lX2J3KCkgK1xuICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSBcIkRhcmsyXCIpICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiU3ByaW5nL1N1bW1lclxcbiAoSnVsLVNlcClcIiwgXG4gICAgeCA9IDEsXG4gICAgeSA9IDEyNTAwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSwgXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIkF1dHVtbi9XaW50ZXJcXG4gKE9jdC1NYXIpXCIsIFxuICAgIHggPSAyLjUsXG4gICAgeSA9IDEyNTAwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiU3ByaW5nL1N1bW1lclxcbiAoQXByLUp1bmUpXCIsIFxuICAgIHggPSA0LFxuICAgIHkgPSAxMjUwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICBsYWJzKFxuICAgIHRpdGxlID0gXCJUb3RhbCBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBRdWFydGVyXCIsXG4gICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICAgeCA9IFwiUXVhcnRlclwiLFxuICAgIHkgPSBcIklucGF0aWVudCBFcGlzb2Rlc1wiKSArXG4gIHlsaW0oNjAwMDAwLCAxMzAwMDAwKVxuXG5gYGAifQ== -->
-<pre class="r"><code># Q3 first
-# total episode number in emergency inpatients pre and post vid
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;) %&gt;%
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(total_episodes = sum(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = factor(quarter, ordered = TRUE, levels = c(&quot;3&quot;, &quot;4&quot;, &quot;1&quot;, &quot;2&quot;)), y = total_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
-  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
-  # stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  # stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Jul-Sep)&quot;, 
-    x = 1,
-    y = 1250000,
-    label.padding = unit(0.15, &quot;lines&quot;), 
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Autumn/Winter\n (Oct-Mar)&quot;, 
-    x = 2.5,
-    y = 1250000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Spring/Summer\n (Apr-June)&quot;, 
-    x = 4,
-    y = 1250000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Total Number of Inpatient Episodes per Quarter&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;) +
-  ylim(600000, 1300000)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW5faG9zcF9hZG1pc3Npb25zICU+JSBcbiAgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09IFwiQWxsIElucGF0aWVudHNcIikgJT4lIFxuICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoYXZfZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSkgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gZmFjdG9yKHF1YXJ0ZXIsIG9yZGVyZWQgPSBUUlVFLCBsZXZlbHMgPSBjKFwiM1wiLCBcIjRcIiwgXCIxXCIsIFwiMlwiKSksIHkgPSBhdl9lcGlzb2RlcykgK1xuICBnZW9tX2NvbCgpXG4gICMgZ2VvbV9saW5lKGFlcyhncm91cCA9IHByZV9wb3N0X2NvdmlkLCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCksIHNpemUgPSAxKSArXG4gICMgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gXCJtZWFuXCIsIGdlb20gPSBcInBvaW50XCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9IFwiYmxhY2tcIikgK1xuICAjIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gXCJibGFja1wiLCBnZW9tID0gXCJsaW5lXCIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKyBcbiAgIyB0aGVtZV9idygpICtcbiAgIyBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSBcIkRhcmsyXCIpICtcbiAgIyBmYWNldF93cmFwKH5hZG1pc3Npb25fdHlwZSkgK1xuICAjIGdlb21fbGFiZWwoXG4gICMgICBsYWJlbCA9IFwiU3ByaW5nL1N1bW1lclxcbiAoQXByLVNlcClcIiwgXG4gICMgICB4ID0gMSxcbiAgIyAgIHkgPSA3OTAwLFxuICAjICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSwgXG4gICMgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgIyAgIGNvbG9yID0gXCJibGFja1wiXG4gICMgKSArXG4gICMgZ2VvbV9sYWJlbChcbiAgIyAgIGxhYmVsID0gXCJBdXR1bW4vV2ludGVyXFxuIChKYW4tTWFyKVwiLCBcbiAgIyAgIHggPSAyLjUsXG4gICMgICB5ID0gNzkwMCxcbiAgIyAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICMgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgIyAgIGNvbG9yID0gXCJibGFja1wiXG4gICMgKSArXG4gICMgZ2VvbV9sYWJlbChcbiAgIyAgIGxhYmVsID0gXCJTcHJpbmcvU3VtbWVyXFxuIChBcHItU2VwKVwiLCBcbiAgIyAgIHggPSA0LFxuICAjICAgeSA9IDc5MDAsXG4gICMgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCBcImxpbmVzXCIpLFxuICAjICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICMgICBjb2xvciA9IFwiYmxhY2tcIlxuICAjICkgK1xuICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICMgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgIyAgbGFicyhcbiAgIyAgIHRpdGxlID0gXCJBdmVyYWdlIE51bWJlciBvZiBFbWVyZ2VuY3kgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBNb250aFwiLFxuICAjICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICMgICB4ID0gXCJRdWFydGVyXCIsXG4gICMgICB5ID0gXCJJbnBhdGllbnQgRXBpc29kZXNcIilcbmBgYCJ9 -->
-<pre class="r"><code>clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;All Inpatients&quot;) %&gt;% 
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = factor(quarter, ordered = TRUE, levels = c(&quot;3&quot;, &quot;4&quot;, &quot;1&quot;, &quot;2&quot;)), y = av_episodes) +
-  geom_col()
-  # geom_line(aes(group = pre_post_covid, colour = pre_post_covid), size = 1) +
-  # stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  # stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) + 
-  # theme_bw() +
-  # scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  # facet_wrap(~admission_type) +
-  # geom_label(
-  #   label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-  #   x = 1,
-  #   y = 7900,
-  #   label.padding = unit(0.15, &quot;lines&quot;), 
-  #   label.size = 0.15,
-  #   color = &quot;black&quot;
-  # ) +
-  # geom_label(
-  #   label = &quot;Autumn/Winter\n (Jan-Mar)&quot;, 
-  #   x = 2.5,
-  #   y = 7900,
-  #   label.padding = unit(0.15, &quot;lines&quot;),
-  #   label.size = 0.15,
-  #   color = &quot;black&quot;
-  # ) +
-  # geom_label(
-  #   label = &quot;Spring/Summer\n (Apr-Sep)&quot;, 
-  #   x = 4,
-  #   y = 7900,
-  #   label.padding = unit(0.15, &quot;lines&quot;),
-  #   label.size = 0.15,
-  #   color = &quot;black&quot;
-  # ) +
-  # geom_vline(xintercept = 1.5, linetype = &quot;dashed&quot;) +
-  # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-  #  labs(
-  #   title = &quot;Average Number of Emergency Inpatient Episodes per Month&quot;,
-  #   subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-  #   x = &quot;Quarter&quot;,
-  #   y = &quot;Inpatient Episodes&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>#cleaning no separate quarters</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyIDwtIGhvc3BpdGFsX2FkbWlzc2lvbnMgJT4lIFxuICBjbGVhbl9uYW1lcygpICU+JSBcbiAgc2VsZWN0KC0gcXVhcnRlcl9xZiwgLSBoYnFmLCAtbG9jYXRpb25fcWYsIC1hZG1pc3Npb25fdHlwZV9xZiwgXG4gICAgICAgICAtYXZlcmFnZV9sZW5ndGhfb2ZfZXBpc29kZV9xZiwgLWF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXlfcWYsIC1sb2NhdGlvbl9xZixcbiAgICAgICAgIC1hZG1pc3Npb25fdHlwZV9xZikgJT4lIFxuICBtdXRhdGUoaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMTVcIiwgXCJBeXJzaGlyZSBhbmQgQXJyYW5cIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMTZcIiwgXCJCb3JkZXJzXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDE3XCIsIFwiRHVtZnJpZXMgYW5kIEdhbGxvd2F5XCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDE4XCIsIFwiRmlmZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAxOVwiLCBcIkZvcnRoIFZhbGxleVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyMFwiLCBcIkdyYW1waWFuXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDIxXCIsIFwiR3JlYXRlciBHbGFzZ293IGFuZCBDbHlkZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyMlwiLCBcIkhpZ2hsYW5kXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDIzXCIsIFwiTGFuYXJrc2hpcmVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjRcIiwgXCJMb3RoaWFuXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDI1XCIsIFwiT3JrbmV5XCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDI2XCIsIFwiU2hldGxhbmRcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjdcIiwgXCJUYXlzaWRlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDI4XCIsIFwiV2VzdGVybiBJc2xlc1wiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyOVwiLCBcIkZpZmVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMzBcIiwgXCJUYXlzaWRlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDMxXCIsIFwiR3JlYXRlciBHbGFzZ293IGFuZCBDbHlkZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAzMlwiLCBcIkxhbmFya3NoaXJlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzkyMDAwMDAzXCIsIFwiQWxsIG9mIFNjb3RsYW5kXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUkEyNzAxXCIsIFwiTm8gRml4ZWQgQWJvZGVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJSQTI3MDJcIiwgXCJSZXN0IG9mIHRoZSBVS1wiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlJBMjcwM1wiLCBcIk91dHNpZGUgdGhlIFVLXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUkEyNzA0XCIsIFwiVW5rbm93biBSZXNpZGVuY3lcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMjcwMDAwMDFcIiwgXCJOb24tTkhTIFByb3ZpZGVyXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiU0IwODAxXCIsIFwiVGhlIEdvbGRlbiBKdWJpbGVlIE5hdGlvbmFsIEhvc3BpdGFsXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiU04wODExXCIsIFwiTmF0aW9uYWwgRmFjaWxpdHkgTkhTIExvdWlzYSBKb3JkYW5cIiwgaGIpLFxuICAgICAgICAgICApICU+JVxuICByZW5hbWUobmhzX2hlYWx0aF9ib2FyZCA9IGhiKSBcbiAgIyBzZXBhcmF0ZShxdWFydGVyLGludG8gPSBjKFwieWVhclwiLCBcInF1YXJ0ZXJcIiksIHNlcCA9IFwiUVwiICkgJT4lIFxuICAjIG11dGF0ZShwcmVfcG9zdF9jb3ZpZCA9IGlmZWxzZSh5ZWFyICVpbiUgYyhcIjIwMTdcIiwgXCIyMDE4XCIsIFwiMjAxOVwiKSwgXCJwcmVcIiwgXCJwb3N0XCIpKVxuYGBgIn0= -->
-<pre class="r"><code>clean_hosp_admissions_qyear &lt;- hospital_admissions %&gt;% 
-  clean_names() %&gt;% 
-  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
-         -average_length_of_episode_qf, -average_length_of_stay_qf, -location_qf,
-         -admission_type_qf) %&gt;% 
-  mutate(hb = ifelse(hb == &quot;S08000015&quot;, &quot;Ayrshire and Arran&quot;, hb),
-         hb = ifelse(hb == &quot;S08000016&quot;, &quot;Borders&quot;, hb),
-         hb = ifelse(hb == &quot;S08000017&quot;, &quot;Dumfries and Galloway&quot;, hb),
-         hb = ifelse(hb == &quot;S08000018&quot;, &quot;Fife&quot;, hb),
-         hb = ifelse(hb == &quot;S08000019&quot;, &quot;Forth Valley&quot;, hb),
-         hb = ifelse(hb == &quot;S08000020&quot;, &quot;Grampian&quot;, hb),
-         hb = ifelse(hb == &quot;S08000021&quot;, &quot;Greater Glasgow and Clyde&quot;, hb),
-         hb = ifelse(hb == &quot;S08000022&quot;, &quot;Highland&quot;, hb),
-         hb = ifelse(hb == &quot;S08000023&quot;, &quot;Lanarkshire&quot;, hb),
-         hb = ifelse(hb == &quot;S08000024&quot;, &quot;Lothian&quot;, hb),
-         hb = ifelse(hb == &quot;S08000025&quot;, &quot;Orkney&quot;, hb),
-         hb = ifelse(hb == &quot;S08000026&quot;, &quot;Shetland&quot;, hb),
-         hb = ifelse(hb == &quot;S08000027&quot;, &quot;Tayside&quot;, hb),
-         hb = ifelse(hb == &quot;S08000028&quot;, &quot;Western Isles&quot;, hb),
-         hb = ifelse(hb == &quot;S08000029&quot;, &quot;Fife&quot;, hb),
-         hb = ifelse(hb == &quot;S08000030&quot;, &quot;Tayside&quot;, hb),
-         hb = ifelse(hb == &quot;S08000031&quot;, &quot;Greater Glasgow and Clyde&quot;, hb),
-         hb = ifelse(hb == &quot;S08000032&quot;, &quot;Lanarkshire&quot;, hb),
-         hb = ifelse(hb == &quot;S92000003&quot;, &quot;All of Scotland&quot;, hb),
-         hb = ifelse(hb == &quot;RA2701&quot;, &quot;No Fixed Abode&quot;, hb),
-         hb = ifelse(hb == &quot;RA2702&quot;, &quot;Rest of the UK&quot;, hb),
-         hb = ifelse(hb == &quot;RA2703&quot;, &quot;Outside the UK&quot;, hb),
-         hb = ifelse(hb == &quot;RA2704&quot;, &quot;Unknown Residency&quot;, hb),
-         hb = ifelse(hb == &quot;S27000001&quot;, &quot;Non-NHS Provider&quot;, hb),
-         hb = ifelse(hb == &quot;SB0801&quot;, &quot;The Golden Jubilee National Hospital&quot;, hb),
-         hb = ifelse(hb == &quot;SN0811&quot;, &quot;National Facility NHS Louisa Jordan&quot;, hb),
-           ) %&gt;%
-  rename(nhs_health_board = hb) 
-  # separate(quarter,into = c(&quot;year&quot;, &quot;quarter&quot;), sep = &quot;Q&quot; ) %&gt;% 
-  # mutate(pre_post_covid = ifelse(year %in% c(&quot;2017&quot;, &quot;2018&quot;, &quot;2019&quot;), &quot;pre&quot;, &quot;post&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jdG90YWwgbnVtYmVyIG9mIGlucGF0aWVudCBlcGlzb2RlcyBvdmVyIHRpbWUgTk9URTogZG8gbG9ja2Rvd25zIGFmZmVjdCB0aGlzPz9cbmNsZWFuX2hvc3BfYWRtaXNzaW9uc19xeWVhciAlPiUgXG5maWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJFbWVyZ2VuY3kgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4gIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSBcbiAgc3VtbWFyaXNlKHRvdGFsX2VwaXNvZGVzID0gc3VtKGVwaXNvZGVzKSkgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gcXVhcnRlciwgeSA9IHRvdGFsX2VwaXNvZGVzKSArXG4gIGdlb21fbGluZShhZXMoZ3JvdXAgPSAxLCBjb2xvdXIgPSBcInJlZFwiKSkgK1xuICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBjb2xvdXIgPSBcInJlZFwiKSArXG4gIGdlb21fbGluZShhZXMoZ3JvdXAgPSBxdWFydGVyKSkgK1xuICB0aGVtZV9idygpICtcbiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA2MCwgdmp1c3QgPSAwLjUsIGhqdXN0ID0gMC41KSkgK1xuICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSBcIkRhcmsyXCIpICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiUHJlLVBhbmRlbWljXCIsXG4gICAgeCA9IDIuNSxcbiAgICB5ID0gMTQwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIlBhbmRlbWljXCIsXG4gICAgeCA9IDIwLFxuICAgIHkgPSAxNDAwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMTEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICMgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgIGxhYnMoXG4gICAgdGl0bGUgPSBcIlRvdGFsIE51bWJlciBvZiBIb3NwaXRhbCBBZG1pc3Npb25zXCIsXG4gICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICAgeCA9IFwiUXVhcnRlclwiLFxuICAgIHkgPSBcIkhvc3BpdGFsIEFkbWlzc2lvbnNcIikgXG5cbiAgIyB5bGltKDkwMDAwLCAxNDAwMDApXG4jIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyNcbiMgY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyICU+JSBcbiMgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09IFwiRW1lcmdlbmN5IElucGF0aWVudHNcIixcbiMgICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4jICAgZ3JvdXBfYnkocXVhcnRlcikgJT4lIFxuIyAgIHN1bW1hcmlzZSh0b3RhbF9lcGlzb2RlcyA9IHN1bShlcGlzb2RlcykpICU+JSBcbiMgICBzZWxlY3QodG90YWxfZXBpc29kZXMpICU+JSBcbiMgICBzbGljZV9tYXgodG90YWxfZXBpc29kZXMsIG4gPSAxKVxuIyAgIGdncGxvdCgpICtcbiMgICBhZXMoeCA9IHF1YXJ0ZXIsIHkgPSB0b3RhbF9lcGlzb2RlcykgK1xuIyAgIGdlb21fbGluZShhZXMoZ3JvdXAgPSAxLCBjb2xvdXIgPSBcInJlZFwiKSxzaG93LmxlZ2VuZCA9IEZBTFNFKSArXG4jICAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgY29sb3VyID0gXCJyZWRcIikgK1xuIyAgIGdlb21fbGluZShhZXMoZ3JvdXAgPSBxdWFydGVyKSkgK1xuIyAgIHRoZW1lX2J3KCkgK1xuIyAgIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gMC41LCBoanVzdCA9IDAuNSkpK1xuIyAgIHRoZW1lKCkgK1xuIyAgIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9IFwiRGFyazJcIikgK1xuIyAgIGdlb21fbGFiZWwoXG4jICAgICBsYWJlbCA9IFwiUHJlLVBhbmRlbWljXCIsXG4jICAgICB4ID0gMi41LFxuIyAgICAgeSA9IDE0MDAwMCxcbiMgICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4jICAgICBsYWJlbC5zaXplID0gMC4xNSxcbiMgICAgIGNvbG9yID0gXCJibGFja1wiXG4jICAgKSArXG4jICAgZ2VvbV9sYWJlbChcbiMgICAgIGxhYmVsID0gXCJQYW5kZW1pY1wiLFxuIyAgICAgeCA9IDIwLFxuIyAgICAgeSA9IDE0MDAwMCxcbiMgICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4jICAgICBsYWJlbC5zaXplID0gMC4xNSxcbiMgICAgIGNvbG9yID0gXCJibGFja1wiXG4jICAgKSArXG4jICAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMTEuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4jICAgIyBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gXCJkYXNoZWRcIikgK1xuIyAgICBsYWJzKFxuIyAgICAgdGl0bGUgPSBcIlRvdGFsIE51bWJlciBvZiBJbnBhdGllbnQgRXBpc29kZXNcIixcbiMgICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuIyAgICAgeCA9IFwiUXVhcnRlclwiLFxuIyAgICAgeSA9IFwiSW5wYXRpZW50IEVwaXNvZGVzXCIpIyArXG4jICAjIHlsaW0oODAwMDAsIDE0MDAwMClcbmBgYCJ9 -->
-<pre class="r"><code>
-#total number of inpatient episodes over time NOTE: do lockdowns affect this??
-clean_hosp_admissions_qyear %&gt;% 
-filter(admission_type == &quot;Emergency Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(quarter) %&gt;% 
-  summarise(total_episodes = sum(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = total_episodes) +
-  geom_line(aes(group = 1, colour = &quot;red&quot;)) +
-  geom_point(size = 4, shape = 17, colour = &quot;red&quot;) +
-  geom_line(aes(group = quarter)) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust = 0.5)) +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Pre-Pandemic&quot;,
-    x = 2.5,
-    y = 140000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Pandemic&quot;,
-    x = 20,
-    y = 140000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 11.5, linetype = &quot;dashed&quot;) +
-  # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Total Number of Hospital Admissions&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Hospital Admissions&quot;) 
-
-  # ylim(90000, 140000)
-################################################
-# clean_hosp_admissions_qyear %&gt;% 
-# filter(admission_type == &quot;Emergency Inpatients&quot;,
-#   nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-#   group_by(quarter) %&gt;% 
-#   summarise(total_episodes = sum(episodes)) %&gt;% 
-#   select(total_episodes) %&gt;% 
-#   slice_max(total_episodes, n = 1)
-#   ggplot() +
-#   aes(x = quarter, y = total_episodes) +
-#   geom_line(aes(group = 1, colour = &quot;red&quot;),show.legend = FALSE) +
-#   geom_point(size = 4, shape = 17, colour = &quot;red&quot;) +
-#   geom_line(aes(group = quarter)) +
-#   theme_bw() +
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
-#   theme() +
-#   scale_colour_brewer(palette = &quot;Dark2&quot;) +
-#   geom_label(
-#     label = &quot;Pre-Pandemic&quot;,
-#     x = 2.5,
-#     y = 140000,
-#     label.padding = unit(0.15, &quot;lines&quot;),
-#     label.size = 0.15,
-#     color = &quot;black&quot;
-#   ) +
-#   geom_label(
-#     label = &quot;Pandemic&quot;,
-#     x = 20,
-#     y = 140000,
-#     label.padding = unit(0.15, &quot;lines&quot;),
-#     label.size = 0.15,
-#     color = &quot;black&quot;
-#   ) +
-#   geom_vline(xintercept = 11.5, linetype = &quot;dashed&quot;) +
-#   # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-#    labs(
-#     title = &quot;Total Number of Inpatient Episodes&quot;,
-#     subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-#     x = &quot;Quarter&quot;,
-#     y = &quot;Inpatient Episodes&quot;)# +
-#  # ylim(80000, 140000)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyICU+JSBcbmZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSBcIkFsbCBJbnBhdGllbnRzXCIsXG4gIG5oc19oZWFsdGhfYm9hcmQgIT0gXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4gIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSBcbiAgc3VtbWFyaXNlKG1lYW5fZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2VwaXNvZGVzID0gc2QoZXBpc29kZXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gbWVhbl9lcGlzb2RlcykgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gMSwgY29sb3VyID0gXCJyZWRcIikpICtcbiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgY29sb3VyID0gXCJyZWRcIikgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcXVhcnRlcikpICtcbiAgdGhlbWVfYncoKSArXG4gIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gMC41LCBoanVzdCA9IDAuNSkpICtcbiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIlByZS0yMDIwXCIsXG4gICAgeCA9IDIsXG4gICAgeSA9IDEyMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIlBvc3QtMjAyMFwiLFxuICAgIHggPSAyMCxcbiAgICB5ID0gMTIwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMTAuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICMgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgIGxhYnMoXG4gICAgdGl0bGUgPSBcIk1lYW4gTnVtYmVyIG9mIElucGF0aWVudCBFcGlzb2Rlc1wiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJIb3NwaXRhbCBBZG1pc3Npb25zXCIpICtcbiAgeWxpbSg2MDAwLCAxMjAwMClcblxuXG5cblxuXG4jIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyNcbiMgY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyICU+JSBcbiMgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09IFwiQWxsIElucGF0aWVudHNcIixcbiMgICBuaHNfaGVhbHRoX2JvYXJkICE9IFwiQWxsIG9mIFNjb3RsYW5kXCIpICU+JVxuIyAgIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSBcbiMgICBzdW1tYXJpc2UoYXZfZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSkgJT4lIFxuIyAgIHNlbGVjdCh0b3RhbF9lcGlzb2RlcykgJT4lIFxuIyAgIHNsaWNlX21heCh0b3RhbF9lcGlzb2RlcywgbiA9IDEpXG4jICAgZ2dwbG90KCkgK1xuIyAgIGFlcyh4ID0gcXVhcnRlciwgeSA9IHRvdGFsX2VwaXNvZGVzKSArXG4jICAgZ2VvbV9saW5lKGFlcyhncm91cCA9IDEsIGNvbG91ciA9IFwicmVkXCIpLHNob3cubGVnZW5kID0gRkFMU0UpICtcbiMgICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBjb2xvdXIgPSBcInJlZFwiKSArXG4jICAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHF1YXJ0ZXIpKSArXG4jICAgdGhlbWVfYncoKSArXG4jICAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA5MCwgdmp1c3QgPSAwLjUsIGhqdXN0ID0gMC41KSkrXG4jICAgdGhlbWUoKSArXG4jICAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4jICAgZ2VvbV9sYWJlbChcbiMgICAgIGxhYmVsID0gXCJQcmUtUGFuZGVtaWNcIixcbiMgICAgIHggPSAyLjUsXG4jICAgICB5ID0gMTQwMDAwLFxuIyAgICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiMgICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuIyAgICAgY29sb3IgPSBcImJsYWNrXCJcbiMgICApICtcbiMgICBnZW9tX2xhYmVsKFxuIyAgICAgbGFiZWwgPSBcIlBhbmRlbWljXCIsXG4jICAgICB4ID0gMjAsXG4jICAgICB5ID0gMTQwMDAwLFxuIyAgICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiMgICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuIyAgICAgY29sb3IgPSBcImJsYWNrXCJcbiMgICApICtcbiMgICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxMS41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiMgICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4jICAgIGxhYnMoXG4jICAgICB0aXRsZSA9IFwiTWVhbiBOdW1iZXIgb2YgSG9zcGl0YWwgQWRtaXNzaW9uc1wiLFxuIyAgICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4jICAgICB4ID0gXCJRdWFydGVyXCIsXG4jICAgICB5ID0gXCJJbnBhdGllbnQgRXBpc29kZXNcIilcbmBgYCJ9 -->
-<pre class="r"><code>clean_hosp_admissions_qyear %&gt;% 
-filter(admission_type == &quot;All Inpatients&quot;,
-  nhs_health_board != &quot;All of Scotland&quot;) %&gt;%
-  group_by(quarter) %&gt;% 
-  summarise(mean_episodes = mean(episodes),
-            sd_episodes = sd(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = mean_episodes) +
-  geom_line(aes(group = 1, colour = &quot;red&quot;)) +
-  geom_point(size = 4, shape = 17, colour = &quot;red&quot;) +
-  geom_line(aes(group = quarter)) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Pre-2020&quot;,
-    x = 2,
-    y = 12000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Post-2020&quot;,
-    x = 20,
-    y = 12000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 10.5, linetype = &quot;dashed&quot;) +
-  # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Mean Number of Inpatient Episodes&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Hospital Admissions&quot;) +
-  ylim(6000, 12000)
-
-
-
-
-
-################################################
-# clean_hosp_admissions_qyear %&gt;% 
-# filter(admission_type == &quot;All Inpatients&quot;,
-#   nhs_health_board != &quot;All of Scotland&quot;) %&gt;%
-#   group_by(quarter) %&gt;% 
-#   summarise(av_episodes = mean(episodes)) %&gt;% 
-#   select(total_episodes) %&gt;% 
-#   slice_max(total_episodes, n = 1)
-#   ggplot() +
-#   aes(x = quarter, y = total_episodes) +
-#   geom_line(aes(group = 1, colour = &quot;red&quot;),show.legend = FALSE) +
-#   geom_point(size = 4, shape = 17, colour = &quot;red&quot;) +
-#   geom_line(aes(group = quarter)) +
-#   theme_bw() +
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
-#   theme() +
-#   scale_colour_brewer(palette = &quot;Dark2&quot;) +
-#   geom_label(
-#     label = &quot;Pre-Pandemic&quot;,
-#     x = 2.5,
-#     y = 140000,
-#     label.padding = unit(0.15, &quot;lines&quot;),
-#     label.size = 0.15,
-#     color = &quot;black&quot;
-#   ) +
-#   geom_label(
-#     label = &quot;Pandemic&quot;,
-#     x = 20,
-#     y = 140000,
-#     label.padding = unit(0.15, &quot;lines&quot;),
-#     label.size = 0.15,
-#     color = &quot;black&quot;
-#   ) +
-#   geom_vline(xintercept = 11.5, linetype = &quot;dashed&quot;) +
-#   # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-#    labs(
-#     title = &quot;Mean Number of Hospital Admissions&quot;,
-#     subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-#     x = &quot;Quarter&quot;,
-#     y = &quot;Inpatient Episodes&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI21lYW4gbnVtYmVyIG9mIGlucGF0aWVudCBlcGlzb2RlcyBvdmVyIHRpbWUgTk9URTogZG8gbG9ja2Rvd25zIGFmZmVjdCB0aGlzPz9cbiNJR05PUkUgVEhJUyBGT1IgTk9XXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMlPiUgXG5maWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJFbWVyZ2VuY3kgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4gIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSBcbiAgc3VtbWFyaXNlKG1lYW5fZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2VwaXNvZGVzID0gc2QoZXBpc29kZXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBxdWFydGVyLCB5ID0gbWVhbl9lcGlzb2RlcykgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gMSwgY29sb3VyID0gXCJyZWRcIikpICtcbiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgY29sb3VyID0gXCJyZWRcIikgK1xuICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcXVhcnRlcikpICtcbiAgZ2VvbV9lcnJvcmJhcihtYXBwaW5nID0gYWVzKHltaW4gPSBtZWFuX2VwaXNvZGVzIC0gc2RfZXBpc29kZXMsIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeW1heCA9IG1lYW5fZXBpc29kZXMgKyBzZF9lcGlzb2RlcyxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHdpZHRoID0gMC4yNSksXG4gICAgICAgICAgICAgICAgY29sb3VyID0gXCJyZWRcIikgK1xuICB0aGVtZV9idygpICtcbiAgIyB0aGVtZShheGlzLnRleHQueCA9IGVsZW1lbnRfdGV4dChhbmdsZSA9IDQ1LCB2anVzdCA9IDAuNSwgaGp1c3QgPSAwLjUpKSArXG4gICMgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIlByZS0yMDIwXCIsXG4gICAgeCA9IDIsXG4gICAgeSA9IDE0MDAwMCxcbiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCBcImxpbmVzXCIpLFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiXG4gICkgK1xuICBnZW9tX2xhYmVsKFxuICAgIGxhYmVsID0gXCJQb3N0LTIwMjBcIixcbiAgICB4ID0gMyxcbiAgICB5ID0gMTQwMDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDIuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICMgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgIGxhYnMoXG4gICAgdGl0bGUgPSBcIk1lYW4gTnVtYmVyIG9mIElucGF0aWVudCBFcGlzb2Rlc1wiLFxuICAgIHN1YnRpdGxlID0gXCJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxcblwiLFxuICAgIHggPSBcIlF1YXJ0ZXJcIixcbiAgICB5ID0gXCJJbnBhdGllbnQgRXBpc29kZXNcIikgK1xuICB5bGltKDEwMDAwMCwgMTQwMDAwKVxuYGBgIn0= -->
-<pre class="r"><code>#mean number of inpatient episodes over time NOTE: do lockdowns affect this??
-#IGNORE THIS FOR NOW
-clean_hosp_admissions%&gt;% 
-filter(admission_type == &quot;Emergency Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(quarter) %&gt;% 
-  summarise(mean_episodes = mean(episodes),
-            sd_episodes = sd(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = mean_episodes) +
-  geom_line(aes(group = 1, colour = &quot;red&quot;)) +
-  geom_point(size = 4, shape = 17, colour = &quot;red&quot;) +
-  geom_line(aes(group = quarter)) +
-  geom_errorbar(mapping = aes(ymin = mean_episodes - sd_episodes, 
-                              ymax = mean_episodes + sd_episodes,
-                              width = 0.25),
-                colour = &quot;red&quot;) +
-  theme_bw() +
-  # theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5)) +
-  # scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Pre-2020&quot;,
-    x = 2,
-    y = 140000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Post-2020&quot;,
-    x = 3,
-    y = 140000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 2.5, linetype = &quot;dashed&quot;) +
-  # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Mean Number of Inpatient Episodes&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;) +
-  ylim(100000, 140000)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhbm92YSB0ZXN0XG5cbnN1bW1hcnkoY2xlYW5faG9zcF9hZG1pc3Npb25zKVxuXG5vbmVfd2F5IDwtIGFvdihxdWFydGVyIH4gbWVhbl9lcGlzb2Rlcywgc3VtX2hvc3BfYWQpICMgdGhpcyBkb2VzIGFub3ZhIHRlc3RcblxuI2NyZWF0ZSB0YWJsZSB0byBiZSB0ZXN0ZWRcbnN1bV9ob3NwX2FkIDwtIGNsZWFuX2hvc3BfYWRtaXNzaW9ucyU+JSBcbmZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSBcIkVtZXJnZW5jeSBJbnBhdGllbnRzXCIsXG4gIG5oc19oZWFsdGhfYm9hcmQgJWluJSBcIkFsbCBvZiBTY290bGFuZFwiKSAlPiVcbiAgZ3JvdXBfYnkocXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9lcGlzb2RlcyA9IG1lYW4oZXBpc29kZXMpLFxuICAgICAgICAgICAgc2RfZXBpc29kZXMgPSBzZChlcGlzb2RlcykpXG5cbnN1bW1hcnkob25lX3dheSlcblxuIyMgc2hvd3MgcmVzdWx0cyBvZiBhbm92YVxuXG5cbmBgYCJ9 -->
-<pre class="r"><code># anova test
-
-summary(clean_hosp_admissions)
-
-one_way &lt;- aov(quarter ~ mean_episodes, sum_hosp_ad) # this does anova test
-
-#create table to be tested
-sum_hosp_ad &lt;- clean_hosp_admissions%&gt;% 
-filter(admission_type == &quot;Emergency Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(quarter) %&gt;% 
-  summarise(mean_episodes = mean(episodes),
-            sd_episodes = sd(episodes))
-
-summary(one_way)
-
-## shows results of anova
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>#total number of emergency inpatient episodes over time</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbWzAsIlx1MDAxYlszODs1OzI1NW1gZ2VvbV9saW5lKClgOiBFYWNoIGdyb3VwIGNvbnNpc3RzIG9mIG9ubHkgb25lIG9ic2VydmF0aW9uLlxuXHUwMDFiWzM2beKEuVx1MDAxYlszODs1OzI1NW0gRG8geW91IG5lZWQgdG8gYWRqdXN0IHRoZSBcdTAwMWJbMzJtZ3JvdXBcdTAwMWJbMzg7NTsyNTVtIGFlc3RoZXRpYz9cdTAwMWJbMzltIl1dfQ== -->
-<p><img src="data:image/png;base64,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" /></p>
-<!-- rnb-plot-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>#speciality cleaning script</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW5faG9zcGl0YWxfYWRtaXNzaW9uc19zcGVjaWFsaXR5IDwtIGhvc3BpdGFsX2FkbWlzc2lvbnNfc3BlY2lhbGl0eSAlPiUgXG4gIGNsZWFuX25hbWVzKCkgJT4lIFxuICBzZWxlY3QoLSBxdWFydGVyX3FmLCAtIGhicWYsIC1sb2NhdGlvbl9xZiwgLWFkbWlzc2lvbl90eXBlX3FmLCBcbiAgICAgICAgIC1hdmVyYWdlX2xlbmd0aF9vZl9lcGlzb2RlX3FmKSAlPiUgXG4gIG11dGF0ZShoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAxNVwiLCBcIkF5cnNoaXJlIGFuZCBBcnJhblwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAxNlwiLCBcIkJvcmRlcnNcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMTdcIiwgXCJEdW1mcmllcyBhbmQgR2FsbG93YXlcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMThcIiwgXCJGaWZlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDE5XCIsIFwiRm9ydGggVmFsbGV5XCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDIwXCIsIFwiR3JhbXBpYW5cIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjFcIiwgXCJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDIyXCIsIFwiSGlnaGxhbmRcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjNcIiwgXCJMYW5hcmtzaGlyZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyNFwiLCBcIkxvdGhpYW5cIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjVcIiwgXCJPcmtuZXlcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjZcIiwgXCJTaGV0bGFuZFwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAyN1wiLCBcIlRheXNpZGVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMjhcIiwgXCJXZXN0ZXJuIElzbGVzXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDI5XCIsIFwiRmlmZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlMwODAwMDAzMFwiLCBcIlRheXNpZGVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTMDgwMDAwMzFcIiwgXCJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUzA4MDAwMDMyXCIsIFwiTGFuYXJrc2hpcmVcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJTOTIwMDAwMDNcIiwgXCJBbGwgb2YgU2NvdGxhbmRcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJSQTI3MDFcIiwgXCJObyBGaXhlZCBBYm9kZVwiLCBoYiksXG4gICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSBcIlJBMjcwMlwiLCBcIlJlc3Qgb2YgdGhlIFVLXCIsIGhiKSxcbiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09IFwiUkEyNzAzXCIsIFwiT3V0c2lkZSB0aGUgVUtcIiwgaGIpLFxuICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gXCJSQTI3MDRcIiwgXCJVbmtub3duIFJlc2lkZW5jeVwiLCBoYilcbiAgICAgICAgICAgKSAlPiVcbiAgcmVuYW1lKG5oc19oZWFsdGhfYm9hcmQgPSBoYikgJT4lIFxuICBzZXBhcmF0ZShxdWFydGVyLGludG8gPSBjKFwieWVhclwiLCBcInF1YXJ0ZXJcIiksIHNlcCA9IFwiUVwiICkgJT4lIFxuICBtdXRhdGUocHJlX3Bvc3RfY292aWQgPSBpZmVsc2UoeWVhciAlaW4lIGMoXCIyMDE3XCIsIFwiMjAxOFwiLCBcIjIwMTlcIiksIFwicHJlXCIsIFwicG9zdFwiKSkgXG5cblxuY2xlYW5faG9zcGl0YWxfYWRtaXNzaW9uc19zcGVjaWFsaXR5ICU+JSBcbiAgZGlzdGluY3Qoc3BlY2lhbHR5X25hbWUpIFxuICBcblxuXG5gYGAifQ== -->
-<pre class="r"><code>clean_hospital_admissions_speciality &lt;- hospital_admissions_speciality %&gt;% 
-  clean_names() %&gt;% 
-  select(- quarter_qf, - hbqf, -location_qf, -admission_type_qf, 
-         -average_length_of_episode_qf) %&gt;% 
-  mutate(hb = ifelse(hb == &quot;S08000015&quot;, &quot;Ayrshire and Arran&quot;, hb),
-         hb = ifelse(hb == &quot;S08000016&quot;, &quot;Borders&quot;, hb),
-         hb = ifelse(hb == &quot;S08000017&quot;, &quot;Dumfries and Galloway&quot;, hb),
-         hb = ifelse(hb == &quot;S08000018&quot;, &quot;Fife&quot;, hb),
-         hb = ifelse(hb == &quot;S08000019&quot;, &quot;Forth Valley&quot;, hb),
-         hb = ifelse(hb == &quot;S08000020&quot;, &quot;Grampian&quot;, hb),
-         hb = ifelse(hb == &quot;S08000021&quot;, &quot;Greater Glasgow and Clyde&quot;, hb),
-         hb = ifelse(hb == &quot;S08000022&quot;, &quot;Highland&quot;, hb),
-         hb = ifelse(hb == &quot;S08000023&quot;, &quot;Lanarkshire&quot;, hb),
-         hb = ifelse(hb == &quot;S08000024&quot;, &quot;Lothian&quot;, hb),
-         hb = ifelse(hb == &quot;S08000025&quot;, &quot;Orkney&quot;, hb),
-         hb = ifelse(hb == &quot;S08000026&quot;, &quot;Shetland&quot;, hb),
-         hb = ifelse(hb == &quot;S08000027&quot;, &quot;Tayside&quot;, hb),
-         hb = ifelse(hb == &quot;S08000028&quot;, &quot;Western Isles&quot;, hb),
-         hb = ifelse(hb == &quot;S08000029&quot;, &quot;Fife&quot;, hb),
-         hb = ifelse(hb == &quot;S08000030&quot;, &quot;Tayside&quot;, hb),
-         hb = ifelse(hb == &quot;S08000031&quot;, &quot;Greater Glasgow and Clyde&quot;, hb),
-         hb = ifelse(hb == &quot;S08000032&quot;, &quot;Lanarkshire&quot;, hb),
-         hb = ifelse(hb == &quot;S92000003&quot;, &quot;All of Scotland&quot;, hb),
-         hb = ifelse(hb == &quot;RA2701&quot;, &quot;No Fixed Abode&quot;, hb),
-         hb = ifelse(hb == &quot;RA2702&quot;, &quot;Rest of the UK&quot;, hb),
-         hb = ifelse(hb == &quot;RA2703&quot;, &quot;Outside the UK&quot;, hb),
-         hb = ifelse(hb == &quot;RA2704&quot;, &quot;Unknown Residency&quot;, hb)
-           ) %&gt;%
-  rename(nhs_health_board = hb) %&gt;% 
-  separate(quarter,into = c(&quot;year&quot;, &quot;quarter&quot;), sep = &quot;Q&quot; ) %&gt;% 
-  mutate(pre_post_covid = ifelse(year %in% c(&quot;2017&quot;, &quot;2018&quot;, &quot;2019&quot;), &quot;pre&quot;, &quot;post&quot;)) 
-
-
-clean_hospital_admissions_speciality %&gt;% 
-  distinct(specialty_name) 
-  
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="mean-inpatient-episodes-pre--and-during-pandemic" class="section level1">
-<h1>Mean Inpatient Episodes Pre- and During Pandemic</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xlYW5faG9zcF9hZG1pc3Npb25zICU+JSBcbiAgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09IFwiRW1lcmdlbmN5IElucGF0aWVudHNcIixcbiAgbmhzX2hlYWx0aF9ib2FyZCAlaW4lIFwiQWxsIG9mIFNjb3RsYW5kXCIpICU+JVxuICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoYXZfZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2F2X2VwaXNvZGVzID0gc2QoZXBpc29kZXMpLFxuICAgICAgICAgICAgbWluX2F2X2VwaXNvZGVzID0gbWluKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIG1heF9lcGlzb2RlcyA9IG1heChlcGlzb2RlcykpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHF1YXJ0ZXIsIHkgPSBhdl9lcGlzb2RlcykgK1xuICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBhZXMoY29sb3VyID0gcHJlX3Bvc3RfY292aWQpKSArXG4gIGdlb21fbGluZShhZXMoZ3JvdXAgPSBwcmVfcG9zdF9jb3ZpZCwgY29sb3VyID0gcHJlX3Bvc3RfY292aWQpLCBsaW5ld2lkdGggPSAxKSArXG4gICMgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gXCJtZWFuXCIsIGdlb20gPSBcInBvaW50XCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9IFwiYmxhY2tcIikgK1xuICAjIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gXCJibGFja1wiLCBnZW9tID0gXCJsaW5lXCIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgK1xuICBnZW9tX2Vycm9yYmFyKGFlcyh5bWluID0gYXZfZXBpc29kZXMgLSBzZF9hdl9lcGlzb2RlcywgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5bWF4ID0gYXZfZXBpc29kZXMgKyBzZF9hdl9lcGlzb2RlcywgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCxcbiAgICAgICAgICAgICAgICAgICAgd2lkdGggPSAwLjI1KVxuICAgICAgICAgICAgICAgICkgK1xuICB0aGVtZV9idygpICtcbiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gXCJEYXJrMlwiKSArXG4gIGdlb21fbGFiZWwoXG4gICAgbGFiZWwgPSBcIlByZS1QYW5kZW1pY1wiLFxuICAgIHggPSAwLjg3LFxuICAgIHkgPSAxNDUwMDAsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSxcbiAgICBsYWJlbC5zaXplID0gMC4xNSxcbiAgICBjb2xvciA9IFwiYmxhY2tcIlxuICApICtcbiAgZ2VvbV9sYWJlbChcbiAgICBsYWJlbCA9IFwiUGFuZGVtaWNcIixcbiAgICB4ID0gNC4yNSxcbiAgICB5ID0gMTQ1MDAwLFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCJcbiAgKSArXG4gIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDIuNSwgbGluZXR5cGUgPSBcImRhc2hlZFwiKSArXG4gICMgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9IFwiZGFzaGVkXCIpICtcbiAgIGxhYnMoXG4gICAgdGl0bGUgPSBcIk1lYW4gSW5wYXRpZW50IEVwaXNvZGVzXCIsXG4gICAgc3VidGl0bGUgPSBcIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXFxuXCIsXG4gICAgeCA9IFwiUXVhcnRlclwiLFxuICAgIHkgPSBcIklucGF0aWVudCBFcGlzb2Rlc1wiKSArXG4gICAgeWxpbSgxMDAwMDAsIDE0NTAwMClcbmBgYCJ9 -->
-<pre class="r"><code>clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes),
-            sd_av_episodes = sd(episodes),
-            min_av_episodes = min(episodes),
-            max_episodes = max(episodes)) %&gt;% 
-  ggplot() +
-  aes(x = quarter, y = av_episodes) +
-  geom_point(size = 4, shape = 17, aes(colour = pre_post_covid)) +
-  geom_line(aes(group = pre_post_covid, colour = pre_post_covid), linewidth = 1) +
-  # stat_summary(fun.y = &quot;mean&quot;, geom = &quot;point&quot;, shape = 19, size = 4, color = &quot;black&quot;) +
-  # stat_summary(fun.y = mean, color = &quot;black&quot;, geom = &quot;line&quot;, aes(group = 1), size = 1) +
-  geom_errorbar(aes(ymin = av_episodes - sd_av_episodes, 
-                              ymax = av_episodes + sd_av_episodes, 
-                              colour = pre_post_covid,
-                    width = 0.25)
-                ) +
-  theme_bw() +
-  scale_colour_brewer(palette = &quot;Dark2&quot;) +
-  geom_label(
-    label = &quot;Pre-Pandemic&quot;,
-    x = 0.87,
-    y = 145000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_label(
-    label = &quot;Pandemic&quot;,
-    x = 4.25,
-    y = 145000,
-    label.padding = unit(0.15, &quot;lines&quot;),
-    label.size = 0.15,
-    color = &quot;black&quot;
-  ) +
-  geom_vline(xintercept = 2.5, linetype = &quot;dashed&quot;) +
-  # geom_vline(xintercept = 3.5, linetype = &quot;dashed&quot;) +
-   labs(
-    title = &quot;Mean Inpatient Episodes&quot;,
-    subtitle = &quot;Quarterly Data from Q3 2017-Q3 2022\n&quot;,
-    x = &quot;Quarter&quot;,
-    y = &quot;Inpatient Episodes&quot;) +
-    ylim(100000, 145000)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3ByZV9wb3N0X2NvdmlkJy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
-<pre><code>`summarise()` has grouped output by &#39;pre_post_covid&#39;. You can override using the `.groups` argument.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAiYAAAFTCAMAAAA6FzebAAABQVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYbnnczMzM6AAA6ADo6OgA6Ojo6OmY6OpA6Zjo6ZmY6ZpA6ZrY6kJA6kLY6kNtNTU1NTW5NTY5NbqtNjshmAABmADpmOgBmOjpmOmZmZgBmZjpmZmZmZpBmkJBmkLZmkNtmtttmtv9uTU1uTW5uTY5uq+SOTU2OyP+QOgCQZgCQZjqQZmaQkGaQtpCQtraQttuQ27aQ29uQ2/+rbk2rjk2r5P+2ZgC2Zjq2kDq2kGa2kJC2tma2tpC2tra2ttu227a229u22/+2/7a2/9u2///Ijk3I///ZXwLbkDrbkGbbtmbbtpDbtrbbttvb25Db27bb29vb2//b/7bb/9vb///kq27k///r6+v/tmb/yI7/25D/27b/29v/5Kv//7b//8j//9v//+T///+HMGmbAAAACXBIWXMAABRMAAAUTAFGjW/LAAAd8UlEQVR4nO2dC3vctpWGObpUDqO4jdSVtsnsOIm9jtSuU8VJm43djNwkaq1s3IxlN7ZrKaUumYz5/3/AAgcgAfAKEiCGhM73PHEoDnjAId4BDkDgIIhRqFoFy74B1BCEmKA0hJigNISYoDSEmKA0hJigNISYoDSEmKA0hJigNISYoDTkJyaLU5vJUC4wiUbv3n3Fjxdff/T2g8YWLsKV75ukfzbZJ//Ogg2dZFzzcZBqlLvFWltM02C/PtEQ5QIT8uCThzwrKoNaNcRkcRDoYMKTcSEmVXKCyWq4zqr3xcFq6AyTZsnm42Y1VqEQk/aKgvVPORvz8W/HiMkA5QaTR8EOOxz9L8fk8n4YBDePWYpnt0hNv3qX1jgX4frrv5KP1r6QLDBM1I+IVfhrK2djBg3HftJQSDkpFpJkXFlMVPvM1uV9csVNfmfsD5771SFJun3KMZG/nHLNYOUGkx95qzNd/xfDJAoDUUqH3CWgaS7CtQn7a0dYSDCRP6J1FHMksjZUTOScFAv1mEj2wdZFKN0Zt8ty55+sfQj21Cxz32aIcoPJ6wMog/l4Yw6YEH9x+zRePAJnMQpGe6QJOITnSh/rf5zGlweBVGoJJvJH1DHelv6SbMgurJKTaqG60VHtg61psAGm+M2sH8dX9wP+ddaO6SeQvZKlfM2A5QaT0xn7mQX7DJOk48CfPvzUSKntwOOHvy5kVzfFRPoo4t0ndpliQ8ZEyUm1UN7TgVpIsU8vZ7fOL5sGvH6kqSL+RwSYyFkq1wxYjjCJ4NFNV76H57Y44AxcJF2gWGDCPpqPCzCRP4qSbmtSRsKGhImak2qhDhPZPrMlPKb0WviUQ0pt7KtZytcMWY4wgSqdtDmshKQiYZXx4sXRZ5sBw4SdKcRE/iilIzktbEiYqDmpFuoaHdn+jFUaqaed3h79VBiiLqyapXTNkOUIE3iAETzEPCYnm0Hq57XFRLbRFSbxM+YAb52K1PQgrT8KMJGuGbJcYTIj5TeFGgUwkQdPyA9udPPOn18eGGCi2FAwkXMyxYS+bLgFjVJlbZIZGUquGbJcYUIa6n+NN3gJKQXE/Anhm2hjwouVmldtKL6JjEIzTCT7ymD9LJDIUHwTOFvors4G3tVxhQmpmP8U7iQlNE27BtxtiWG0oRkmEhmqDbmnI+fUEBOZPGoruRr+z+2STzcEUqynI2epXDNgucKEPOh32BADH8BYPyYORQhFDEMLdMSzISYwBjKh1lUbpOw+jkUfOM0pj8nH4i6Lxk1S+0nNRE1dHgi7fNyE9meO48XTMBn6SbNUrhmwnGESsVHWuToKux0nw6F0RH+jESarzGuFdIoN8numuKijsNtxzvhUHh2VO8SshlDtS6OwYEQZhb1kF69/qozCsizlHt1g5QwTUgy0SJLih9cefEiB9lJW94raBa4SF/b1ISkm3teUbcSL+7Sk5Xc6LKeMcZaMK4+JbD95pxOKHC+pY5q8UVrk3+nwL6dcM1gNdvaaPKo2RPvDEmKyJPvDEmKyJPvDEmKyJPvDEmKyJPvD0mAxQbkUYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSkBtMYCX26var+pSLx4VnDwpmf/EZa6vbuXcvxUbi+aTZBHf1rukkptU96WM6L2nEMqfTK8XUo/l4P5bmOSm33sqmdFY6dCknmDzlM/1Ge3UpLyeF5ViFST5qTYkRdVJjvdS7nk+SZUBcfPoivCCcJnPe2M0GpZi0simdlRO4lAtMIsL/K/pDCmpX0l6ETTBhMwoPsk+t3EiT0CqZu57RSdnPxMpmAgObUc2mYh+nK0/JB/LXnMl/tLIpnZUTOJUDTMS01qh25nALTPILY0qNNPkRZu6a34EodLrSNclryhfS0zMn4egd6X7kVdItbUpn5QRO5QCTmWB/Cr8I+nDmY/r4YNoxC0qz8t0kWPmc1qj7LAIFa5fZ+S/JNVESTWAntcsfL3tqqa2IGxHGQRGrrZnBBzDJGRp5cj//d0inwVNHQbT6mbvO5pmIfo9FEpYD1iOtHUuJxLpRA5vibP7QkRxgMhVPihaohEnEW28a7WHlQ1KIJ+wv3qzDAhk4T+Oj8GczS62ljxcsCluR9L9ANAApJtTgKXcL1uA3/SE93DtQ/ITMXTOdhNnyYT93vrSLfrGXSrlHis/c1mbWVOR81U/3mMh1vfidsKMR+a0vpiwOCTxC9vSmEEfmkC23Y+ul6EI7dpRaUzCRbYER+YR8IzyjKV1mBausSJtFvAACKDnxNHVzsnfNMgzWM20f1BbZIhWYqJWJiU3ZlGrVibrHRK4hVUz4yYhhwpuUjbSJhqfKzsM10NyINidTm0i25KY7ymPClgvxOj1ZDswevVj6l71ryPCdXB8D2g5+v7CUXrmxzM/exKbcSk2de7BLrU3IiavnX38UMkx4EDNpdV0AoQD2Yw4Cw0b8kLKYpLYSTNIT8o3MeEg0XgqjBwwQZkP+8eaLNKbRseRy53VVeW2iRnY0sCnVinIF6UxL9U0uJ+kiOxmTxKvIYEIRkZ90WhpZW9ylFSeYSjERgEj1UqEfoXa5SD20fRpXYJKugOfDI61tJmfVQ4dy19N58Yr9umTfJFi7c/Q4ytcmcpQIgQlpcKQ2R+3pyLa4byJOMDXDJHPXiaaiSC/HabwKtVeS6YIJTNraTM8qhy7lbNyEFNvWNyyEBStyGtUBnuIsi4kcHEDGhJTzI8l5U8ZNZFsya7NiTBTfpBCTzF1zBqRbIwmSQWV53ES6sVxXt6VN6ax06FRuRmGD7VcQD5N3MnbY0CkMNNIhEhkT+uSmPPIDuLACkzgabUruHr/kxQFfop7a4uH4xAkmGROlp1OISf6uN06VABRSfQDh/IhHlaVjmu2RtLMpnV1WGGsn73ROEp8UmlWogn91AI1OkAyQ8EdLR0z2knETFhpUwmSu1LjpOx1WwMIWGJFPMCmY8CzSsdA8Jpm7lsZyQKmfzbiWvSBRzeXGjtvYlM4qCVzK1RviTVLqW99OaLgY+v5r6zUtMzruOdr6+zh1VeEzGsjmfhIGXMEkO6YJ4mESJVvMiHwCpGCijMIWY5K5axpVXHo3m/rZEClDeUNcgUkbm9JZJYFLOZ5vcmIU0dD9IDWT2V27s9mdhjQtiXgaw47VPFwNBxPqbODq7yVpOJgQn27teNn3cF01IExQyxNigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSUPeYvIUS6vxpdyQHmHRsn32Dfxtaqb3eyoNCTEqFmAghJqXijyYJz3mzJuJRzZZC+eiILjEx/RKISakymOR25suoI0zqvmczTNp+CcSkVCkmEIVxcVizf0PjDcrcYmL2JRCTUqmYFG/bJ2kImLT+EohJqTKYsP0e0n34FgfrP06C0cf0E3py+0d4wulmf9md+FgB0ZRJ+N1lYNL2SyAmpSqqTZKg2vtprPmdJDb7u2wPjCTkdnYnPr5PlxSQ260La/YlEJNSqZhcfQqbTqT78JEnvH68eEQfJuzwdwLbaYnN/rI78bFd/8jHl8m2ssG/nSiw8SUQk1KV93Qi9rAfsGD0fMfemdh5d8F2yVB24luke4jyDWeX0iFu+yV8wuSfp/HFJFj9Iv9JK6mYjLbYkEOyD5/YqysSm0JKm/1ld+Kj/6kO4hIwaf0l/MGEb6YZ1G9Ur6m3WKut7FQl9uErfMLpfiD5vbPaYmLZhW35JfzBhO4YRbdmj2ztI1CAibQPX8kPMbNfYh8xafMlvMEENp6bQtNaPTSgrWyHOFb24RNPONm1XM27CBOWMtlcZ1mYtPkSXmECe6V1i0m6D5+03SzsfPeMdxKSzf6KMIE+xGLayIXtApPmX8IbTKi3dRHCboS2Gh32v0x9nexFJj1hNs4gDzmQ2yjEhHmHHONljJu0/RLeYEKexOomGwqwtN9tASbSPnzyHud057ttVpenm/0VYtJiFLZOLVzYFl/CH0xoNbr2vcVt9XC+iZA/mBDBruuvbOXQ8aMJHGFihROvMIlja4zEHT+agFPSvQsrsjKQR5jQ/W9Jb+eD6ok3+nor6FBpLt1jEgMpZvIHE+K7rlJMxjUTtLSl+WgMWw0nmBhf7w8ms2AHhkwiZYLWz//zD3705L2fyL/nu7v/+VVcfcCFmAh5gwkdNwFMlOG1Xz75HcfkfJdick5AoP9VHSTqByb9uN4bTNgobAYTUkFwTH75hGLy5uE9cvzk/aqDVIiJkDeYpLWJNAp7vnvvnGNy9t5fCCY///6P9Ph3/6g4SC0iJkLeYBJPmW9CPFnZN+GY/PyHr6hvQv7HzlUc0ORsQaSb2WWDkD+YzCfBajj6TRgob/5YudMWhWLCfA/yb8VBemk/ahN0YY1UMG5yCF38LWWsnmFyRhBBTAyu9wgToquXLzNnABNoUJo0OiDERMgvTPKCcj/bZfrjAF1YxMRI8uOb33pH1k3JORHVwxPsELe/3g9MxsoLiJVSTHB4reX1XmACWhyO9k7p3Lxt2YfNYELbH4ZCxQEXYiLkDyZTPkErqll0ry3ERMgbTNIxettTpuuELmyflceETyC4CBETi/kzeYMJrNGJ+RJqK0JMhPzB5CIMVm/fvp0ZrDcQYiLkDyYsuAtbOGBF/cCkH9d7hAnRy6PsYL2BEBMhrzBZEEwsLdKJERNZHmFCl60RrWGjY/96fzCZj4MRurDW82fyBxNYUo8dYtv5M3mDiTS8ZisiwbJnFoIcBfKrkUeY4GB9F/kzeYMJiyYX26xN9JKhC9tnFaz6AzwyM+sNhJgIucJk8bhJYhFZvTQSfNHM+uDm7VsQ5MSKusXkh4zaWfEMk8tJk594K0ySmfXbtgbY3NQmrfmwk32/MGm8PUTthSUz6y0GOOkHJtfKhXWEiVVdD0z0arOaZzGFjTJg66/ZyneTYOWB2EWjJB1JEAYjqPrpEbyxjWhroAZ/FsHq0vRT6KvMx+uv03B2fOeOAjkLRl6nJWFiybfRvLIWE9gog5bfjB7SOLPgAWQ6nVK6OQt1TR3JaTLRPY+J2DJEpGfhBqNgRwqO+a6+C2s9GLleMjNMaouprjYx4KMBZnWYBKM9Pv49Y7sniF00StJB8NnLAwhXvHZMT+4XtB1iyxCRniUidUoaapfv3FEkB8HI9ZJ1jEmtAdPstW6gFhP604RimwEZ0i4axen4ICj9H4QzZspiIrYMkdKDUfoJi++eRsculLNg5HUywsSoL8wsmF1tCRP2yKnXwJoEaReN4nQJEFAp0MlkMGCSxUT8LaWPZ+S/iO9kJcXaL5SzYOR1Wi4mZpdr+zV6mFBEEs+hChOSRi72BcwAWXugi8lFuMOua4FJZ8HI62SCieHQWtwzTOTapLDYCmsT8u/i61vgqOphsjjYgNaoDSYlwch5iL4zjch8SwjRp+E/VruwZpTpd5O0fBOox2fisCqd5Guwj+YT6LYU+SZshw4p/XTlG1rIYlMRfd+kOBg5D9FHAw3ULR1uu4bY4NesU0wDwWT0BeuGJNHxxS4aJelEzyWCpM9CqE2yPeh0yxCRnjRpo8106zNp544iaQUj5yH6fvnkHo2YVBmIoG1EAivFVGGiEhPjMRNdTuowGW0mjgjHROyiUZKOJyCHyY4c++zknnyB2DJEpIfj9VOOibRzR5GUx3f1CkLgcKWgSCH6GCYdxDcxwESrmHQwaXcHDYZN6jH58j5/m5ZuZZvsolGSLjsKuwajok/DzEhLwShsDHH24uTVn7RzR4HUwBXQy6kOXHFGGhT7IfrgGbebEaYUk5kF09xrLdRiohfZWzedPcmYLD67c7r47HaiO1L7lmBCmp97sf3YayaV/g9ZGVhokVujzL3ApEJyo/PeTx1h0rCA60pMt/gqUzXKpENM0hEU6n3oYKJcUJu6ToXLuZ4fPc6MmUgx9wgCNkP0NXvOBReYKGfP3HrlvXuECd9e99eK2ySVO3FSbbuwOs9Yv5gKTwfG5V98h7UJFPkzF5ZGJLh79PlmQfhghgA5tNwhrnrGdSVWX5D8e1rCov72qpL7g0myjGtaEIw8jeJodXit6BnrFpx2yRb7YM25MDPgDSYl0ZJ4o/OERoWlBzZD9FUgUfv0DTEx7Sc1uFOQR5i4Xs7Vho7qa5vcndnVkh2tVN5gkg7/OYvkaFbSN7h+4P9veHOmlAlDWqn8wSSejT6GuLDrj+UB+/ay3SEuMdPyMsRES/lGJ5BloeGpfjRuK/363E0brerU3mAiDdZnB+xbqh+YdDVlOlGv1unY15LX6Tir9BETI5U+vsXzvzmY5IiYDEPZiQQpH046xOa+QWqp5vMhYtK029ah8pjkplcaqh+r/rq+vgNMmnfvuxNiYud6xMRQw4hv0j9M2owWdiYHmLSZd9hYNwyvbznDsqEQk1K5aXTqHujgXNh2Lx+60nXHxFaj1RUmPeHkumNiKXvrmNzoMyajPx8dfRvSf8n/EJMG6gyTppxElsLSqNLcYNZA/cCk4+xtY3KjLSbzceeYLJ4fyXIxWC+EmEi6caMtJw4w6Ub9xuRGRm3zt4VJ9n6Kb+zi7T+FAVv/SRda0ANYJrxP/7UUcETRdcfE1vWOMQmDfQLIfgz/0NBbFyH7A2uTSpm6sEPDhFYgMxo3jR5EowdROoUZMamQISbGPU+bvkk1IlRQd1A62AH5Nxm/QEwq5TUmuXu7eJuukkkxoWxAeJN9xKRaZpgYea8gi5jUNjk5TNi/sAYZMamUWSEPDhPwTaaSbwKnCSOuMLlK1lws5L2IWYi+Nw93Ib5J30L0xYaYlLkADWQPEw0PNoZYm0pPB0iJaG2yU2zWTHqr/liIvjcPSfmf7b7fSYi+HmBiYsPtXNiL8L9DHo8iGTeJeIi2affjJpfpG52jo0fSYD0P0ZcGpeggRN8yMSnvUejLNSadNC3lUjBRX+qki0OVEH0QBsd+iL5lurAVPU9tXSdM4heiNjkqC4PzpDJIUssQfcaqm71WscGs5AFYvaUCeYIJC9NXkExgQqoWqyH6aoeS9NS+NrGRu26j58U6nQqlmJwnHqzVEH2x8Wi5JUwM3iDqJPMIkxefvcN0syAu7Dn0h22G6EvUMSblF1qpzq4dJlHhtCRe7mds1KQLF3Y5mBQPUjSGRfcSbzCh21QXBDVhmJyxiFpdxKxfBialjDSgpdkF3mBSMlOaR3K8l/xpfXjNxH2E65umbyJNY/W5XgtMznZBlAGbIfpAXWMif08dKBrRcv0w4Vv6WJT+6y6TXLQxUcu9jgYtWLRrHY8wuRyP7mY2SjGT/usuk1y0MNGqMwruQ5el2rv0BpOSjVIM1OCtaPtMai8OatY06ORdQku1YUXNMDFdsGpRFbHXLMRdo9J4NNq/xioLOhmUZ6Kfd3ENpPcNGmFisFTVunoxLUm/1q4yUGu9yr6lnlLNVZ5hYsktATWZTd42j/K2RLcIbQ3PVSdvgonRynfbymOy+GtI3JL5B7Y2gKp9NA1+jdUWKgzXm2iXcw6U6sSNMekLJ/kNZg+CVYrJ2NZGYY0waVVaRRdnbXa1TqdZddIAE8NAGpZVELN+B4bYnMWsb/JrrLOQt5ikGRomxgFX7Cr/TodOu4WNaR11iHMP2sCbjEubsDJM7OWtY6EFJv3gpGiw3ikmBQ+6UE0tZBJ1FN+kK0wsxG+yqtLaJLeBeltVT3LUpaRYJRa6nqtYffcV6dtg0gtOCt7pgG9CJxTYyaH60RT9Gs3QaXeXpvFN7E5yrAsHlwaumP/X53S0fMZXYXSmHCbzSbAajn4T2hqrr340+uXcLSW9waQ4PHsWljRwxXxM6/wZ6ZWyhYBdqWDc5BDe6GzZWhRkCRPdy1veZVtMmmVvDxMeuAIW+bGVfpGt33WRCl27q5cvi063U9WjMa8QdK8eSog+XUx44ApYMsyWEHe6KEN5fHT98NXLRA4nEsRtBy60KRsKJlQ1jMRSRAKGibXNy0uVjQu7nIkEMWIiVFuX5DCxNWBeLiWS42d3TpcykYDKcPy1jhPPMEkCVwAmHQWrkNWLiQRUy1qnw9UfTDRcExG4ghEyg1AEXdYpmvFNDISYCFkPXMErkpk9H6FYy9/VnAsxaaDlLjUvi29iJMREyA9MSuKbmKkfmAzIhdVQX+ObGAgxEfJmAUZJfBMWok8c2A/Rh5j0WXodYhaiTxxYXENs6Z0MYtKp8o/v2S0W3iTMhehLDzwL0Wch+2uHiYhvsp5gkoboSw4GGKKv4+yvGyZ0OtKLyejLp4EyqCeCagEmwwvR1w95gwksvKBRCWZKh1jFpIvYa1ib9FmFo7CzYCczF3bwmKALa6R8owNrdHYyg/XtGh0QYiLkDSbQ4NCa5CKswGR4LixiYqTc46N4ED/25maFbzLADjFiYqT847v44Hs6vT5Yk9/8qZj4tgOGefbXDxOmK3XIPoOJ/RB9iEmvVYTJ4vnRY3t7siAmQh5hcjmBMdhfO35DjJj0WQUubLB69+jzTTer/oTQhe2zCjrEG8r/jYWYCHmDSRolSR03MRBiIuQRJkuaMo2Y9FkFQbXYNEtnQbW40IXts/K/stnoY9IbPgnXH9tZR4yYCHmDiTq53kZ3BzER8gYTaQ2xpXXEiImQN5jYVz8wQRfWSA4wcTJ90GAfYofyCJPCnUMNhLWJkD+YFO8caiDERMgbTEp2DjVQPzDpOPvrhom1wddUiIkQYlIqxETIG0yWtHMoYtJv9WPn0Bhd2H6rHzuHxohJv9WLnUOpEJM+CwfrrWSPmJiqH5h0nD1iYirERMgLTOxPIqBCTIS8wKRiSlKDyHwtQ/RZ2myvnRXEpEbqRikvZUnjJg0i8y1pDXHd5ejCGknLN2kQmW9ZEQkQk06lg0mTyHzLim+CmHQqzZ6OdpCkZUVLQkw6VRNMdEKuKbHXHEZyHIYQkyWH6HNTG5hefy0wGXKj04/rrwcmA3Zh+3H9tcAEO8Sm118LTHB4zfT664GJVmS+5YToQ0w6lS9viBGTTuUAE5RQ50+7I3WPiaYMn6BpASz7+p4LMenH9T0XYtKP63suxKQf1/dcvcEE1WchJigNISYoDSEmKA0hJigNISYoDfUFE74QqJXePNzd3b1nkHn2bWULPXnvJzMD/VZPMOELgVrpzUNSxme779enLBGdRHVuxsn5LmLSvfhCoHbKT5hrpl8+uUdZa48ZNYGYdK9kIZCRDbPqwAyTs/f+gpi4kDEmT8wMnJlQ9vMfvkLfxIlMMTk38mHPjVxgOv8XMXEiQ0zODTxY0JuH7cv5jFyKmDiRGSZmdQkz0brVgaVJiIkTGWFyZk4J7y+1y52p7fVDkA+YnJmVEAPEsNXD2sSJDErp598b1iW0iNkyNDMbHssDTHilb9CjfWLeZCAmKBRigtIQYoLSEGKC0hBigtIQYoLSEGKC0hBigtIQYoLSEGKC0pA/mFwdhkGwuq2xkeXicfd345m8weRpyLZ3Ge3VpbycbLi4Ia/kCyZRMKIVydVhULuP8kWImDSVJ5jMx6MH7Ciq3RgXMWkuTzCZBTvJ4ZQcLg4oK/Px+ilpY26RpmjtC5po5btJsPI5bZpIjbMgFc/o7ml6/sHy7r7/8gST6SgtZVpZSJhEfEu6fYrDh0GwfsL+4jvWUZDYeTs7G3oqPzBZHIhSpnAITBYHI1KRLKbBBq1yACbW6EyD7VNao+yk51Hl8gMT1ryIY7nRAUUME2iZAJP5GBwU4EtqsVDF8gOT8tqEnLh6/vVHIcMEOkGAyUUo9ked1XaOrr38wKTCN7mcMBwymCQuC2KiJU8w4e3Gi1fU6diPZd8kWLtz9DjK1yYb0sWISY08wYSNmxAmtr6hfRaGyUW4fspxmGUxmY/F8ApiUitPMKGNyParePEoYL0WOnhyeRBQTFaOYYhExoS6LNNg/TiOT0JwYRGTGvmCCSnwxNsgHV3mevzqABqdIBkg4TjQEZO9ZNyEQoWY1MobTOKrw01S6lvfToK1Y3gTuPWa9n8W9+nZv48lV5V8RjyZxX0C1hZJipjUyx9MUp1s4YCqbXmICcq+EBOUhhATlIYQE5SGEBOUhhATlIYQE5SGEBOUhhATlIYQE5SGEBOUhhATlIb+H6BBD0Yhvf29AAAAAElFTkSuQmCC" /></p>
-<!-- rnb-plot-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkFcbmBgYCJ9 -->
-<pre class="r"><code>NA</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIEgwOiBtZWFuX2lucGF0aWVudF9lcGlzb2RlcyBhcmUgdGhlIHNhbWVcbiMgSGE6IG1lYW5faW5wYXRpZW50X2VwaXNvZGVzIGFyZSBkaWZmZXJlbnRcblxuIyBhbm92YSB0ZXN0XG5cbnN1bW1hcnkoY2xlYW5faG9zcF9hZG1pc3Npb25zKVxuXG5vbmVfd2F5IDwtIGFvdihhdl9lcGlzb2RlcyB+IHF1YXJ0ZXIsIHN1bV9ob3NwX2FkX3YyKSAjIHRoaXMgZG9lcyBhbm92YSB0ZXN0XG5cbnBsb3QoZXBpc29kZXMgfiBxdWFydGVyLCBzdW1faG9zcF9hZF92MilcblxuI2NyZWF0ZSB0YWJsZSB0byBiZSB0ZXN0ZWRcbnN1bV9ob3NwX2FkX3YyIDwtIGNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgXG4gIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSBcIkVtZXJnZW5jeSBJbnBhdGllbnRzXCIsXG4gIG5oc19oZWFsdGhfYm9hcmQgJWluJSBcIkFsbCBvZiBTY290bGFuZFwiKSAlPiVcbiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSBcbiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksXG4gICAgICAgICAgICBzZF9hdl9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIG1pbl9hdl9lcGlzb2RlcyA9IG1pbihlcGlzb2RlcyksXG4gICAgICAgICAgICBtYXhfZXBpc29kZXMgPSBtYXgoZXBpc29kZXMpKVxuXG4jIHNob3dzIHJlc3VsdHMgb2YgYW5vdmFcbnN1bW1hcnkob25lX3dheSlcblxuXG5jbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIFxuICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gXCJFbWVyZ2VuY3kgSW5wYXRpZW50c1wiLFxuICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgXCJBbGwgb2YgU2NvdGxhbmRcIikgJT4lXG4gIGdyb3VwX2J5KHByZV9wb3N0X2NvdmlkLCBxdWFydGVyKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgZ2VvbV9jb2woYWVzKHggPSBxdWFydGVyLCB5ID0gZXBpc29kZXMpKVxuXG4gIFxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>
-# H0: mean_inpatient_episodes are the same
-# Ha: mean_inpatient_episodes are different
-
-# anova test
-
-summary(clean_hosp_admissions)
-
-one_way &lt;- aov(av_episodes ~ quarter, sum_hosp_ad_v2) # this does anova test
-
-plot(episodes ~ quarter, sum_hosp_ad_v2)
-
-#create table to be tested
-sum_hosp_ad_v2 &lt;- clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(pre_post_covid, quarter) %&gt;% 
-  summarise(av_episodes = mean(episodes),
-            sd_av_episodes = sd(episodes),
-            min_av_episodes = min(episodes),
-            max_episodes = max(episodes))
-
-# shows results of anova
-summary(one_way)
-
-
-clean_hosp_admissions %&gt;% 
-  filter(admission_type == &quot;Emergency Inpatients&quot;,
-  nhs_health_board %in% &quot;All of Scotland&quot;) %&gt;%
-  group_by(pre_post_covid, quarter) %&gt;% 
-  ggplot() +
-  geom_col(aes(x = quarter, y = episodes))
-
-  
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-</div>
-
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeShqYW5pdG9yKQ0KbGlicmFyeShnZ3B1YnIpDQpsaWJyYXJ5KGJyb29tKQ0KbGlicmFyeShBSUNjbW9kYXZnKQ0KDQpob3NwaXRhbF9hZG1pc3Npb25zIDwtIHJlYWRfY3N2KCJpbnBhdGllbnRfYW5kX2RheWNhc2VfYnlfbmhzX2JvYXJkX29mX3RyZWF0bWVudC5jc3YiKQ0KDQpob3NwaXRhbF9hZG1pc3Npb25zX3NwZWNpYWxpdHkgPC0gcmVhZF9jc3YoImlucGF0aWVudF9hbmRfZGF5Y2FzZV9ieV9uaHNfYm9hcmRfb2ZfdHJlYXRtZW50X2FuZF9zcGVjaWFsdHkuY3N2IikNCmBgYA0KDQojY2xlYW5pbmcNCmBgYHtyfQ0KI2NsZWFuaW5nIHNjcmlwdCAxDQpjbGVhbl9ob3NwX2FkbWlzc2lvbnMgPC0gaG9zcGl0YWxfYWRtaXNzaW9ucyAlPiUgDQogIGNsZWFuX25hbWVzKCkgJT4lIA0KICBzZWxlY3QoLSBxdWFydGVyX3FmLCAtIGhicWYsIC1sb2NhdGlvbl9xZiwgLWFkbWlzc2lvbl90eXBlX3FmLCANCiAgICAgICAgIC1hdmVyYWdlX2xlbmd0aF9vZl9lcGlzb2RlX3FmLCAtYXZlcmFnZV9sZW5ndGhfb2Zfc3RheV9xZiwgLWxvY2F0aW9uX3FmLA0KICAgICAgICAgLWFkbWlzc2lvbl90eXBlX3FmKSAlPiUgDQogIG11dGF0ZShoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDE1IiwgIkF5cnNoaXJlIGFuZCBBcnJhbiIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMTYiLCAiQm9yZGVycyIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMTciLCAiRHVtZnJpZXMgYW5kIEdhbGxvd2F5IiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAxOCIsICJGaWZlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAxOSIsICJGb3J0aCBWYWxsZXkiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDIwIiwgIkdyYW1waWFuIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAyMSIsICJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAyMiIsICJIaWdobGFuZCIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMjMiLCAiTGFuYXJrc2hpcmUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI0IiwgIkxvdGhpYW4iLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI1IiwgIk9ya25leSIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMjYiLCAiU2hldGxhbmQiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI3IiwgIlRheXNpZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI4IiwgIldlc3Rlcm4gSXNsZXMiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI5IiwgIkZpZmUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMwIiwgIlRheXNpZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMxIiwgIkdyZWF0ZXIgR2xhc2dvdyBhbmQgQ2x5ZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMyIiwgIkxhbmFya3NoaXJlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlM5MjAwMDAwMyIsICJBbGwgb2YgU2NvdGxhbmQiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUkEyNzAxIiwgIk5vIEZpeGVkIEFib2RlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlJBMjcwMiIsICJSZXN0IG9mIHRoZSBVSyIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJSQTI3MDMiLCAiT3V0c2lkZSB0aGUgVUsiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUkEyNzA0IiwgIlVua25vd24gUmVzaWRlbmN5IiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMyNzAwMDAwMSIsICJOb24tTkhTIFByb3ZpZGVyIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlNCMDgwMSIsICJUaGUgR29sZGVuIEp1YmlsZWUgTmF0aW9uYWwgSG9zcGl0YWwiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiU04wODExIiwgIk5hdGlvbmFsIEZhY2lsaXR5IE5IUyBMb3Vpc2EgSm9yZGFuIiwgaGIpLA0KICAgICAgICAgICApICU+JQ0KICByZW5hbWUobmhzX2hlYWx0aF9ib2FyZCA9IGhiKSAlPiUgDQogIHNlcGFyYXRlKHF1YXJ0ZXIsaW50byA9IGMoInllYXIiLCAicXVhcnRlciIpLCBzZXAgPSAiUSIgKSAlPiUgDQogIG11dGF0ZShwcmVfcG9zdF9jb3ZpZCA9IGlmZWxzZSh5ZWFyICVpbiUgYygiMjAxNyIsICIyMDE4IiwgIjIwMTkiKSwgInByZSIsICJwb3N0IikpDQoNCg0KDQpgYGANCg0KIyBtZWFuIG51bSBlcGlzb2Rlcy9xdWFydGVyDQoNCmBgYHtyfQ0KI21lYW5fbnVtYmVyIG9mIGVwaXNvZGVzDQoNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGRpc3RpbmN0KG5oc19oZWFsdGhfYm9hcmQpDQoNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiQWxsIElucGF0aWVudHMiLA0KICBuaHNfaGVhbHRoX2JvYXJkICE9ICJBbGwgb2YgU2NvdGxhbmQiKSAlPiUgDQojIG5oc19oZWFsdGhfYm9hcmQgIT0gIk5vIEZpeGVkIEFib2RlIiwNCiMgbmhzX2hlYWx0aF9ib2FyZCAhPSAiUmVzdCBvZiB0aGUgVUsiLA0KIyBuaHNfaGVhbHRoX2JvYXJkICE9ICJVbmtub3duIFJlc2lkZW5jeSIsDQojIG5oc19oZWFsdGhfYm9hcmQgIT0gIk91dHNpZGUgdGhlIFVLIikgJT4lIA0KICBhcnJhbmdlKGVwaXNvZGVzKSAlPiUgDQogIGdyb3VwX2J5KHllYXIsIHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSwNCiAgICAgICAgICAgIG1pbl9lcGlzb2RlcyA9IG1pbihlcGlzb2RlcyksDQogICAgICAgICAgICBtYXhfZXBpc2RvZXMgPSBtYXgoZXBpc29kZXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHllYXIpKSArDQogIGdlb21fbGluZShhZXMoZ3JvdXAgPSB5ZWFyLCBjb2xvdXIgPSB5ZWFyKSwgc2l6ZSA9IDEpICsNCiAgZ2VvbV9lcnJvcmJhcihhZXMoeW1pbiA9IGF2X2VwaXNvZGVzIC0gc2RfZXBpc29kZXMsIA0KICAgICAgICAgICAgICAgICAgICB5bWF4ID0gYXZfZXBpc29kZXMgKyBzZF9lcGlzb2RlcywNCiAgICAgICAgICAgICAgICAgICAgd2lkdGggPSAwLjI1LCBjb2xvdXIgPSB5ZWFyKSkgKw0KICBzdGF0X3N1bW1hcnkoZnVuLnkgPSAibWVhbiIsIGdlb20gPSAicG9pbnQiLCBzaGFwZSA9IDE5LCBzaXplID0gNCwgY29sb3IgPSAiYmxhY2siLCAgDQogICAgICAgICAgICAgICBhZXMoc2hhcGU9IiIpKSArDQogIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gImJsYWNrIiwgZ2VvbSA9ICJsaW5lIiwgYWVzKGdyb3VwID0gMSksIA0KICAgICAgICAgICAgICAgc2l6ZSA9IDEpICsgDQogICMgeWxpbSgxNTAwMDAsIDM1MDAwMCkgKw0KICB0aGVtZV9idygpICsNCiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIldpbnRlci9TcHJpbmdcbiAoSmFuLU1hcikiLCANCiAgICB4ID0gMSwNCiAgICB5ID0gMzI1MDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLCANCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiU3ByaW5nL1N1bW1lclxuIChBcHItU2VwKSIsIA0KICAgIHggPSAyLjUsDQogICAgeSA9IDMyNTAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiQXV0dW1uL1dpbnRlclxuIChPY3QtRGVjKSIsIA0KICAgIHggPSA0LA0KICAgIHkgPSAzMjUwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9ICJkYXNoZWQiKSArDQogICBsYWJzKA0KICAgIHRpdGxlID0gIk1lYW4gTnVtYmVyIG9mIElucGF0aWVudCBFcGlzb2RlcyBwZXIgUXVhcnRlciIsDQogICAgc3VidGl0bGUgPSAiUXVhcnRlcmx5IERhdGEgZnJvbSBRMyAyMDE3LVEzIDIwMjJcbiIsDQogICAgeCA9ICJRdWFydGVyIiwNCiAgICB5ID0gIklucGF0aWVudCBFcGlzb2RlcyIpDQogDQpgYGANCg0KDQoNCg0KI3RvdGFsIG51bSBlcGlzZG9lcyAvcXVhcnRlcg0KYGBge3J9DQoNCiN0b3RhbF9udW1iZXIgb2YgZXBpc29kZXMNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiQWxsIElucGF0aWVudHMiLA0KICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkFsbCBvZiBTY290bGFuZCIpICU+JQ0KICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgeWVhciwgcXVhcnRlcikgJT4lIA0KICBzdW1tYXJpc2UodG90YWxfZXBpc29kZXMgPSBzdW0oZXBpc29kZXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gdG90YWxfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHllYXIpKSArDQogIGdlb21fbGluZShhZXMoZ3JvdXAgPSB5ZWFyLCBjb2xvdXIgPSB5ZWFyKSwgc2l6ZSA9IDEpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gIm1lYW4iLCBnZW9tID0gInBvaW50Iiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gImJsYWNrIiwgIGFlcyhzaGFwZT0iIikpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSAiYmxhY2siLCBnZW9tID0gImxpbmUiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgDQogICMgeWxpbSg1MDAwMDAsIDE4MDAwKSArDQogIHRoZW1lX2J3KCkgKw0KICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSAiRGFyazIiKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiV2ludGVyL1NwcmluZ1xuIChKYW4tTWFyKSIsIA0KICAgIHggPSAxLA0KICAgIHkgPSAyOTUwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksIA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJTcHJpbmcvU3VtbWVyXG4gKEFwci1TZXApIiwgDQogICAgeCA9IDIuNSwNCiAgICB5ID0gMjk1MDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJBdXR1bW4vV2ludGVyXG4gKE9jdC1EZWMpIiwgDQogICAgeCA9IDQsDQogICAgeSA9IDI5NTAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIGxhYnMoDQogICAgdGl0bGUgPSAiQXZlcmFnZSBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIHBlciBNb250aCIsDQogICAgc3VidGl0bGUgPSAiUXVhcnRlcmx5IERhdGEgZnJvbSBRMyAyMDE3LVEzIDIwMjJcbiIsDQogICAgeCA9ICJRdWFydGVyIiwNCiAgICB5ID0gIklucGF0aWVudCBFcGlzb2RlcyIpICsNCiAgeWxpbSgyMDAwMDAsIDMwMDAwMCkNCiANCmBgYA0KDQojIGF2IHN0YXkgcGVyIG1vbnRoIGFsbCBpbnBhdGllbnRzL3F1YXJ0ZXINCg0KYGBge3J9DQojYXYgc3RheSBwZXIgbW9udGggcGVyIHF1YXJ0ZXIgZm9yIGFsbCBpbnBhdGllbnRzDQoNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiQWxsIElucGF0aWVudHMiLA0KICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkFsbCBvZiBTY290bGFuZCIpICU+JQ0KICBtdXRhdGUocHJlX3Bvc3RfY292aWQgPSBpZmVsc2UoeWVhciA9PSBjKCIyMDE3IiwgIjIwMTgiLCAiMjAxOSIpLCAicHJlIiwgInBvc3QiKSkgJT4lIA0KICBncm91cF9ieShwcmVfcG9zdF9jb3ZpZCwgeWVhciwgcXVhcnRlcikgJT4lIA0KICBzdW1tYXJpc2UoYXZfc3RheSA9IG1lYW4oc3RheXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfc3RheSkgKw0KICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBhZXMoY29sb3VyID0geWVhcikpICsNCiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHllYXIsIGNvbG91ciA9IHllYXIpLCBzaXplID0gMSkgKw0KICBzdGF0X3N1bW1hcnkoZnVuLnkgPSAibWVhbiIsIGdlb20gPSAicG9pbnQiLCBzaGFwZSA9IDE5LCBzaXplID0gNCwgY29sb3IgPSAiYmxhY2siKSArDQogIHNjYWxlX3NoYXBlX21hbnVhbCgibWVhbiIsIHZhbHVlcyA9ICIiICkgKw0KICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9ICJibGFjayIsIGdlb20gPSAibGluZSIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKyANCiAgeWxpbSgxMDAwMDAsIDE4MDAwMCkgKw0KICB0aGVtZV9idygpICsNCiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIldpbnRlci9TcHJpbmciLCANCiAgICB4ID0gMSwNCiAgICB5ID0gMTgwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgImxpbmVzIiksIA0KICAgIGxhYmVsLnNpemUgPSAwLjEsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlNwcmluZyAvIFN1bW1lciIsIA0KICAgIHggPSAyLjUsDQogICAgeSA9IDE4MDAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjEsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjEsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIkF1dHVtbi9XaW50ZXIiLCANCiAgICB4ID0gNCwNCiAgICB5ID0gMTgwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgbGFicygNCiAgICB0aXRsZSA9ICJUb3RhbCBOdW1iZXIgb2YgSW5wYXRpZW50IFN0YXlzIHBlciBNb250aCIsDQogICAgc3VidGl0bGUgPSAiUXVhcnRlcmx5IERhdGEgZnJvbSBRMyAyMDE3LVEzIDIwMjJcbiIsDQogICAgeCA9ICJRdWFydGVyIiwNCiAgICB5ID0gIklucGF0aWVudCBTdGF5cyIpDQpgYGANCg0KDQoNCmBgYHtyfQ0KI2F2IHN0YXlzIHBlciBtb250aCBwZXIgcXVhcnRlciBmb3IgYWxsIGlucGF0aWVudHMsIHByZS9wb3N0IGNvdmlkDQpjbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIA0KICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gIkFsbCBJbnBhdGllbnRzIiwNCiAgbmhzX2hlYWx0aF9ib2FyZCAlaW4lICJBbGwgb2YgU2NvdGxhbmQiKSAlPiUgDQogIGdyb3VwX2J5KHByZV9wb3N0X2NvdmlkLCBxdWFydGVyKSAlPiUgDQogIHN1bW1hcmlzZShhdl9zdGF5ID0gbWVhbihzdGF5cykpICU+JSANCiAgZ2dwbG90KCkgKw0KICBhZXMoeCA9IHF1YXJ0ZXIsIHkgPSBhdl9zdGF5KSArDQogIGdlb21fcG9pbnQoc2l6ZSA9IDQsIHNoYXBlID0gMTcsIGFlcyhjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCkpICsNCiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHByZV9wb3N0X2NvdmlkLCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCksIHNpemUgPSAxKSArDQogIHN0YXRfc3VtbWFyeShmdW4ueSA9ICJtZWFuIiwgZ2VvbSA9ICJwb2ludCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9ICJibGFjayIpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSAiYmxhY2siLCBnZW9tID0gImxpbmUiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgDQogIHlsaW0oMTIwMDAwLCAxODAwMDApICsNCiAgdGhlbWVfYncoKSArDQogIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJEYXJrMiIpICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJXaW50ZXIvU3ByaW5nIiwgDQogICAgeCA9IDEsDQogICAgeSA9IDEwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgImxpbmVzIiksIA0KICAgIGxhYmVsLnNpemUgPSAwLjEsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlNwcmluZyAvIFN1bW1lciIsIA0KICAgIHggPSAyLjUsDQogICAgeSA9IDEwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiQXV0dW1uL1dpbnRlciIsIA0KICAgIHggPSA0LA0KICAgIHkgPSAxMDAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjEsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjEsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9ICJkYXNoZWQiKSArDQogIGxhYnMoDQogICAgdGl0bGUgPSAiTWVhbiBOdW1iZXIgb2YgSW5wYXRpZW50IFN0YXlzIHBlciBNb250aCIsDQogICAgc3VidGl0bGUgPSAiUXVhcnRlcmx5IERhdGEgZnJvbSBRMyAyMDE3LVEzIDIwMjJcbiIsDQogICAgeCA9ICJRdWFydGVyIiwNCiAgICB5ID0gIklucGF0aWVudCBTdGF5cyIpDQpgYGANCiNhdiBlcHMgcGVyIG1vbnRoIHBlciBxdWFydGVyIGZvciBhbGwgaW5wYXRpZW50cw0KYGBge3J9DQojYXYgZXBzIHBlciBtb250aCBwZXIgcXVhcnRlciBmb3IgYWxsIGlucGF0aWVudHMNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiQWxsIElucGF0aWVudHMiLA0KICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkFsbCBvZiBTY290bGFuZCIpICU+JSANCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSkgJT4lIA0KICBnZ3Bsb3QoKSArDQogIGFlcyh4ID0gcXVhcnRlciwgeSA9IGF2X2VwaXNvZGVzKSArDQogIGdlb21fcG9pbnQoc2l6ZSA9IDQsIHNoYXBlID0gMTcsIGFlcyhjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCkpICsNCiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHByZV9wb3N0X2NvdmlkLCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCksIHNpemUgPSAxKSArDQogIHN0YXRfc3VtbWFyeShmdW4ueSA9ICJtZWFuIiwgZ2VvbSA9ICJwb2ludCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9ICJibGFjayIpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSAiYmxhY2siLCBnZW9tID0gImxpbmUiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgDQogIGdlb21fZXJyb3JiYXIoYWVzKHltaW4gPSBhdl9lcGlzb2RlcyAtIHNkX2VwaXNvZGVzLCANCiAgICAgICAgICAgICAgICAgICAgIHltYXggPSBhdl9lcGlzb2RlcyArIHNkX2VwaXNvZGVzLA0KICAgICAgICAgICAgICAgICAgICAgd2lkdGggPSAwLjI1LCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCkpICsNCiAgeWxpbSgyMjAwMDAsIDI4MDAwMCkgKw0KICB0aGVtZV9idygpICsNCiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIldpbnRlci9TcHJpbmdcbiAoSmFuLU1hcikiLCANCiAgICB4ID0gMSwNCiAgICB5ID0gMTc3NTAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksIA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJTcHJpbmcvU3VtbWVyXG4gKEFwci1TZXApIiwgDQogICAgeCA9IDIuNSwNCiAgICB5ID0gMTc3NTAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIkF1dHVtbi9XaW50ZXJcbiAoT2N0LURlYykiLCANCiAgICB4ID0gNCwNCiAgICB5ID0gMTc3NTAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9ICJkYXNoZWQiKSArDQogICBsYWJzKA0KICAgIHRpdGxlID0gIkF2ZXJhZ2UgTnVtYmVyIG9mIElucGF0aWVudCBFcGlzb2RlcyBwZXIgTW9udGgiLA0KICAgIHN1YnRpdGxlID0gIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXG4iLA0KICAgIHggPSAiUXVhcnRlciIsDQogICAgeSA9ICJJbnBhdGllbnQgRXBpc29kZXMiKQ0KIA0KYGBgDQoNCg0KIyBlcGlzb2RlIG51bWJlciBpbiBlbWVyZ2VuY3kgaW5wYXRpZW50cw0KYGBge3J9DQojIGVwaXNvZGUgbnVtYmVyIGluIGVtZXJnZW5jeSBpbnBhdGllbnRzDQoNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiRW1lcmdlbmN5IElucGF0aWVudHMiKSAlPiUNCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIsIHllYXIpICU+JSANCiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcykpICU+JSANCiAgIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHllYXIpKSArDQogIGdlb21fbGluZShhZXMoZ3JvdXAgPSB5ZWFyLCBjb2xvdXIgPSB5ZWFyKSwgc2l6ZSA9IDEpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gIm1lYW4iLCBnZW9tID0gInBvaW50Iiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gImJsYWNrIiwgIGFlcyhzaGFwZT0iIikpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSAiYmxhY2siLCBnZW9tID0gImxpbmUiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgDQogIHlsaW0oNTAwMCwgOTAwMCkgKw0KICB0aGVtZV9idygpICsNCiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIldpbnRlci9TcHJpbmdcbiAoSmFuLU1hcikiLCANCiAgICB4ID0gMSwNCiAgICB5ID0gODc1MCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwgDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlNwcmluZy9TdW1tZXJcbiAoQXByLVNlcCkiLCANCiAgICB4ID0gMi41LA0KICAgIHkgPSA4NzUwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJBdXR1bW4vV2ludGVyXG4gKE9jdC1EZWMpIiwgDQogICAgeCA9IDQsDQogICAgeSA9IDg3NTAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9ICJkYXNoZWQiKSArDQogICBsYWJzKA0KICAgIHRpdGxlID0gIkF2ZXJhZ2UgTnVtYmVyIG9mIEVtZXJnZW5jeSBJbnBhdGllbnQgRXBpc29kZXMgcGVyIE1vbnRoIiwNCiAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiAgICB4ID0gIlF1YXJ0ZXIiLA0KICAgIHkgPSAiSW5wYXRpZW50IEVwaXNvZGVzIikNCg0KDQojIGZhY3RvcihxdWFydGVyLCBvcmRlcmVkID0gVFJVRSwgbGV2ZWxzID0gYygiMyIsICI0IiwgIjEiLCAiMiIpKSwNCiAgDQoNCmBgYA0KDQojIGF2ZXJhZ2UgZXBpc29kZSBudW1iZXIgaW4gZW1lcmdlbmN5IGlucGF0aWVudHMgcHJlIGFuZCBwb3N0IHZpZA0KYGBge3J9DQoNCiMgYXZlcmFnZSBlcGlzb2RlIG51bWJlciBpbiBlbWVyZ2VuY3kgaW5wYXRpZW50cyBwcmUgYW5kIHBvc3QgdmlkDQpjbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIA0KICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gIkVtZXJnZW5jeSBJbnBhdGllbnRzIikgJT4lDQogIGdyb3VwX2J5KHByZV9wb3N0X2NvdmlkLCBxdWFydGVyKSAlPiUgDQogIHN1bW1hcmlzZShhdl9lcGlzb2RlcyA9IG1lYW4oZXBpc29kZXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSkgKw0KICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcHJlX3Bvc3RfY292aWQsIGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSwgc2l6ZSA9IDEpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gIm1lYW4iLCBnZW9tID0gInBvaW50Iiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gImJsYWNrIikgKw0KICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9ICJibGFjayIsIGdlb20gPSAibGluZSIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKyANCiAgeWxpbSg2MDAwLCA4MDAwKSArDQogIHRoZW1lX2J3KCkgKw0KICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSAiRGFyazIiKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiV2ludGVyL1NwcmluZ1xuIChKYW4tTWFyKSIsIA0KICAgIHggPSAxLA0KICAgIHkgPSA3OTAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLCANCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiU3ByaW5nL1N1bW1lclxuIChBcHItU2VwKSIsIA0KICAgIHggPSAyLjUsDQogICAgeSA9IDc5MDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIkF1dHVtbi9XaW50ZXJcbiAoT2N0LURlYykiLCANCiAgICB4ID0gNCwNCiAgICB5ID0gNzkwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIGxhYnMoDQogICAgdGl0bGUgPSAiQXZlcmFnZSBOdW1iZXIgb2YgRW1lcmdlbmN5IElucGF0aWVudCBFcGlzb2RlcyBwZXIgTW9udGgiLA0KICAgIHN1YnRpdGxlID0gIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXG4iLA0KICAgIHggPSAiUXVhcnRlciIsDQogICAgeSA9ICJJbnBhdGllbnQgRXBpc29kZXMiKQ0KYGBgDQojIFEzIGZpcnN0DQojIG1lYW4gZXBpc29kZSBudW1iZXIgaW4gZW1lcmdlbmN5IGlucGF0aWVudHMgcHJlIGFuZCBwb3N0IHZpZA0KYGBge3J9DQojIFEzIGZpcnN0DQojIG1lYW4gZXBpc29kZSBudW1iZXIgaW4gZW1lcmdlbmN5IGlucGF0aWVudHMgcHJlIGFuZCBwb3N0IHZpZA0KY2xlYW5faG9zcF9hZG1pc3Npb25zICU+JSANCiAgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09ICJFbWVyZ2VuY3kgSW5wYXRpZW50cyIsDQogICAgICAgICBuaHNfaGVhbHRoX2JvYXJkID09ICJBbGwgb2YgU2NvdGxhbmQiKSAlPiUNCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9lcGlzZG9lcyA9IHNkKGVwaXNvZGVzKSkgJT4lIA0KICBnZ3Bsb3QoKSArDQogIGFlcyh4ID0gZmFjdG9yKHF1YXJ0ZXIsIG9yZGVyZWQgPSBUUlVFLCBsZXZlbHMgPSBjKCIzIiwgIjQiLCAiMSIsICIyIikpLCB5ID0gYXZfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSkgKw0KICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcHJlX3Bvc3RfY292aWQsIGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSwgc2l6ZSA9IDEpICsNCiAgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gIm1lYW4iLCBnZW9tID0gInBvaW50Iiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gImJsYWNrIikgKw0KICBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9ICJibGFjayIsIGdlb20gPSAibGluZSIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKyANCiAgeWxpbSg5MDAwMCwgMTYwMDAwKSArDQogIHRoZW1lX2J3KCkgKw0KICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSAiRGFyazIiKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiU3ByaW5nL1N1bW1lclxuIChKdWwtU2VwKSIsIA0KICAgIHggPSAxLA0KICAgIHkgPSAxNTAwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksIA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJBdXR1bW4vV2ludGVyXG4gKE9jdC1NYXIpIiwgDQogICAgeCA9IDIuNSwNCiAgICB5ID0gMTUwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJTcHJpbmcvU3VtbWVyXG4gKEFwci1KdW5lKSIsIA0KICAgIHggPSA0LA0KICAgIHkgPSAxNTAwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9ICJkYXNoZWQiKSArDQogICBsYWJzKA0KICAgIHRpdGxlID0gIkF2ZXJhZ2UgTnVtYmVyIG9mIEVtZXJnZW5jeSBJbnBhdGllbnQgRXBpc29kZXMgcGVyIE1vbnRoIiwNCiAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiAgICB4ID0gIlF1YXJ0ZXIiLA0KICAgIHkgPSAiSW5wYXRpZW50IEVwaXNvZGVzIikNCg0KDQoNCg0KDQpgYGANCiMgUTMgZmlyc3QNCiMgdG90YWwgZXBpc29kZSBudW1iZXIgaW4gZW1lcmdlbmN5IGlucGF0aWVudHMgcHJlIGFuZCBwb3N0IHZpZA0KYGBge3J9DQojIFEzIGZpcnN0DQojIHRvdGFsIGVwaXNvZGUgbnVtYmVyIGluIGVtZXJnZW5jeSBpbnBhdGllbnRzIHByZSBhbmQgcG9zdCB2aWQNCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiRW1lcmdlbmN5IElucGF0aWVudHMiKSAlPiUNCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKHRvdGFsX2VwaXNvZGVzID0gc3VtKGVwaXNvZGVzKSkgJT4lIA0KICBnZ3Bsb3QoKSArDQogIGFlcyh4ID0gZmFjdG9yKHF1YXJ0ZXIsIG9yZGVyZWQgPSBUUlVFLCBsZXZlbHMgPSBjKCIzIiwgIjQiLCAiMSIsICIyIikpLCB5ID0gdG90YWxfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSkgKw0KICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcHJlX3Bvc3RfY292aWQsIGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSwgc2l6ZSA9IDEpICsNCiAgIyBzdGF0X3N1bW1hcnkoZnVuLnkgPSAibWVhbiIsIGdlb20gPSAicG9pbnQiLCBzaGFwZSA9IDE5LCBzaXplID0gNCwgY29sb3IgPSAiYmxhY2siKSArDQogICMgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gbWVhbiwgY29sb3IgPSAiYmxhY2siLCBnZW9tID0gImxpbmUiLCBhZXMoZ3JvdXAgPSAxKSwgc2l6ZSA9IDEpICsgDQogIHRoZW1lX2J3KCkgKw0KICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSAiRGFyazIiKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiU3ByaW5nL1N1bW1lclxuIChKdWwtU2VwKSIsIA0KICAgIHggPSAxLA0KICAgIHkgPSAxMjUwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLCANCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiQXV0dW1uL1dpbnRlclxuIChPY3QtTWFyKSIsIA0KICAgIHggPSAyLjUsDQogICAgeSA9IDEyNTAwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlNwcmluZy9TdW1tZXJcbiAoQXByLUp1bmUpIiwgDQogICAgeCA9IDQsDQogICAgeSA9IDEyNTAwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAxLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMy41LCBsaW5ldHlwZSA9ICJkYXNoZWQiKSArDQogICBsYWJzKA0KICAgIHRpdGxlID0gIlRvdGFsIE51bWJlciBvZiBJbnBhdGllbnQgRXBpc29kZXMgcGVyIFF1YXJ0ZXIiLA0KICAgIHN1YnRpdGxlID0gIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXG4iLA0KICAgIHggPSAiUXVhcnRlciIsDQogICAgeSA9ICJJbnBhdGllbnQgRXBpc29kZXMiKSArDQogIHlsaW0oNjAwMDAwLCAxMzAwMDAwKQ0KDQpgYGANCg0KDQpgYGB7cn0NCmNsZWFuX2hvc3BfYWRtaXNzaW9ucyAlPiUgDQogIGZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiQWxsIElucGF0aWVudHMiKSAlPiUgDQogIGdyb3VwX2J5KHByZV9wb3N0X2NvdmlkLCBxdWFydGVyKSAlPiUgDQogIHN1bW1hcmlzZShhdl9lcGlzb2RlcyA9IG1lYW4oZXBpc29kZXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBmYWN0b3IocXVhcnRlciwgb3JkZXJlZCA9IFRSVUUsIGxldmVscyA9IGMoIjMiLCAiNCIsICIxIiwgIjIiKSksIHkgPSBhdl9lcGlzb2RlcykgKw0KICBnZW9tX2NvbCgpDQogICMgZ2VvbV9saW5lKGFlcyhncm91cCA9IHByZV9wb3N0X2NvdmlkLCBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCksIHNpemUgPSAxKSArDQogICMgc3RhdF9zdW1tYXJ5KGZ1bi55ID0gIm1lYW4iLCBnZW9tID0gInBvaW50Iiwgc2hhcGUgPSAxOSwgc2l6ZSA9IDQsIGNvbG9yID0gImJsYWNrIikgKw0KICAjIHN0YXRfc3VtbWFyeShmdW4ueSA9IG1lYW4sIGNvbG9yID0gImJsYWNrIiwgZ2VvbSA9ICJsaW5lIiwgYWVzKGdyb3VwID0gMSksIHNpemUgPSAxKSArIA0KICAjIHRoZW1lX2J3KCkgKw0KICAjIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJEYXJrMiIpICsNCiAgIyBmYWNldF93cmFwKH5hZG1pc3Npb25fdHlwZSkgKw0KICAjIGdlb21fbGFiZWwoDQogICMgICBsYWJlbCA9ICJTcHJpbmcvU3VtbWVyXG4gKEFwci1TZXApIiwgDQogICMgICB4ID0gMSwNCiAgIyAgIHkgPSA3OTAwLA0KICAjICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksIA0KICAjICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICMgICBjb2xvciA9ICJibGFjayINCiAgIyApICsNCiAgIyBnZW9tX2xhYmVsKA0KICAjICAgbGFiZWwgPSAiQXV0dW1uL1dpbnRlclxuIChKYW4tTWFyKSIsIA0KICAjICAgeCA9IDIuNSwNCiAgIyAgIHkgPSA3OTAwLA0KICAjICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICMgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgIyAgIGNvbG9yID0gImJsYWNrIg0KICAjICkgKw0KICAjIGdlb21fbGFiZWwoDQogICMgICBsYWJlbCA9ICJTcHJpbmcvU3VtbWVyXG4gKEFwci1TZXApIiwgDQogICMgICB4ID0gNCwNCiAgIyAgIHkgPSA3OTAwLA0KICAjICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICMgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgIyAgIGNvbG9yID0gImJsYWNrIg0KICAjICkgKw0KICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICAjICBsYWJzKA0KICAjICAgdGl0bGUgPSAiQXZlcmFnZSBOdW1iZXIgb2YgRW1lcmdlbmN5IElucGF0aWVudCBFcGlzb2RlcyBwZXIgTW9udGgiLA0KICAjICAgc3VidGl0bGUgPSAiUXVhcnRlcmx5IERhdGEgZnJvbSBRMyAyMDE3LVEzIDIwMjJcbiIsDQogICMgICB4ID0gIlF1YXJ0ZXIiLA0KICAjICAgeSA9ICJJbnBhdGllbnQgRXBpc29kZXMiKQ0KYGBgDQoNCiNjbGVhbmluZyBubyBzZXBhcmF0ZSBxdWFydGVycw0KYGBge3J9DQpjbGVhbl9ob3NwX2FkbWlzc2lvbnNfcXllYXIgPC0gaG9zcGl0YWxfYWRtaXNzaW9ucyAlPiUgDQogIGNsZWFuX25hbWVzKCkgJT4lIA0KICBzZWxlY3QoLSBxdWFydGVyX3FmLCAtIGhicWYsIC1sb2NhdGlvbl9xZiwgLWFkbWlzc2lvbl90eXBlX3FmLCANCiAgICAgICAgIC1hdmVyYWdlX2xlbmd0aF9vZl9lcGlzb2RlX3FmLCAtYXZlcmFnZV9sZW5ndGhfb2Zfc3RheV9xZiwgLWxvY2F0aW9uX3FmLA0KICAgICAgICAgLWFkbWlzc2lvbl90eXBlX3FmKSAlPiUgDQogIG11dGF0ZShoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDE1IiwgIkF5cnNoaXJlIGFuZCBBcnJhbiIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMTYiLCAiQm9yZGVycyIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMTciLCAiRHVtZnJpZXMgYW5kIEdhbGxvd2F5IiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAxOCIsICJGaWZlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAxOSIsICJGb3J0aCBWYWxsZXkiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDIwIiwgIkdyYW1waWFuIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAyMSIsICJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAyMiIsICJIaWdobGFuZCIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMjMiLCAiTGFuYXJrc2hpcmUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI0IiwgIkxvdGhpYW4iLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI1IiwgIk9ya25leSIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMjYiLCAiU2hldGxhbmQiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI3IiwgIlRheXNpZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI4IiwgIldlc3Rlcm4gSXNsZXMiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI5IiwgIkZpZmUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMwIiwgIlRheXNpZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMxIiwgIkdyZWF0ZXIgR2xhc2dvdyBhbmQgQ2x5ZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMyIiwgIkxhbmFya3NoaXJlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlM5MjAwMDAwMyIsICJBbGwgb2YgU2NvdGxhbmQiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUkEyNzAxIiwgIk5vIEZpeGVkIEFib2RlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlJBMjcwMiIsICJSZXN0IG9mIHRoZSBVSyIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJSQTI3MDMiLCAiT3V0c2lkZSB0aGUgVUsiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUkEyNzA0IiwgIlVua25vd24gUmVzaWRlbmN5IiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMyNzAwMDAwMSIsICJOb24tTkhTIFByb3ZpZGVyIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlNCMDgwMSIsICJUaGUgR29sZGVuIEp1YmlsZWUgTmF0aW9uYWwgSG9zcGl0YWwiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiU04wODExIiwgIk5hdGlvbmFsIEZhY2lsaXR5IE5IUyBMb3Vpc2EgSm9yZGFuIiwgaGIpLA0KICAgICAgICAgICApICU+JQ0KICByZW5hbWUobmhzX2hlYWx0aF9ib2FyZCA9IGhiKSANCiAgIyBzZXBhcmF0ZShxdWFydGVyLGludG8gPSBjKCJ5ZWFyIiwgInF1YXJ0ZXIiKSwgc2VwID0gIlEiICkgJT4lIA0KICAjIG11dGF0ZShwcmVfcG9zdF9jb3ZpZCA9IGlmZWxzZSh5ZWFyICVpbiUgYygiMjAxNyIsICIyMDE4IiwgIjIwMTkiKSwgInByZSIsICJwb3N0IikpDQpgYGANCg0KDQpgYGB7cn0NCg0KI3RvdGFsIG51bWJlciBvZiBpbnBhdGllbnQgZXBpc29kZXMgb3ZlciB0aW1lIE5PVEU6IGRvIGxvY2tkb3ducyBhZmZlY3QgdGhpcz8/DQpjbGVhbl9ob3NwX2FkbWlzc2lvbnNfcXllYXIgJT4lIA0KZmlsdGVyKGFkbWlzc2lvbl90eXBlID09ICJFbWVyZ2VuY3kgSW5wYXRpZW50cyIsDQogIG5oc19oZWFsdGhfYm9hcmQgJWluJSAiQWxsIG9mIFNjb3RsYW5kIikgJT4lDQogIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKHRvdGFsX2VwaXNvZGVzID0gc3VtKGVwaXNvZGVzKSkgJT4lIA0KICBnZ3Bsb3QoKSArDQogIGFlcyh4ID0gcXVhcnRlciwgeSA9IHRvdGFsX2VwaXNvZGVzKSArDQogIGdlb21fbGluZShhZXMoZ3JvdXAgPSAxLCBjb2xvdXIgPSAicmVkIikpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgY29sb3VyID0gInJlZCIpICsNCiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHF1YXJ0ZXIpKSArDQogIHRoZW1lX2J3KCkgKw0KICB0aGVtZShheGlzLnRleHQueCA9IGVsZW1lbnRfdGV4dChhbmdsZSA9IDYwLCB2anVzdCA9IDAuNSwgaGp1c3QgPSAwLjUpKSArDQogIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJEYXJrMiIpICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJQcmUtUGFuZGVtaWMiLA0KICAgIHggPSAyLjUsDQogICAgeSA9IDE0MDAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiUGFuZGVtaWMiLA0KICAgIHggPSAyMCwNCiAgICB5ID0gMTQwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMTEuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICAgbGFicygNCiAgICB0aXRsZSA9ICJUb3RhbCBOdW1iZXIgb2YgSG9zcGl0YWwgQWRtaXNzaW9ucyIsDQogICAgc3VidGl0bGUgPSAiUXVhcnRlcmx5IERhdGEgZnJvbSBRMyAyMDE3LVEzIDIwMjJcbiIsDQogICAgeCA9ICJRdWFydGVyIiwNCiAgICB5ID0gIkhvc3BpdGFsIEFkbWlzc2lvbnMiKSANCg0KICAjIHlsaW0oOTAwMDAsIDE0MDAwMCkNCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KIyBjbGVhbl9ob3NwX2FkbWlzc2lvbnNfcXllYXIgJT4lIA0KIyBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gIkVtZXJnZW5jeSBJbnBhdGllbnRzIiwNCiMgICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkFsbCBvZiBTY290bGFuZCIpICU+JQ0KIyAgIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSANCiMgICBzdW1tYXJpc2UodG90YWxfZXBpc29kZXMgPSBzdW0oZXBpc29kZXMpKSAlPiUgDQojICAgc2VsZWN0KHRvdGFsX2VwaXNvZGVzKSAlPiUgDQojICAgc2xpY2VfbWF4KHRvdGFsX2VwaXNvZGVzLCBuID0gMSkNCiMgICBnZ3Bsb3QoKSArDQojICAgYWVzKHggPSBxdWFydGVyLCB5ID0gdG90YWxfZXBpc29kZXMpICsNCiMgICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gMSwgY29sb3VyID0gInJlZCIpLHNob3cubGVnZW5kID0gRkFMU0UpICsNCiMgICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBjb2xvdXIgPSAicmVkIikgKw0KIyAgIGdlb21fbGluZShhZXMoZ3JvdXAgPSBxdWFydGVyKSkgKw0KIyAgIHRoZW1lX2J3KCkgKw0KIyAgIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gMC41LCBoanVzdCA9IDAuNSkpKw0KIyAgIHRoZW1lKCkgKw0KIyAgIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJEYXJrMiIpICsNCiMgICBnZW9tX2xhYmVsKA0KIyAgICAgbGFiZWwgPSAiUHJlLVBhbmRlbWljIiwNCiMgICAgIHggPSAyLjUsDQojICAgICB5ID0gMTQwMDAwLA0KIyAgICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQojICAgICBsYWJlbC5zaXplID0gMC4xNSwNCiMgICAgIGNvbG9yID0gImJsYWNrIg0KIyAgICkgKw0KIyAgIGdlb21fbGFiZWwoDQojICAgICBsYWJlbCA9ICJQYW5kZW1pYyIsDQojICAgICB4ID0gMjAsDQojICAgICB5ID0gMTQwMDAwLA0KIyAgICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQojICAgICBsYWJlbC5zaXplID0gMC4xNSwNCiMgICAgIGNvbG9yID0gImJsYWNrIg0KIyAgICkgKw0KIyAgIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDExLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiMgICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KIyAgICBsYWJzKA0KIyAgICAgdGl0bGUgPSAiVG90YWwgTnVtYmVyIG9mIElucGF0aWVudCBFcGlzb2RlcyIsDQojICAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiMgICAgIHggPSAiUXVhcnRlciIsDQojICAgICB5ID0gIklucGF0aWVudCBFcGlzb2RlcyIpIyArDQojICAjIHlsaW0oODAwMDAsIDE0MDAwMCkNCmBgYA0KYGBge3J9DQpjbGVhbl9ob3NwX2FkbWlzc2lvbnNfcXllYXIgJT4lIA0KZmlsdGVyKGFkbWlzc2lvbl90eXBlID09ICJBbGwgSW5wYXRpZW50cyIsDQogIG5oc19oZWFsdGhfYm9hcmQgIT0gIkFsbCBvZiBTY290bGFuZCIpICU+JQ0KICBncm91cF9ieShxdWFydGVyKSAlPiUgDQogIHN1bW1hcmlzZShtZWFuX2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSkgJT4lIA0KICBnZ3Bsb3QoKSArDQogIGFlcyh4ID0gcXVhcnRlciwgeSA9IG1lYW5fZXBpc29kZXMpICsNCiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IDEsIGNvbG91ciA9ICJyZWQiKSkgKw0KICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBjb2xvdXIgPSAicmVkIikgKw0KICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcXVhcnRlcikpICsNCiAgdGhlbWVfYncoKSArDQogIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gMC41LCBoanVzdCA9IDAuNSkpICsNCiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlByZS0yMDIwIiwNCiAgICB4ID0gMiwNCiAgICB5ID0gMTIwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlBvc3QtMjAyMCIsDQogICAgeCA9IDIwLA0KICAgIHkgPSAxMjAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDEwLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIyBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIGxhYnMoDQogICAgdGl0bGUgPSAiTWVhbiBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIiwNCiAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiAgICB4ID0gIlF1YXJ0ZXIiLA0KICAgIHkgPSAiSG9zcGl0YWwgQWRtaXNzaW9ucyIpICsNCiAgeWxpbSg2MDAwLCAxMjAwMCkNCg0KDQoNCg0KDQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiMgY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyICU+JSANCiMgZmlsdGVyKGFkbWlzc2lvbl90eXBlID09ICJBbGwgSW5wYXRpZW50cyIsDQojICAgbmhzX2hlYWx0aF9ib2FyZCAhPSAiQWxsIG9mIFNjb3RsYW5kIikgJT4lDQojICAgZ3JvdXBfYnkocXVhcnRlcikgJT4lIA0KIyAgIHN1bW1hcmlzZShhdl9lcGlzb2RlcyA9IG1lYW4oZXBpc29kZXMpKSAlPiUgDQojICAgc2VsZWN0KHRvdGFsX2VwaXNvZGVzKSAlPiUgDQojICAgc2xpY2VfbWF4KHRvdGFsX2VwaXNvZGVzLCBuID0gMSkNCiMgICBnZ3Bsb3QoKSArDQojICAgYWVzKHggPSBxdWFydGVyLCB5ID0gdG90YWxfZXBpc29kZXMpICsNCiMgICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gMSwgY29sb3VyID0gInJlZCIpLHNob3cubGVnZW5kID0gRkFMU0UpICsNCiMgICBnZW9tX3BvaW50KHNpemUgPSA0LCBzaGFwZSA9IDE3LCBjb2xvdXIgPSAicmVkIikgKw0KIyAgIGdlb21fbGluZShhZXMoZ3JvdXAgPSBxdWFydGVyKSkgKw0KIyAgIHRoZW1lX2J3KCkgKw0KIyAgIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gMC41LCBoanVzdCA9IDAuNSkpKw0KIyAgIHRoZW1lKCkgKw0KIyAgIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJEYXJrMiIpICsNCiMgICBnZW9tX2xhYmVsKA0KIyAgICAgbGFiZWwgPSAiUHJlLVBhbmRlbWljIiwNCiMgICAgIHggPSAyLjUsDQojICAgICB5ID0gMTQwMDAwLA0KIyAgICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQojICAgICBsYWJlbC5zaXplID0gMC4xNSwNCiMgICAgIGNvbG9yID0gImJsYWNrIg0KIyAgICkgKw0KIyAgIGdlb21fbGFiZWwoDQojICAgICBsYWJlbCA9ICJQYW5kZW1pYyIsDQojICAgICB4ID0gMjAsDQojICAgICB5ID0gMTQwMDAwLA0KIyAgICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQojICAgICBsYWJlbC5zaXplID0gMC4xNSwNCiMgICAgIGNvbG9yID0gImJsYWNrIg0KIyAgICkgKw0KIyAgIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDExLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiMgICAjIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDMuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KIyAgICBsYWJzKA0KIyAgICAgdGl0bGUgPSAiTWVhbiBOdW1iZXIgb2YgSG9zcGl0YWwgQWRtaXNzaW9ucyIsDQojICAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiMgICAgIHggPSAiUXVhcnRlciIsDQojICAgICB5ID0gIklucGF0aWVudCBFcGlzb2RlcyIpDQpgYGANCg0KDQpgYGB7cn0NCiNtZWFuIG51bWJlciBvZiBpbnBhdGllbnQgZXBpc29kZXMgb3ZlciB0aW1lIE5PVEU6IGRvIGxvY2tkb3ducyBhZmZlY3QgdGhpcz8/DQojSUdOT1JFIFRISVMgRk9SIE5PVw0KY2xlYW5faG9zcF9hZG1pc3Npb25zJT4lIA0KZmlsdGVyKGFkbWlzc2lvbl90eXBlID09ICJFbWVyZ2VuY3kgSW5wYXRpZW50cyIsDQogIG5oc19oZWFsdGhfYm9hcmQgJWluJSAiQWxsIG9mIFNjb3RsYW5kIikgJT4lDQogIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKG1lYW5fZXBpc29kZXMgPSBtZWFuKGVwaXNvZGVzKSwNCiAgICAgICAgICAgIHNkX2VwaXNvZGVzID0gc2QoZXBpc29kZXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gbWVhbl9lcGlzb2RlcykgKw0KICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gMSwgY29sb3VyID0gInJlZCIpKSArDQogIGdlb21fcG9pbnQoc2l6ZSA9IDQsIHNoYXBlID0gMTcsIGNvbG91ciA9ICJyZWQiKSArDQogIGdlb21fbGluZShhZXMoZ3JvdXAgPSBxdWFydGVyKSkgKw0KICBnZW9tX2Vycm9yYmFyKG1hcHBpbmcgPSBhZXMoeW1pbiA9IG1lYW5fZXBpc29kZXMgLSBzZF9lcGlzb2RlcywgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5bWF4ID0gbWVhbl9lcGlzb2RlcyArIHNkX2VwaXNvZGVzLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgd2lkdGggPSAwLjI1KSwNCiAgICAgICAgICAgICAgICBjb2xvdXIgPSAicmVkIikgKw0KICB0aGVtZV9idygpICsNCiAgIyB0aGVtZShheGlzLnRleHQueCA9IGVsZW1lbnRfdGV4dChhbmdsZSA9IDQ1LCB2anVzdCA9IDAuNSwgaGp1c3QgPSAwLjUpKSArDQogICMgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlByZS0yMDIwIiwNCiAgICB4ID0gMiwNCiAgICB5ID0gMTQwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJQb3N0LTIwMjAiLA0KICAgIHggPSAzLA0KICAgIHkgPSAxNDAwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAyLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIyBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIGxhYnMoDQogICAgdGl0bGUgPSAiTWVhbiBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIiwNCiAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiAgICB4ID0gIlF1YXJ0ZXIiLA0KICAgIHkgPSAiSW5wYXRpZW50IEVwaXNvZGVzIikgKw0KICB5bGltKDEwMDAwMCwgMTQwMDAwKQ0KYGBgDQoNCmBgYHtyfQ0KIyBhbm92YSB0ZXN0DQoNCnN1bW1hcnkoY2xlYW5faG9zcF9hZG1pc3Npb25zKQ0KDQpvbmVfd2F5IDwtIGFvdihxdWFydGVyIH4gbWVhbl9lcGlzb2Rlcywgc3VtX2hvc3BfYWQpICMgdGhpcyBkb2VzIGFub3ZhIHRlc3QNCg0KI2NyZWF0ZSB0YWJsZSB0byBiZSB0ZXN0ZWQNCnN1bV9ob3NwX2FkIDwtIGNsZWFuX2hvc3BfYWRtaXNzaW9ucyU+JSANCmZpbHRlcihhZG1pc3Npb25fdHlwZSA9PSAiRW1lcmdlbmN5IElucGF0aWVudHMiLA0KICBuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkFsbCBvZiBTY290bGFuZCIpICU+JQ0KICBncm91cF9ieShxdWFydGVyKSAlPiUgDQogIHN1bW1hcmlzZShtZWFuX2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSkNCg0Kc3VtbWFyeShvbmVfd2F5KQ0KDQojIyBzaG93cyByZXN1bHRzIG9mIGFub3ZhDQoNCg0KYGBgDQoNCiN0b3RhbCBudW1iZXIgb2YgZW1lcmdlbmN5IGlucGF0aWVudCBlcGlzb2RlcyBvdmVyIHRpbWUNCmBgYHtyfQ0KDQojdG90YWwgbnVtYmVyIG9mIGVtZXJnZW5jeSBpbnBhdGllbnQgZXBpc29kZXMgb3ZlciB0aW1lDQpjbGVhbl9ob3NwX2FkbWlzc2lvbnNfcXllYXIgJT4lIA0KZmlsdGVyKGFkbWlzc2lvbl90eXBlID09ICJFbWVyZ2VuY3kgSW5wYXRpZW50cyIsDQogIG5oc19oZWFsdGhfYm9hcmQgJWluJSAiQWxsIG9mIFNjb3RsYW5kIikgJT4lDQogIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKHRvdGFsX2VwaXNvZGVzID0gc3VtKGVwaXNvZGVzKSkgJT4lIA0KICBnZ3Bsb3QoKSArDQogIGFlcyh4ID0gcXVhcnRlciwgeSA9IHRvdGFsX2VwaXNvZGVzKSArDQogIGdlb21fbGluZShhZXMoZ3JvdXAgPSAxLCBjb2xvdXIgPSAicmVkIikpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgY29sb3VyID0gInJlZCIpICsNCiAgZ2VvbV9saW5lKGFlcyhncm91cCA9IHF1YXJ0ZXIpKSArDQogIHRoZW1lX2J3KCkgKw0KICB0aGVtZShheGlzLnRleHQueCA9IGVsZW1lbnRfdGV4dChhbmdsZSA9IDkwLCB2anVzdCA9IDAuNSwgaGp1c3QgPSAwLjUpKSArDQogIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJEYXJrMiIpICsNCiAgZ2VvbV9sYWJlbCgNCiAgICBsYWJlbCA9ICJQcmUtUGFuZGVtaWMiLA0KICAgIHggPSAyLjUsDQogICAgeSA9IDE0MDAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiUGFuZGVtaWMiLA0KICAgIHggPSAyMCwNCiAgICB5ID0gMTQwMDAwLA0KICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsICJsaW5lcyIpLA0KICAgIGxhYmVsLnNpemUgPSAwLjE1LA0KICAgIGNvbG9yID0gImJsYWNrIg0KICApICsNCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gMTAuNSwgbGluZXR5cGUgPSAiZGFzaGVkIikgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIsIGNvbG91ciA9ICJncmV5IikgKw0KICAgbGFicygNCiAgICB0aXRsZSA9ICJUb3RhbCBOdW1iZXIgb2YgSW5wYXRpZW50IEVwaXNvZGVzIiwNCiAgICBzdWJ0aXRsZSA9ICJRdWFydGVybHkgRGF0YSBmcm9tIFEzIDIwMTctUTMgMjAyMlxuIiwNCiAgICB4ID0gIlF1YXJ0ZXIiLA0KICAgIHkgPSAiSW5wYXRpZW50IEVwaXNvZGVzIikgKw0KICB5bGltKDgwMDAwLCAxNDAwMDApICsNCiAgYW5ub3RhdGUoInJlY3QiLCB4bWluID0gMTEuMjUsIHhtYXggPSAxMi43NSwgeW1pbiA9IDgwMDAwLCB5bWF4ID0gMTQwMDAwLCANCiAgICAgICAgICAgYWxwaGEgPSAuMjUpICsNCiAgYW5ub3RhdGUoInJlY3QiLCB4bWluID0gMTQsIHhtYXggPSAxNywgeW1pbiA9IDgwMDAwLCB5bWF4ID0gMTQwMDAwLCANCiAgICAgICAgICAgYWxwaGEgPSAuMjUpIA0KICAjIGFubm90YXRlKCJyZWN0IiwgeG1pbiA9IDEzLjI1LCB4bWF4ID0gMTMuNzUsIHltaW4gPSA4MDAwMCwgeW1heCA9IDE0MDAwMCwgDQogICMgICAgICAgICAgYWxwaGEgPSAuMjUpDQoNCmBgYA0KDQojc3BlY2lhbGl0eSBjbGVhbmluZyBzY3JpcHQNCmBgYHtyfQ0KY2xlYW5faG9zcGl0YWxfYWRtaXNzaW9uc19zcGVjaWFsaXR5IDwtIGhvc3BpdGFsX2FkbWlzc2lvbnNfc3BlY2lhbGl0eSAlPiUgDQogIGNsZWFuX25hbWVzKCkgJT4lIA0KICBzZWxlY3QoLSBxdWFydGVyX3FmLCAtIGhicWYsIC1sb2NhdGlvbl9xZiwgLWFkbWlzc2lvbl90eXBlX3FmLCANCiAgICAgICAgIC1hdmVyYWdlX2xlbmd0aF9vZl9lcGlzb2RlX3FmKSAlPiUgDQogIG11dGF0ZShoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDE1IiwgIkF5cnNoaXJlIGFuZCBBcnJhbiIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMTYiLCAiQm9yZGVycyIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMTciLCAiRHVtZnJpZXMgYW5kIEdhbGxvd2F5IiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAxOCIsICJGaWZlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAxOSIsICJGb3J0aCBWYWxsZXkiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDIwIiwgIkdyYW1waWFuIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAyMSIsICJHcmVhdGVyIEdsYXNnb3cgYW5kIENseWRlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlMwODAwMDAyMiIsICJIaWdobGFuZCIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMjMiLCAiTGFuYXJrc2hpcmUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI0IiwgIkxvdGhpYW4iLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI1IiwgIk9ya25leSIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJTMDgwMDAwMjYiLCAiU2hldGxhbmQiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI3IiwgIlRheXNpZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI4IiwgIldlc3Rlcm4gSXNsZXMiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDI5IiwgIkZpZmUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMwIiwgIlRheXNpZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMxIiwgIkdyZWF0ZXIgR2xhc2dvdyBhbmQgQ2x5ZGUiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUzA4MDAwMDMyIiwgIkxhbmFya3NoaXJlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlM5MjAwMDAwMyIsICJBbGwgb2YgU2NvdGxhbmQiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUkEyNzAxIiwgIk5vIEZpeGVkIEFib2RlIiwgaGIpLA0KICAgICAgICAgaGIgPSBpZmVsc2UoaGIgPT0gIlJBMjcwMiIsICJSZXN0IG9mIHRoZSBVSyIsIGhiKSwNCiAgICAgICAgIGhiID0gaWZlbHNlKGhiID09ICJSQTI3MDMiLCAiT3V0c2lkZSB0aGUgVUsiLCBoYiksDQogICAgICAgICBoYiA9IGlmZWxzZShoYiA9PSAiUkEyNzA0IiwgIlVua25vd24gUmVzaWRlbmN5IiwgaGIpDQogICAgICAgICAgICkgJT4lDQogIHJlbmFtZShuaHNfaGVhbHRoX2JvYXJkID0gaGIpICU+JSANCiAgc2VwYXJhdGUocXVhcnRlcixpbnRvID0gYygieWVhciIsICJxdWFydGVyIiksIHNlcCA9ICJRIiApICU+JSANCiAgbXV0YXRlKHByZV9wb3N0X2NvdmlkID0gaWZlbHNlKHllYXIgJWluJSBjKCIyMDE3IiwgIjIwMTgiLCAiMjAxOSIpLCAicHJlIiwgInBvc3QiKSkgDQoNCg0KY2xlYW5faG9zcGl0YWxfYWRtaXNzaW9uc19zcGVjaWFsaXR5ICU+JSANCiAgZGlzdGluY3Qoc3BlY2lhbHR5X25hbWUpIA0KICANCg0KDQpgYGANCg0KDQojIE1lYW4gSW5wYXRpZW50IEVwaXNvZGVzIFByZS0gYW5kIER1cmluZyBQYW5kZW1pYw0KYGBge3J9DQpjbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIA0KICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gIkVtZXJnZW5jeSBJbnBhdGllbnRzIiwNCiAgbmhzX2hlYWx0aF9ib2FyZCAlaW4lICJBbGwgb2YgU2NvdGxhbmQiKSAlPiUNCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9hdl9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSwNCiAgICAgICAgICAgIG1pbl9hdl9lcGlzb2RlcyA9IG1pbihlcGlzb2RlcyksDQogICAgICAgICAgICBtYXhfZXBpc29kZXMgPSBtYXgoZXBpc29kZXMpKSAlPiUgDQogIGdncGxvdCgpICsNCiAgYWVzKHggPSBxdWFydGVyLCB5ID0gYXZfZXBpc29kZXMpICsNCiAgZ2VvbV9wb2ludChzaXplID0gNCwgc2hhcGUgPSAxNywgYWVzKGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSkgKw0KICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcHJlX3Bvc3RfY292aWQsIGNvbG91ciA9IHByZV9wb3N0X2NvdmlkKSwgbGluZXdpZHRoID0gMSkgKw0KICAjIHN0YXRfc3VtbWFyeShmdW4ueSA9ICJtZWFuIiwgZ2VvbSA9ICJwb2ludCIsIHNoYXBlID0gMTksIHNpemUgPSA0LCBjb2xvciA9ICJibGFjayIpICsNCiAgIyBzdGF0X3N1bW1hcnkoZnVuLnkgPSBtZWFuLCBjb2xvciA9ICJibGFjayIsIGdlb20gPSAibGluZSIsIGFlcyhncm91cCA9IDEpLCBzaXplID0gMSkgKw0KICBnZW9tX2Vycm9yYmFyKGFlcyh5bWluID0gYXZfZXBpc29kZXMgLSBzZF9hdl9lcGlzb2RlcywgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5bWF4ID0gYXZfZXBpc29kZXMgKyBzZF9hdl9lcGlzb2RlcywgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb2xvdXIgPSBwcmVfcG9zdF9jb3ZpZCwNCiAgICAgICAgICAgICAgICAgICAgd2lkdGggPSAwLjI1KQ0KICAgICAgICAgICAgICAgICkgKw0KICB0aGVtZV9idygpICsNCiAgc2NhbGVfY29sb3VyX2JyZXdlcihwYWxldHRlID0gIkRhcmsyIikgKw0KICBnZW9tX2xhYmVsKA0KICAgIGxhYmVsID0gIlByZS1QYW5kZW1pYyIsDQogICAgeCA9IDAuODcsDQogICAgeSA9IDE0NTAwMCwNCiAgICBsYWJlbC5wYWRkaW5nID0gdW5pdCgwLjE1LCAibGluZXMiKSwNCiAgICBsYWJlbC5zaXplID0gMC4xNSwNCiAgICBjb2xvciA9ICJibGFjayINCiAgKSArDQogIGdlb21fbGFiZWwoDQogICAgbGFiZWwgPSAiUGFuZGVtaWMiLA0KICAgIHggPSA0LjI1LA0KICAgIHkgPSAxNDUwMDAsDQogICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgImxpbmVzIiksDQogICAgbGFiZWwuc2l6ZSA9IDAuMTUsDQogICAgY29sb3IgPSAiYmxhY2siDQogICkgKw0KICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAyLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIyBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSAzLjUsIGxpbmV0eXBlID0gImRhc2hlZCIpICsNCiAgIGxhYnMoDQogICAgdGl0bGUgPSAiTWVhbiBJbnBhdGllbnQgRXBpc29kZXMiLA0KICAgIHN1YnRpdGxlID0gIlF1YXJ0ZXJseSBEYXRhIGZyb20gUTMgMjAxNy1RMyAyMDIyXG4iLA0KICAgIHggPSAiUXVhcnRlciIsDQogICAgeSA9ICJJbnBhdGllbnQgRXBpc29kZXMiKSArDQogICAgeWxpbSgxMDAwMDAsIDE0NTAwMCkNCiAgDQpgYGANCg0KDQpgYGB7cn0NCg0KIyBIMDogbWVhbl9pbnBhdGllbnRfZXBpc29kZXMgYXJlIHRoZSBzYW1lDQojIEhhOiBtZWFuX2lucGF0aWVudF9lcGlzb2RlcyBhcmUgZGlmZmVyZW50DQoNCiMgYW5vdmEgdGVzdA0KDQpzdW1tYXJ5KGNsZWFuX2hvc3BfYWRtaXNzaW9ucykNCg0Kb25lX3dheSA8LSBhb3YoYXZfZXBpc29kZXMgfiBxdWFydGVyLCBzdW1faG9zcF9hZF92MikgIyB0aGlzIGRvZXMgYW5vdmEgdGVzdA0KDQpwbG90KGVwaXNvZGVzIH4gcXVhcnRlciwgc3VtX2hvc3BfYWRfdjIpDQoNCiNjcmVhdGUgdGFibGUgdG8gYmUgdGVzdGVkDQpzdW1faG9zcF9hZF92MiA8LSBjbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIA0KICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gIkVtZXJnZW5jeSBJbnBhdGllbnRzIiwNCiAgbmhzX2hlYWx0aF9ib2FyZCAlaW4lICJBbGwgb2YgU2NvdGxhbmQiKSAlPiUNCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSANCiAgc3VtbWFyaXNlKGF2X2VwaXNvZGVzID0gbWVhbihlcGlzb2RlcyksDQogICAgICAgICAgICBzZF9hdl9lcGlzb2RlcyA9IHNkKGVwaXNvZGVzKSwNCiAgICAgICAgICAgIG1pbl9hdl9lcGlzb2RlcyA9IG1pbihlcGlzb2RlcyksDQogICAgICAgICAgICBtYXhfZXBpc29kZXMgPSBtYXgoZXBpc29kZXMpKQ0KDQojIHNob3dzIHJlc3VsdHMgb2YgYW5vdmENCnN1bW1hcnkob25lX3dheSkNCg0KDQpjbGVhbl9ob3NwX2FkbWlzc2lvbnMgJT4lIA0KICBmaWx0ZXIoYWRtaXNzaW9uX3R5cGUgPT0gIkVtZXJnZW5jeSBJbnBhdGllbnRzIiwNCiAgbmhzX2hlYWx0aF9ib2FyZCAlaW4lICJBbGwgb2YgU2NvdGxhbmQiKSAlPiUNCiAgZ3JvdXBfYnkocHJlX3Bvc3RfY292aWQsIHF1YXJ0ZXIpICU+JSANCiAgZ2dwbG90KCkgKw0KICBnZW9tX2NvbChhZXMoeCA9IHF1YXJ0ZXIsIHkgPSBlcGlzb2RlcykpDQoNCiAgDQoNCg0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeShqYW5pdG9yKQ0KbGlicmFyeShnZ3B1YnIpDQpsaWJyYXJ5KGJyb29tKQ0KbGlicmFyeShBSUNjbW9kYXZnKQ0KbGlicmFyeShpbmZlcikNCmxpYnJhcnkoa25pdHIpDQpsaWJyYXJ5KGthYmxlRXh0cmEpDQoNCg0KaG9zcGl0YWxfYWRtaXNzaW9uc19xeWVhciA8LSByZWFkX2NzdigiYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyLmNzdiIpDQoNCmhvc3BfYWRtX3Ffc3BsaXQgPC0gcmVhZF9jc3YoImFwcC9jbGVhbl9kYXRhL2NsZWFuX2hvc3BfYWRtaXNzaW9ucy5jc3YiKSANCg0KaG9zcGl0YWxfYmVkcyA8LSByZWFkX2NzdigiYXBwL2NsZWFuX2RhdGEvcHJlX3Bvc3RfMjAyMF9hdmdfb2NjdXBhbmN5LmNzdiIpDQoNCmRlcHJpdmF0aW9ucyA8LSByZWFkX2NzdigiYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlcHJpdmF0aW9uX2FsbC5jc3YiKQ0KDQpkZW1vZ3JhcGhpY3MgPC0gcmVhZF9jc3YoImFwcC9jbGVhbl9kYXRhL2FkbWlzc2lvbl9kZW1vZ3JhcGhpY3NfYWxsLmNzdiIpDQoNCnByZV9wb3N0XzIwMjBfYXZfb2NjIDwtIHJlYWRfY3N2KCJhcHAvY2xlYW5fZGF0YS9wcmVfcG9zdF8yMDIwX2F2Z19vY2N1cGFuY3kuY3N2IikNCmBgYA0KDQoNCg0KYGBge3J9DQojIGhvc3BfYWRtaXNzaW9uc19zdW1tYXJ5IHRhYmxlIA0KDQpob3NwX2FkbV9xX3NwbGl0ICU+JSANCiAgZmlsdGVyKCFpcy5uYShlcGlzb2RlcykpICU+JSANCiAgZ3JvdXBfYnkobmhzX2hlYWx0aF9ib2FyZCwgcXVhcnRlciwgeWVhcikgJT4lIA0KICBmaWx0ZXIobmhzX2hlYWx0aF9ib2FyZCAlaW4lICJMb3RoaWFuIiwNCiAgICAgICAgIHF1YXJ0ZXIgPT0gMSwNCiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIA0KICBzdW1tYXJpc2UobWVhbl9ob3NwX2FkbSA9IG1lYW4oZXBpc29kZXMpLA0KICAgICAgICAgICAgbWVkaWFuX2hvc3BfYWRtID0gbWVkaWFuKGVwaXNvZGVzKSwNCiAgICAgICAgICAgIHNkX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpLA0KICAgICAgICAgICAgc2VtX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpL3NxcnQobGVuZ3RoKGVwaXNvZGVzKSksDQogICAgICAgICAgICBjaV9ob3NwX2FkbSA9IDIgKiBzZChlcGlzb2RlcyksDQogICAgICAgICAgICApDQpgYGANCg0KDQpgYGB7cn0NCiMgYXZnX2xvc19zdW1tYXJ5IHRhYmxlIA0KDQpob3NwX2FkbV9xX3NwbGl0ICU+JSANCiAgZmlsdGVyKCFpcy5uYShhdmVyYWdlX2xlbmd0aF9vZl9zdGF5KSkgJT4lIA0KICBncm91cF9ieShuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyLCB5ZWFyKSAlPiUgDQogIGZpbHRlcihuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkxvdGhpYW4iLA0KICAgICAgICAgcXVhcnRlciA9PSAxLA0KICAgICAgICAgeWVhciA9PSAyMDE4KSAlPiUgDQogIHN1bW1hcmlzZShtZWFuX2F2bG9zID0gbWVhbihhdmVyYWdlX2xlbmd0aF9vZl9zdGF5KSwNCiAgICAgICAgICAgIG1lZGlhbl9hdmxvcyA9IG1lZGlhbihhdmVyYWdlX2xlbmd0aF9vZl9zdGF5KSwNCiAgICAgICAgICAgIHNkX2hvc3BfYXZsb3MgPSBzZChhdmVyYWdlX2xlbmd0aF9vZl9zdGF5KSwNCiAgICAgICAgICAgIHNlbV9ob3NwX2F2bG9zID0gc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSkvc3FydChsZW5ndGgoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSkpLA0KICAgICAgICAgICAgY2lfaG9zcF9hdmxvcyA9IDIgKiBzZChhdmVyYWdlX2xlbmd0aF9vZl9zdGF5KSwNCiAgICAgICAgICAgICkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBwZXJjZW50YWdlIG9jY3VwYW5jeSBzdW1tYXJ5IHRhYmxlLg0KYmVkc19kYXRhX3llYXJfcXVhcnQgJT4lIA0KICBmaWx0ZXIoIWlzLm5hKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSkgJT4lIA0KICBncm91cF9ieShuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyLCB5ZWFyKSAlPiUgDQogIGZpbHRlcihuaHNfaGVhbHRoX2JvYXJkICVpbiUgIkxvdGhpYW4iLA0KICAgICAgICAgcXVhcnRlciAlaW4lICJRMSIsDQogICAgICAgICB5ZWFyID09IDIwMTgpICU+JSANCiAgc3VtbWFyaXNlKG1lYW5fcGVyX29jYyA9IG1lYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLA0KICAgICAgICAgICAgbWVkaWFuX3Blcl9vY2MgPSBtZWRpYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLA0KICAgICAgICAgICAgc2RfaG9zcF9wZXJfb2NjID0gc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLA0KICAgICAgICAgICAgc2VtX2hvc3BfcGVyX29jYyA9IHNkKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KS9zcXJ0KGxlbmd0aChwZXJjZW50YWdlX29jY3VwYW5jeSkpLA0KICAgICAgICAgICAgY2lfaG9zcF9wZXJfb2NjPSAyICogc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLA0KICAgICAgICAgICAgKQ0KDQpgYGANCg0K</div>
 
 
 
@@ -2912,7 +1987,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("temporal_analysis_wip.Rmd");
+  window.initializeSourceEmbed("stats_tables_codes.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
