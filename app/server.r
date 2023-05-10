@@ -165,20 +165,20 @@ server <- function(input, output, session) {
                                        filter(simd %in% input$deprivation_input) %>%
                                        mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>%
                                        group_by(quarter, simd, pre_post_2020) %>%
-                                       # summarise(mean_episodes = mean(episodes)) %>%
-                                       ggplot(aes(x = quarter, y = episodes)) +
-                                       stat_summary(fun.data = "mean_se",
-                                                    mult = 1,
-                                                    geom = "errorbar",
-                                                    width = .1,
-                                                    aes(colour = simd),
-                                                    alpha = 0.6) +
-                                       stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
-                                       # geom_point(aes(colour = simd)) +
-                                       # geom_line(aes(group = simd, colour = simd)) +
-                                       stat_summary(fun = "mean",
-                                                    geom = "line",
-                                                    aes(group = simd, colour = simd)) +
+                                       summarise(mean_episodes = mean(episodes)) %>%
+                                       ggplot(aes(x = quarter, y = mean_episodes)) +
+                                       # stat_summary(fun.data = "mean_se",
+                                       #              mult = 1,
+                                       #              geom = "errorbar",
+                                       #              width = .1,
+                                       #              aes(colour = simd),
+                                       #              alpha = 0.6) +
+                                       # stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
+                                       geom_point(aes(colour = simd)) +
+                                       geom_line(aes(group = simd, colour = simd)) +
+                                       # stat_summary(fun = "mean",
+                                       #              geom = "line",
+                                       #              aes(group = simd, colour = simd)) +
                                        facet_wrap(~pre_post_2020) +
                                        labs(
                                          x = "\n Quarter",
@@ -196,20 +196,20 @@ server <- function(input, output, session) {
                                        filter(simd %in% input$deprivation_input) %>% 
                                        mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>%
                                        group_by(quarter, simd, pre_post_2020) %>%
-                                       # summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
-                                       ggplot(aes(x = quarter, y = average_length_of_stay)) +
-                                       stat_summary(fun.data = "mean_se",
-                                                    mult = 1,
-                                                    geom = "errorbar",
-                                                    width = .1,
-                                                    aes(colour = simd),
-                                                    alpha = 0.6) +
-                                       stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
-                                       # geom_point(aes(colour = simd)) +
-                                       # geom_line(aes(group = simd, colour = simd)) +
-                                       stat_summary(fun = "mean",
-                                                    geom = "line",
-                                                    aes(group = simd, colour = simd)) +
+                                       summarise(mean_length_of_stay = mean(average_length_of_stay)) %>%
+                                       ggplot(aes(x = quarter, y = mean_length_of_stay)) +
+                                       # stat_summary(fun.data = "mean_se",
+                                       #              mult = 1,
+                                       #              geom = "errorbar",
+                                       #              width = .1,
+                                       #              aes(colour = simd),
+                                       #              alpha = 0.6) +
+                                       # stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
+                                       geom_point(aes(colour = simd)) +
+                                       geom_line(aes(group = simd, colour = simd)) +
+                                       # stat_summary(fun = "mean",
+                                       #              geom = "line",
+                                       #              aes(group = simd, colour = simd)) +
                                        facet_wrap(~pre_post_2020) +
                                        labs(
                                          x = "\n Quarter",
