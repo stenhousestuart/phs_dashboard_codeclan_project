@@ -44,6 +44,7 @@ server <- function(input, output, session) {
                                        
                                        geo_year <- input$year_input_geo
                                        geo_quart <- input$quarter_input_geo
+                                       title <- HTML("<h6>Percentage Occupancy by NHS Location</h6")
                                        
                                        validate(need(!(geo_year %in% 2017 & geo_quart %in% c("Q1", "Q2")), "There is no data for the date range you have selected, please reselect."))
                                        validate(need(!(geo_year %in% 2022 & geo_quart %in% "Q4"), "There is no data for the date range you have selected, please reselect."))
@@ -61,7 +62,10 @@ server <- function(input, output, session) {
                                                           color = ~palette(mean_occ),
                                                           stroke = FALSE,
                                                           label = ~location,
-                                                          popup = ~paste(location, "<br> Average Occupied beds:", mean_beds, "<br> Average Percentage Occupied:", mean_occ))
+                                                          popup = ~paste(location, "<br> Average Occupied beds:", mean_beds, "<br> Average Percentage Occupied:", mean_occ)) %>% 
+                                         addLegend(position = "bottomright", pal = palette, values = ~percentage_occupancy, opacity = 2, title = "Average Percentage Occupied") %>% 
+                                         addControl(position = "topright", html = title)
+                                  
                                        
                                        
                                        
