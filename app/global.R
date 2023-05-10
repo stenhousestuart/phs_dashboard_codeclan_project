@@ -24,6 +24,8 @@ locations_occupancy_full <- read_csv(here("app/clean_data/locations_occupancy_fu
 
 clean_hospital_admissions_speciality <- read_csv(here("app/clean_data/clean_hospital_admissions_speciality.csv"))
 
+hosp_adm_q_split <- read_csv(here("app/clean_data/clean_hosp_admissions.csv")) 
+
 # Set Input Choices
 age_choice <- admission_demographics_all %>% 
   distinct(age)
