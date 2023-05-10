@@ -50,14 +50,20 @@ server <- function(input, output, session) {
                                        validate(need(!(geo_year %in% 2022 & geo_quart %in% "Q4"), "There is no data for the date range you have selected, please reselect."))
                                        
                                        locations_occupancy_full %>% 
-                                         filter(year == input$year_input_geo & quarter == input$quarter_input_geo) %>% 
+                                         group_by(location, year, quarter) %>% 
+                                         mutate(mean_occ = round(mean(percentage_occupancy), digits = 2), 
+                                                mean_beds = floor(mean(average_occupied_beds))) %>% 
+                                         ungroup() %>%  # adds columns for mean % occ and mean occ beds for each location, year, quarter
+                                         filter(year == 2021 & quarter == "Q2") %>% 
                                          leaflet() %>% 
                                          addTiles() %>% 
                                          addCircleMarkers(lng = ~longitude,
                                                           lat = ~latitude,
-                                                          color = ~geo_palette(percentage_occupancy),
+                                                          color = ~palette(mean_occ),
                                                           stroke = FALSE,
-                                                          label = ~ceiling(average_occupied_beds))
+                                                          label = ~location,
+                                                          popup = ~paste(location, "<br> Average Occupied beds:", mean_beds, "<br> Average Percentage Occupied:", mean_occ))
+                                       
                                        
                                        
                                      })
