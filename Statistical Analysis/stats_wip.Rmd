@@ -429,6 +429,7 @@ p_value
 
 ```
 
+
 ```{r}
 
 beds_data_year_quart %>% 
@@ -457,8 +458,5 @@ beds_data_year_quart %>%
 
 =======
 >>>>>>> Stashed changes
-```
-```{r}
-
 ```
 

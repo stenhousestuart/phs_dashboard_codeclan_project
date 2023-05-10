@@ -36,10 +36,12 @@ age_choice <- admission_demographics_all %>%
 
 admission_choice <- clean_hosp_admissions_qyear %>% 
   distinct(admission_type) %>% 
+  arrange(admission_type) %>% 
   rename("Admission Type" = admission_type)
 
 health_board_choice <- clean_hosp_admissions_qyear %>% 
   distinct(nhs_health_board) %>% 
+  arrange(nhs_health_board) %>% 
   rename("NHS Health Board" = nhs_health_board)
 
 deprivation_choice <- admission_deprivation_all %>% 
@@ -60,12 +62,16 @@ geo_quarter_choice <- locations_occupancy_full %>%
 
 geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
   distinct(nhs_health_board) %>% 
+  arrange(nhs_health_board) %>% 
   rename("NHS Health Board" = nhs_health_board)
 
 speciality_choice <- clean_hospital_admissions_speciality %>% 
+  drop_na(specialty_name) %>% 
   distinct(specialty_name) %>% 
+  arrange(specialty_name) %>% 
   rename("Specialty Name" = specialty_name)
 
 speciality_choice_longer <- locations_occupancy_full %>% 
   distinct(specialty_name) %>% 
+  arrange(specialty_name) %>% 
   rename("Specialty Name" = specialty_name)

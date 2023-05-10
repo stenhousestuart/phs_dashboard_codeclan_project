@@ -525,25 +525,25 @@ filtered_speciality <- eventReactive(eventExpr = input$update_speciality,
 
 speciality_output_selection <- eventReactive(eventExpr = input$update_speciality,
                                              valueExpr = {
+                                               # superceded - selection no longer required
+                                               # if (input$speciality_plot_type_input == "Mean Admissions") {
+                                               #   filtered_speciality() %>% 
+                                               #     group_by(quarter, specialty_name, pre_post_covid) %>% 
+                                               #     summarise(mean_episodes = mean(episodes)) %>% 
+                                               #     ggplot(aes(x = quarter, y = mean_episodes, colour = specialty_name)) +
+                                               #     geom_line() +
+                                               #     geom_point(size = 4, shape = 17) +
+                                               #     facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
+                                               #     labs(
+                                               #       title = "Mean number of episodes by Quarter for Specialities",
+                                               #       x = "Quarter",
+                                               #       y = "Hospital Admissions",
+                                               #       col = "Speciality Name",
+                                               #       subtitle = "2017 Q3 to 2022 Q3"
+                                               #     )
+                                               # }
                                                
-                                               if (input$speciality_plot_type_input == "Mean Admissions") {
-                                                 filtered_speciality() %>% 
-                                                   group_by(quarter, specialty_name, pre_post_covid) %>% 
-                                                   summarise(mean_episodes = mean(episodes)) %>% 
-                                                   ggplot(aes(x = quarter, y = mean_episodes, colour = specialty_name)) +
-                                                   geom_line() +
-                                                   geom_point(size = 4, shape = 17) +
-                                                   facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
-                                                   labs(
-                                                     title = "Mean number of episodes by Quarter for Specialities",
-                                                     x = "Quarter",
-                                                     y = "Hospital Admissions",
-                                                     col = "Speciality Name",
-                                                     subtitle = "2017 Q3 to 2022 Q3"
-                                                   )
-                                               }
-                                               
-                                               else{
+                                               # else{
                                                  filtered_speciality() %>% 
                                                    group_by(quarter, specialty_name, pre_post_covid) %>% 
                                                    drop_na(average_length_of_spell) %>% 
@@ -558,8 +558,6 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                      col = "Speciality Name",
                                                      subtitle = "2017 Q3 to 2022 Q3"
                                                    )
-                                                 
-                                               }
                                              })
 
 output$speciality_output <-renderPlot(
