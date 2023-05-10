@@ -371,3 +371,4 @@ ui <- fluidPage( theme = phs_theme,
         tags$a(href = "https://fontawesome.com/icons",
                "FontAwesome")
 )
+
