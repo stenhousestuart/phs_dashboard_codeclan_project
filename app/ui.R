@@ -97,8 +97,12 @@ ui <- fluidPage(
       ),
       plotOutput("geo_output"),
       fluidRow(
-        print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
+        column(width = 10,
+               offset = 1,
+               print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
+        ),
       ),
+      fluidRow(),
       fluidRow(
         column(width = 4,
                offset = 1,

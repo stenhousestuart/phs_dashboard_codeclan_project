@@ -20,8 +20,9 @@ server <- function(input, output, session) {
   filtered_geo <- eventReactive(eventExpr = input$update_geo,
                                 valueExpr = {
                                   pre_post_2020_avg_occupancy %>% 
+                                    mutate(year = if_else(year == "post 2020", "2020 - 2022", "2017 - 2019")) %>% 
                                     filter(nhs_health_board %in% input$health_board_input_geo) %>% 
-                                    mutate(year = factor(year, levels = c("pre 2020", "post 2020"))) %>% 
+                                    mutate(year = factor(year, levels = c("2017 - 2019", "2020 - 2022"))) %>% 
                                     ggplot(aes(x = factor(quarter, 
                                                           level = c("Q1", "Q2", "Q3", "Q4")), 
                                                y = percentage_occupancy, 
@@ -59,11 +60,11 @@ server <- function(input, output, session) {
                                          addTiles() %>% 
                                          addCircleMarkers(lng = ~longitude,
                                                           lat = ~latitude,
-                                                          color = ~palette(mean_occ),
+                                                          color = ~geo_palette(mean_occ),
                                                           stroke = FALSE,
                                                           label = ~location,
                                                           popup = ~paste(location, "<br> Average Occupied beds:", mean_beds, "<br> Average Percentage Occupied:", mean_occ)) %>% 
-                                         addLegend(position = "bottomright", pal = palette, values = ~percentage_occupancy, opacity = 2, title = "Average Percentage Occupied") %>% 
+                                         addLegend(position = "bottomright", pal = geo_palette, values = ~percentage_occupancy, opacity = 2, title = "Average Percentage Occupied") %>% 
                                          addControl(position = "topright", html = title)
                                   
                                        

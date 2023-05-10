@@ -37,16 +37,19 @@ deprivation_choice <- admission_deprivation_all %>%
 geo_year_choice <- locations_occupancy_full %>% 
   arrange(year) %>% 
   distinct(year) %>%
-  drop_na(year)
+  drop_na(year) %>% 
+  rename("Year" = year)
   
 
 geo_quarter_choice <- locations_occupancy_full %>% 
   arrange(quarter) %>% 
   distinct(quarter) %>% 
-  drop_na(quarter)
+  drop_na(quarter) %>% 
+  rename("Quarter" = quarter)
 
 geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
-  distinct(nhs_health_board)
+  distinct(nhs_health_board) %>% 
+  rename("NHS Health Board" = nhs_health_board)
 
 speciality_choice <- clean_hospital_admissions_speciality %>% 
   distinct(specialty_name)
