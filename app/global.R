@@ -30,7 +30,7 @@ beds_data_year_quart <- read_csv(here("app/clean_data/beds_data_year_quart.csv")
 
 # Set Input Choices
 age_choice <- admission_demographics_all %>% 
-  distinct(age) %>% 
+  distinct(age) %>%
   rename("Age" = age)
 
 admission_choice <- clean_hosp_admissions_qyear %>% 

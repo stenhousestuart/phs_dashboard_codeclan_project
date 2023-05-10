@@ -475,6 +475,7 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                    summarise(mean_episodes = mean(episodes)) %>% 
                                                    ggplot(aes(x = quarter, y = mean_episodes, colour = specialty_name)) +
                                                    geom_line() +
+                                                   geom_point(size = 4, shape = 17) +
                                                    facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
                                                    labs(
                                                      title = "Mean number of episodes by Quarter for Specialities",
@@ -508,7 +509,7 @@ output$speciality_output <-renderPlot(
   speciality_output_selection()
 )
 
-speciality_occupancy_filter <- eventReactive(eventExpr = input$update_speciality,
+speciality_occupancy_filter <- eventReactive(eventExpr = input$update_speciality_means,
                                           valueExpr = {
                                             locations_occupancy_full %>% 
                                               mutate(year = case_when(
