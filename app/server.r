@@ -45,8 +45,7 @@ server <- function(input, output, session) {
                                        geo_year <- input$year_input_geo
                                        geo_quart <- input$quarter_input_geo
                                        
-                                       validate(need(!(geo_year %in% 2017 & geo_quart %in% "Q1"), "There is no data for the date range you have selected, please reselect."))
-                                       validate(need(!(geo_year %in% 2017 & geo_quart %in% "Q2"), "There is no data for the date range you have selected, please reselect."))
+                                       validate(need(!(geo_year %in% 2017 & geo_quart %in% c("Q1", "Q2")), "There is no data for the date range you have selected, please reselect."))
                                        validate(need(!(geo_year %in% 2022 & geo_quart %in% "Q4"), "There is no data for the date range you have selected, please reselect."))
                                        
                                        locations_occupancy_full %>% 
