@@ -332,14 +332,7 @@ server <- function(input, output, session) {
     domain = locations_occupancy_full$percentage_occupancy)
   
   output$geo_map_output <- renderLeaflet(
-    locations_occupancy_full_combine_year_quarter %>% 
-      filter(year_quarter == input$year_input_geo) %>% 
-      leaflet() %>% 
-      addTiles() %>% 
-      addCircleMarkers(lng = ~longitude,
-                       lat = ~latitude,
-                       color = ~geo_palette(percentage_occupancy),
-                       stroke = FALSE)
+    filtered_geo_date()
   )
   
   output$demo_age_output <- renderPlot(
