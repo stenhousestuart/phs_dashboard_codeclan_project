@@ -82,7 +82,7 @@ ui <- fluidPage( theme = phs_theme,
                        column(width = 3,
                               actionButton(inputId = "update_temporal",
                                            label = "Update dashboard",
-                                           icon = icon("refresh", class = "fa-spin-pulse"))
+                                           icon = icon("refresh"))
                        )
                      ),
                      
@@ -120,7 +120,7 @@ ui <- fluidPage( theme = phs_theme,
                        column(width = 3,
                               actionButton(inputId = "update_geo",
                                            label = "Update dashboard",
-                                           icon = icon("refresh", class = "fa-spin-pulse"))
+                                           icon = icon("refresh")
                        )
                      ),
                      plotOutput("geo_output"),
@@ -159,7 +159,7 @@ ui <- fluidPage( theme = phs_theme,
                        
                      ),
                    ),
-                   
+                   ),
                    tabPanel(
                      title = "Speciality",
                      fluidRow(
@@ -245,7 +245,7 @@ ui <- fluidPage( theme = phs_theme,
                            column(width = 4,
                                   actionButton(inputId = "update_demo_age",
                                                label = "Update Dashboard",
-                                               icon = icon("refresh", class = "fa-spin-pulse"))
+                                               icon = icon("refresh"))
                            )
                          ),
                          
@@ -371,6 +371,5 @@ ui <- fluidPage( theme = phs_theme,
                  tags$a(href = "https://fontawesome.com/icons",
                         "FontAwesome")
 )
-
 
 
