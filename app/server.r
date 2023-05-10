@@ -62,17 +62,16 @@ server <- function(input, output, session) {
                                                  filter(age %in% input$gender_age_input,
                                                         year != "2017",
                                                         year != "2022") %>% 
-                                                 group_by(sex, age, year, season) %>% 
-                                                 summarise(total_admissions = sum(episodes)) %>% 
-                                                 ggplot(aes(x = age, y = total_admissions, fill = year)) +
-                                                 geom_col(aes(x = age, y = total_admissions, fill = year), position = "dodge") +
-                                                 facet_grid(sex~season) +
-                                                 labs(
-                                                   x = "\n Age",
-                                                   y = "Number of Admissions \n",
-                                                   title = "Number of Admissions by Age, Gender & Season") +
-                                                 theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
-                                                 scale_y_continuous(labels = scales::comma)
+                                                   group_by(sex, age, year, season) %>%
+                                                   summarise(total_admissions = sum(episodes)) %>%
+                                                   ggplot(aes(x = age, y = total_admissions, fill = year)) +
+                                                   geom_col(aes(x = age, y = total_admissions, fill = year), position = "dodge") +
+                                                   facet_grid(sex~season) +
+                                                   labs(x = "\n Age",
+                                                        y = "Number of Admissions \n",
+                                                        title = "Number of Admissions by Age, Gender & Season") +
+                                                   theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
+                                                   scale_y_continuous(labels = scales::comma)
                                                
                                              }
                                             
@@ -84,14 +83,15 @@ server <- function(input, output, session) {
                                                 filter(age %in% input$gender_age_input,
                                                        year != "2017",
                                                        year != "2022") %>% 
-                                                group_by(sex, age, year, season) %>% 
-                                                ggplot(aes(x = age, y = average_length_of_stay, fill = year)) +
-                                                geom_col(aes(x = age, y = average_length_of_stay, fill = year), position = "dodge") +
+                                                group_by(year, sex, age, season) %>%
+                                                select(year, sex, age, season, average_length_of_stay) %>% 
+                                                summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
+                                                ggplot(aes(x = age, y = mean_length_of_stay, fill = year)) +
+                                                geom_col(aes(x = age, y = mean_length_of_stay, fill = year), position = "dodge") +
                                                 facet_grid(sex~season) +
-                                                labs(
-                                                  x = "\n Age",
-                                                  y = "Average Length of Stay \n",
-                                                  title = "Average Length of Stay by Age, Gender & Season") +
+                                                labs(x = "\n Age",
+                                                     y = "Average Length of Stay \n",
+                                                     title = "Average Length of Stay by Age, Gender & Season") +
                                                 theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
                                               
                                               
@@ -107,18 +107,27 @@ server <- function(input, output, session) {
                                      admission_deprivation_all %>%
                                        mutate(simd = factor(simd, levels = c("1", "2", "3", "4", "5"))) %>%
                                        filter(simd %in% input$deprivation_input) %>%
-                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
-                                       group_by(quarter, simd, pre_post_2020) %>% 
-                                       summarise(mean_episodes = mean(episodes)) %>% 
-                                       ggplot(aes(x = quarter, y = mean_episodes)) +
-                                       geom_point(aes(colour = simd)) +
-                                       geom_line(aes(group = simd, colour = simd)) +
+                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>%
+                                       group_by(quarter, simd, pre_post_2020) %>%
+                                       # summarise(mean_episodes = mean(episodes)) %>%
+                                       ggplot(aes(x = quarter, y = episodes)) +
+                                       stat_summary(fun.data = "mean_se",
+                                                    mult = 1,
+                                                    geom = "errorbar",
+                                                    width = .1,
+                                                    aes(colour = simd),
+                                                    alpha = 0.6) +
+                                       stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
+                                       # geom_point(aes(colour = simd)) +
+                                       # geom_line(aes(group = simd, colour = simd)) +
+                                       stat_summary(fun = "mean",
+                                                    geom = "line",
+                                                    aes(group = simd, colour = simd)) +
                                        facet_wrap(~pre_post_2020) +
-                                       labs(
-                                         x = "\n Quarter",
-                                         y = "Mean Episodes of Care \n",
-                                         title = "Mean Episodes of Care by SIMD & Quarter",
-                                         colour = "SIMD:")
+                                       labs(x = "\n Quarter",
+                                            y = "Mean Episodes of Care \n",
+                                            title = "Mean Episodes of Care by SIMD & Quarter",
+                                            colour = "SIMD:")
                                    
                                    }
                                    
@@ -127,18 +136,27 @@ server <- function(input, output, session) {
                                      admission_deprivation_all %>%
                                        mutate(simd = factor(simd, levels = c("1", "2", "3", "4", "5"))) %>%
                                        filter(simd %in% input$deprivation_input) %>% 
-                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
-                                       group_by(quarter, simd, pre_post_2020) %>% 
-                                       summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
-                                       ggplot(aes(x = quarter, y = mean_length_of_stay)) +
-                                       geom_point(aes(colour = simd)) +
-                                       geom_line(aes(group = simd, colour = simd)) +
+                                       mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>%
+                                       group_by(quarter, simd, pre_post_2020) %>%
+                                       # summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
+                                       ggplot(aes(x = quarter, y = average_length_of_stay)) +
+                                       stat_summary(fun.data = "mean_se",
+                                                    mult = 1,
+                                                    geom = "errorbar",
+                                                    width = .1,
+                                                    aes(colour = simd),
+                                                    alpha = 0.6) +
+                                       stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
+                                       # geom_point(aes(colour = simd)) +
+                                       # geom_line(aes(group = simd, colour = simd)) +
+                                       stat_summary(fun = "mean",
+                                                    geom = "line",
+                                                    aes(group = simd, colour = simd)) +
                                        facet_wrap(~pre_post_2020) +
-                                       labs(
-                                         x = "\n Quarter",
-                                         y = "Mean Length of Stay \n",
-                                         title = "Mean Length of Stay by SIMD & Quarter",
-                                         colour = "SIMD:")
+                                       labs(x = "\n Quarter",
+                                            y = "Mean Length of Stay \n",
+                                            title = "Mean Length of Stay by SIMD & Quarter",
+                                            colour = "SIMD:")
                                      
                                      
                                    }
@@ -152,18 +170,20 @@ server <- function(input, output, session) {
                                          
                                          admission_demographics_all %>%
                                            filter(age %in% input$age_input) %>% 
-                                           mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
+                                           mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>%
+                                           group_by(year, quarter, age, pre_post_2020) %>%
+                                           summarise(total_admissions_year_quarter = sum(episodes)) %>% 
+                                           ungroup() %>%
                                            group_by(quarter, age, pre_post_2020) %>% 
-                                           summarise(mean_admissions = mean(episodes)) %>% 
-                                           ggplot(aes(x = quarter, y = mean_admissions)) +
-                                           geom_point(aes(colour = age)) +
+                                           summarise(mean_admissions_quarter = mean(total_admissions_year_quarter)) %>%
+                                           ggplot(aes(x = quarter, y = mean_admissions_quarter)) +
                                            geom_line(aes(group = age, colour = age)) +
+                                           geom_point(aes(colour = age)) +
                                            facet_wrap(~pre_post_2020) +
-                                           labs(
-                                             x = "\n Quarter",
-                                             y = "Mean Episodes of Care \n",
-                                             title = "Mean Episodes of Care by Age & Quarter",
-                                             colour = "Age:")
+                                           labs(x = "\n Quarter", 
+                                                y = "Mean Episodes of Care \n", 
+                                                title = "Mean Episodes of Care by Age & Quarter",
+                                                colour = "Age:")
                                          
                                        }
                                        
@@ -172,9 +192,9 @@ server <- function(input, output, session) {
                                          admission_demographics_all %>%
                                            filter(age %in% input$age_input) %>%
                                            mutate(pre_post_2020 = factor(pre_post_2020, levels = c("pre 2020", "post 2020"))) %>% 
-                                           group_by(quarter, age, pre_post_2020) %>% 
-                                           summarise(mean_length_of_stay = mean(average_length_of_stay)) %>% 
-                                           ggplot(aes(x = quarter, y = mean_length_of_stay)) +
+                                           group_by(quarter, age, pre_post_2020) %>%
+                                           summarise(mean_average_length_of_stay = mean(average_length_of_stay)) %>%
+                                           ggplot(aes(x = quarter, y = mean_average_length_of_stay)) +
                                            geom_point(aes(colour = age)) +
                                            geom_line(aes(group = age, colour = age)) +
                                            facet_wrap(~pre_post_2020) +
@@ -182,7 +202,7 @@ server <- function(input, output, session) {
                                              x = "\n Quarter",
                                              y = "Mean Length of Stay \n",
                                              title = "Mean Length of Stay by Age & Quarter",
-                                             colour = "Age:")  
+                                             colour = "Age:")
                                          
                                          
                                        }
