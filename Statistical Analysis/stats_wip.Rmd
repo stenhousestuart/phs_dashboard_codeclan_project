@@ -428,6 +428,8 @@ p_value <- null_distribution_beds_occ %>%
 p_value
 
 ```
+
+
 ```{r}
 
 beds_data_year_quart %>% 
