@@ -74,8 +74,7 @@ ui <- fluidPage(
             This would be where some stats go, but good luck interpretting these nonsense graphs")
       )
     ),
-    # this allows for multiple inputs for Health Board - Actual data set
-    # will probably need more human readable choice names
+ 
     tabPanel(
       title = "Geographical",
       fluidRow(
@@ -153,7 +152,7 @@ ui <- fluidPage(
       
       fluidRow(
         plotOutput("speciality_output"),
-        plotOutput("testing_occupancy"),
+        plotOutput("speciality_occupancy"),
         selectInput(
           inputId = "speciality_input_longer",
           label = "Please select Speciality(s)",
@@ -169,7 +168,7 @@ ui <- fluidPage(
       ),
     ),
     
-    # using age for the demographic for testing purposes
+  
     tabPanel(
       title = "Demographics",
       tabsetPanel(
@@ -298,12 +297,9 @@ ui <- fluidPage(
     ),
   ),
   # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
-  # Testing a "footer" that mentions where data was taken from
-  # Will need to alter link and title for actual dataset used
-  # Could be shifted into individual tabs if we end up using different datasets for different outputs
   hr(),
   print("Data taken from "),
-  tags$a(href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions/resource/f8f3a435-1925-4c5a-b2e8-e58fdacf04bb",
+  tags$a(href = "https://www.opendata.nhs.scot/dataset?groups=covid-19",
          "Public health Scotland")
   
 )

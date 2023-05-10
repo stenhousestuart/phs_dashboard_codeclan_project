@@ -239,7 +239,6 @@ server <- function(input, output, session) {
 
   output$geo_output <- renderPlot(
     filtered_geo()
-      
   )
   
   geo_palette <- colorNumeric(
@@ -414,7 +413,7 @@ output$speciality_output <-renderPlot(
   speciality_output_selection()
 )
 
-testing_occupancy_filter <- eventReactive(eventExpr = input$update_speciality,
+speciality_occupancy_filter <- eventReactive(eventExpr = input$update_speciality,
                                           valueExpr = {
                                             locations_occupancy_full %>% 
                                               mutate(year = case_when(
@@ -426,8 +425,8 @@ testing_occupancy_filter <- eventReactive(eventExpr = input$update_speciality,
                                               group_by(quarter, specialty_name, year)
                                           })
 
-output$testing_occupancy <- renderPlot(
-testing_occupancy_filter() %>% 
+output$speciality_occupancy <- renderPlot(
+speciality_occupancy_filter() %>% 
     ggplot() +
     aes(x = quarter, y = percentage_occupancy, colour = specialty_name) + 
     stat_summary(fun.data = "mean_cl_normal",
