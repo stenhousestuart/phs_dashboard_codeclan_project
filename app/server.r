@@ -54,7 +54,7 @@ server <- function(input, output, session) {
                                          mutate(mean_occ = round(mean(percentage_occupancy), digits = 2), 
                                                 mean_beds = floor(mean(average_occupied_beds))) %>% 
                                          ungroup() %>%  # adds columns for mean % occ and mean occ beds for each location, year, quarter
-                                         filter(year == 2021 & quarter == "Q2") %>% 
+                                         filter(year == input$year_input_geo & quarter == input$quarter_input_geo) %>% 
                                          leaflet() %>% 
                                          addTiles() %>% 
                                          addCircleMarkers(lng = ~longitude,
