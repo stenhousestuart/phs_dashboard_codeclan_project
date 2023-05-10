@@ -304,7 +304,7 @@ hosp_adm_q_split %>%
   ggplot() +
   aes(x = season, y = mean_av_los) +
   geom_col(fill = "red", color = "black") +
-  geom_errorbar(aes(ymin = mean_av_los, ymax = mean_av_los + sd), width = 0.2) +
+  geom_errorbar(aes(ymin = mean_av_los, ymax = mean_av_los + ci), width = 0.2) +
   ylim(0, 15) +
   theme_bw() +
   geom_segment(aes(x = 1, y = 14.25, xend = 2, yend = 14.25), color = "black", linewidth = 1) +
@@ -351,7 +351,11 @@ hosp_adm_q_split %>%
   group_by(quarter) %>% 
   ggplot() +
   aes(x = quarter, y = episodes) + 
+<<<<<<< Updated upstream
   stat_summary(fun.data = "mean_se",
+=======
+  stat_summary(fun.data = "mean_cl_normal",
+>>>>>>> Stashed changes
                geom = "errorbar",
                width = .1) +
   stat_summary(fun = "mean", geom = "point", size = 4) +
@@ -365,6 +369,7 @@ hosp_adm_q_split %>%
     y = "Hospital Admissions",
     title = "Mean Hospital Admissions per Quarter"
   )
+<<<<<<< Updated upstream
 ```
 # bed occupancy
 
@@ -449,5 +454,7 @@ beds_data_year_quart %>%
    labs(x = "Season",
         y = "Average Percentage of Bed Occupancy") 
 
+=======
+>>>>>>> Stashed changes
 ```
 
