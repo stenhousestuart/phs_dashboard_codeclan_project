@@ -11,7 +11,7 @@ server <- function(input, output, session) {
                                        clean_hosp_admissions_qyear %>% 
                                          filter(admission_type %in% input$admission_input_tempo,
                                                 nhs_health_board %in% input$health_board_input_tempo) %>%
-                                         group_by(quarter)
+                                         group_by(quarter, nhs_health_board)
                                          
                                      })
 
@@ -20,14 +20,16 @@ server <- function(input, output, session) {
   filtered_geo <- eventReactive(eventExpr = input$update_geo,
                                 valueExpr = {
                                   pre_post_2020_avg_occupancy %>% 
+                                    mutate(year = if_else(year == "post 2020", "2020 - 2022", "2017 - 2019")) %>% 
                                     filter(nhs_health_board %in% input$health_board_input_geo) %>% 
-                                    mutate(year = factor(year, levels = c("pre 2020", "post 2020"))) %>% 
-                                  ggplot(aes(x = factor(quarter, 
-                                                        level = c("Q1", "Q2", "Q3", "Q4")), 
-                                             y = percentage_occupancy, 
-                                             group = nhs_health_board, 
-                                             colour = nhs_health_board)) + 
-                                    geom_line() +
+                                    mutate(year = factor(year, levels = c("2017 - 2019", "2020 - 2022"))) %>% 
+                                    ggplot(aes(x = factor(quarter, 
+                                                          level = c("Q1", "Q2", "Q3", "Q4")), 
+                                               y = percentage_occupancy, 
+                                               group = nhs_health_board, 
+                                               colour = nhs_health_board)) + 
+                                    geom_point() +
+                                    geom_line()+
                                     facet_wrap(~year) +
                                     labs(
                                       x = "Quarter", 
@@ -35,21 +37,75 @@ server <- function(input, output, session) {
                                       title = "Average Hospital Bed Occupancy per Location and Quarter",
                                       colour = "NHS Health Board"
                                     ) #+
-                                  #ylim(min_beds, max_beds)
-                                           
+                                  #ylim(min_beds, max_beds) not working!
+                                  
                                 })
   
   filtered_geo_date <- eventReactive(eventExpr = input$update_geo_date,
                                      valueExpr = {
-                                       locations_occupancy_full_combine_year_quarter %>% 
-                                         filter(year_quarter == input$year_input_geo) %>% 
+                                       
+                                       geo_year <- input$year_input_geo
+                                       geo_quart <- input$quarter_input_geo
+                                       title <- HTML("<h6>Percentage Occupancy by NHS Location</h6")
+                                       
+                                       validate(need(!(geo_year %in% 2017 & geo_quart %in% c("Q1", "Q2")), "There is no data for the date range you have selected, please reselect."))
+                                       validate(need(!(geo_year %in% 2022 & geo_quart %in% "Q4"), "There is no data for the date range you have selected, please reselect."))
+                                       
+                                       locations_occupancy_full %>% 
+                                         group_by(location, year, quarter) %>% 
+                                         mutate(mean_occ = round(mean(percentage_occupancy), digits = 2), 
+                                                mean_beds = floor(mean(average_occupied_beds))) %>% 
+                                         ungroup() %>%  # adds columns for mean % occ and mean occ beds for each location, year, quarter
+                                         filter(year == input$year_input_geo & quarter == input$quarter_input_geo) %>% 
                                          leaflet() %>% 
                                          addTiles() %>% 
                                          addCircleMarkers(lng = ~longitude,
                                                           lat = ~latitude,
-                                                          color = ~geo_palette(percentage_occupancy),
-                                                          stroke = FALSE)
+                                                          color = ~geo_palette(mean_occ),
+                                                          stroke = FALSE,
+                                                          label = ~location,
+                                                          popup = ~paste(location, "<br> Average Occupied beds:", mean_beds, "<br> Average Percentage Occupied:", mean_occ)) %>% 
+                                         addLegend(position = "bottomright", pal = geo_palette, values = ~percentage_occupancy, opacity = 2, title = "Average Percentage Occupied") %>% 
+                                         addControl(position = "topright", html = title)
+                                       
+                                       
+                                       
+                                       
                                      })
+  
+  # filtered_geo <- eventReactive(eventExpr = input$update_geo,
+  #                               valueExpr = {
+  #                                 pre_post_2020_avg_occupancy %>% 
+  #                                   filter(nhs_health_board %in% input$health_board_input_geo) %>% 
+  #                                   mutate(year = factor(year, levels = c("pre 2020", "post 2020"))) %>% 
+  #                                 ggplot(aes(x = factor(quarter, 
+  #                                                       level = c("Q1", "Q2", "Q3", "Q4")), 
+  #                                            y = percentage_occupancy, 
+  #                                            group = nhs_health_board, 
+  #                                            colour = nhs_health_board)) + 
+  #                                   geom_line() +
+  #                                   facet_wrap(~year) +
+  #                                   labs(
+  #                                     x = "Quarter", 
+  #                                     y = "Percentage of Occupied Beds",
+  #                                     title = "Average Hospital Bed Occupancy per Location and Quarter",
+  #                                     colour = "NHS Health Board"
+  #                                   ) #+
+  #                                 #ylim(min_beds, max_beds)
+  #                                          
+  #                               })
+  # filtered_geo_date <- eventReactive(eventExpr = input$update_geo_date,
+  #                                    valueExpr = {
+  #                                        locations_occupancy_full %>% 
+  #                                        filter(year == input$year_input_geo & quarter == input$quarter_input_geo) %>% 
+  #                                        leaflet() %>% 
+  #                                        addTiles() %>% 
+  #                                        addCircleMarkers(lng = ~longitude,
+  #                                                         lat = ~latitude,
+  #                                                         color = ~geo_palette(percentage_occupancy),
+  #                                                         stroke = FALSE)
+  #                                      
+  #                                    })
   
   filtered_age_gender_demo <- eventReactive(eventExpr = input$update_demo_gender_age,
                                              valueExpr = {
@@ -124,10 +180,12 @@ server <- function(input, output, session) {
                                                     geom = "line",
                                                     aes(group = simd, colour = simd)) +
                                        facet_wrap(~pre_post_2020) +
-                                       labs(x = "\n Quarter",
-                                            y = "Mean Episodes of Care \n",
-                                            title = "Mean Episodes of Care by SIMD & Quarter",
-                                            colour = "SIMD:")
+                                       labs(
+                                         x = "\n Quarter",
+                                         y = "Mean Episodes of Care \n",
+                                         title = "Mean Episodes of Care by SIMD & Quarter",
+                                         colour = "SIMD:",
+                                         subtitle = "2017 Q3 to 2022 Q3")
                                    
                                    }
                                    
@@ -153,10 +211,13 @@ server <- function(input, output, session) {
                                                     geom = "line",
                                                     aes(group = simd, colour = simd)) +
                                        facet_wrap(~pre_post_2020) +
-                                       labs(x = "\n Quarter",
-                                            y = "Mean Length of Stay \n",
-                                            title = "Mean Length of Stay by SIMD & Quarter",
-                                            colour = "SIMD:")
+                                       labs(
+                                         x = "\n Quarter",
+                                         y = "Mean Length of Stay \n",
+                                         title = "Mean Length of Stay by SIMD & Quarter",
+                                         colour = "SIMD:",
+                                         subtitle = "2017 Q3 to 2022 Q3")
+
                                      
                                      
                                    }
@@ -180,10 +241,13 @@ server <- function(input, output, session) {
                                            geom_line(aes(group = age, colour = age)) +
                                            geom_point(aes(colour = age)) +
                                            facet_wrap(~pre_post_2020) +
-                                           labs(x = "\n Quarter", 
-                                                y = "Mean Episodes of Care \n", 
-                                                title = "Mean Episodes of Care by Age & Quarter",
-                                                colour = "Age:")
+                                           labs(
+                                             x = "\n Quarter",
+                                             y = "Mean Episodes of Care \n",
+                                             title = "Mean Episodes of Care by Age & Quarter",
+                                             colour = "Age:",
+                                             subtitle = "2017 Q3 to 2022 Q3")
+
                                          
                                        }
                                        
@@ -202,7 +266,9 @@ server <- function(input, output, session) {
                                              x = "\n Quarter",
                                              y = "Mean Length of Stay \n",
                                              title = "Mean Length of Stay by Age & Quarter",
-                                             colour = "Age:")
+                                             colour = "Age:",
+                                             subtitle = "2017 Q3 to 2022 Q3")  
+
                                          
                                          
                                        }
@@ -259,7 +325,6 @@ server <- function(input, output, session) {
 
   output$geo_output <- renderPlot(
     filtered_geo()
-      
   )
   
   geo_palette <- colorNumeric(
@@ -299,34 +364,37 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            summarise(total_episodes = sum(episodes)) %>% 
                                            ggplot() +
                                            aes(x = quarter, y = total_episodes) +
-                                           geom_line(aes(group = 1),show.legend = FALSE) +
-                                           geom_point(size = 4, shape = 17, colour = "red") +
-                                           geom_line(aes(group = quarter)) +
-                                           theme_bw() +
-                                           theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
-                                           scale_colour_brewer(palette = "Dark2") +
-                                           geom_label(
-                                             label = "Pre-2020",
-                                             x = 2.5,
-                                             y = max_total_episodes(),
-                                             label.padding = unit(0.15, "lines"),
-                                             label.size = 0.15,
-                                             color = "black"
-                                           ) +
-                                           geom_label(
-                                             label = "Post-2020",
-                                             x = 20,
-                                             y = max_total_episodes(),
-                                             label.padding = unit(0.15, "lines"),
-                                             label.size = 0.15,
-                                             color = "black"
-                                           ) +
-                                           geom_vline(xintercept = 10.5, linetype = "dashed") +
-                                           labs(
-                                             title = "Total Number of Hospital Admissions",
-                                             subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
-                                             x = "Quarter",
-                                             y = "Hospital Admissions")
+                                           geom_line(aes(group = nhs_health_board, colour = nhs_health_board),show.legend = FALSE) +
+                                           geom_point(aes(colour = nhs_health_board), size = 4, shape = 17) +
+                                         #+
+                                          # geom_line(aes(group = quarter)) 
+                                         
+                                         theme_bw() +
+                                         theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5))+
+                                         scale_colour_brewer(palette = "Dark2") +
+                                         geom_label(
+                                           label = "Pre-2020",
+                                           x = 2.5,
+                                           y = max_total_episodes(),
+                                           label.padding = unit(0.15, "lines"),
+                                           label.size = 0.15,
+                                           color = "black"
+                                         ) +
+                                         geom_label(
+                                           label = "Post-2020",
+                                           x = 20,
+                                           y = max_total_episodes(),
+                                           label.padding = unit(0.15, "lines"),
+                                           label.size = 0.15,
+                                           color = "black"
+                                         ) +
+                                         geom_vline(xintercept = 10.5, linetype = "dashed") +
+                                         labs(
+                                           title = "Total Number of Hospital Admissions",
+                                           subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
+                                           x = "Quarter",
+                                           y = "Hospital Admissions",
+                                           col = "NHS Health Board")
                                          
                                        }
                                        
@@ -336,9 +404,9 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                              summarise(average_length_of_stay = mean(average_length_of_stay)) %>% 
                                              ggplot() +
                                              aes(x = quarter, y = average_length_of_stay) +
-                                             geom_line(aes(group = 1)) +
-                                             geom_point(size = 4, shape = 17, colour = "red") +
-                                             geom_line(aes(group = quarter)) +
+                                           geom_line(aes(group = nhs_health_board, colour = nhs_health_board),show.legend = FALSE) +
+                                           geom_point(aes(colour = nhs_health_board), size = 4, shape = 17) +
+                                             #geom_line(aes(group = quarter)) +
                                              theme_bw() +
                                              theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
                                              scale_colour_brewer(palette = "Dark2") +
@@ -364,7 +432,8 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                                title = "Average Length of Stay by Quarter",
                                                subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
                                                x = "Quarter",
-                                               y = "Mean of Average Length of Stay (In Days)") 
+                                               y = "Mean of Average Length of Stay (In Days)",
+                                               col = "NHS Health Board") 
                                        }
                                      })
 
@@ -415,7 +484,8 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                      title = "Mean number of episodes by Quarter for Specialities",
                                                      x = "Quarter",
                                                      y = "Hospital Admissions",
-                                                     col = "Speciality Name"
+                                                     col = "Speciality Name",
+                                                     subtitle = "2017 Q3 to 2022 Q3"
                                                    )
                                                }
                                                
@@ -431,7 +501,8 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                      title = "Mean length of episodes by Quarter for Specialities",
                                                      x = "Quarter",
                                                      y = "Mean of Average Length of Stay (In Days)",
-                                                     col = "Speciality Name"
+                                                     col = "Speciality Name",
+                                                     subtitle = "2017 Q3 to 2022 Q3"
                                                    )
                                                  
                                                }
@@ -440,5 +511,60 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
 output$speciality_output <-renderPlot(
   speciality_output_selection()
 )
-  
+
+speciality_occupancy_filter <- eventReactive(eventExpr = input$update_speciality,
+                                          valueExpr = {
+                                            locations_occupancy_full %>% 
+                                              mutate(year = case_when(
+                                                year >= 2020 ~ "Post-2020",
+                                                year < 2020 ~ "Pre-2020",
+                                                TRUE ~ "")) %>% 
+                                              drop_na(percentage_occupancy) %>% 
+                                              filter(specialty_name %in% input$speciality_input_longer) %>% 
+                                              group_by(quarter, specialty_name, year)
+                                          })
+
+output$speciality_occupancy <- renderPlot(
+speciality_occupancy_filter() %>% 
+    ggplot() +
+    aes(x = quarter, y = percentage_occupancy, colour = specialty_name) + 
+    stat_summary(fun.data = "mean_cl_normal",
+                 geom = "errorbar",
+                 width = .1) +
+    stat_summary(fun = "mean", geom = "point", size = 4) +
+    stat_summary(fun = "mean",
+                 geom = "line",
+                 color = "black") +
+    facet_wrap(~factor(year, level = c("Pre-2020", "Post-2020"))) +
+    labs(
+      title = "Mean Hospital Admission by Quarter for Specialities",
+      x = "Quarter",
+      y = "Hospital Admissions",
+      col = "Speciality Name",
+      subtitle = "2017 Q3 to 2022 Q3"
+    )
+)
+
+
+
+
+
+#filtering stats_split
+# stats_split_filtered <- eventReactive(eventExpr = input$hypothetical_stat_update,
+#                                       valueExpr = {
+#                                         hosp_adm_q_split %>%
+#   filter(!is.na(episodes)) %>%
+#   group_by(nhs_health_board, quarter, year) %>%
+#   filter(nhs_health_board %in% input$stats_health_board,
+#          quarter %in% input$stats_quarter,
+#          year %in% input$stats_year) 
+# 
+#                                       }
+#   )
+# # results to display
+# summarise(mean_hosp_adm = mean(episodes),
+#             median_hosp_adm = median(episodes)),
+#             sd_hosp_adm = sd(episodes),
+#             sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
+#             ci_hosp_adm = 2 * sd(episodes)
 }

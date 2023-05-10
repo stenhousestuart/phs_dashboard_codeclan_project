@@ -5,8 +5,11 @@ library(here)
 library(janitor)
 library(leaflet)
 library(DT)
-library(shiny)
+library(Hmisc)
+library(bslib)
 library(shinyWidgets)
+library(leafpop)
+
 
 # Read In Data
 clean_hosp_admissions_qyear <- read_csv(here("app/clean_data/clean_hosp_admissions_qyear.csv"))
@@ -21,7 +24,7 @@ locations_occupancy_full <- read_csv(here("app/clean_data/locations_occupancy_fu
 
 clean_hospital_admissions_speciality <- read_csv(here("app/clean_data/clean_hospital_admissions_speciality.csv"))
 
-locations_occupancy_full_combine_year_quarter <- read_csv(here("app/clean_data/locations_occupancy_full_combine_year_quarter.csv"))
+hosp_adm_q_split <- read_csv(here("app/clean_data/clean_hosp_admissions.csv")) 
 
 # Set Input Choices
 age_choice <- admission_demographics_all %>% 
@@ -37,17 +40,32 @@ deprivation_choice <- admission_deprivation_all %>%
   distinct(simd)
 
 geo_year_choice <- locations_occupancy_full %>% 
-  distinct(year)
+  arrange(year) %>% 
+  distinct(year) %>%
+  drop_na(year) %>% 
+  rename("Year" = year)
+
 
 geo_quarter_choice <- locations_occupancy_full %>% 
-  distinct(quarter)
+  arrange(quarter) %>% 
+  distinct(quarter) %>% 
+  drop_na(quarter) %>% 
+  rename("Quarter" = quarter)
 
 geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
-  distinct(nhs_health_board)
+  distinct(nhs_health_board) %>% 
+  rename("NHS Health Board" = nhs_health_board)
 
 speciality_choice <- clean_hospital_admissions_speciality %>% 
   distinct(specialty_name)
 
-year_quarter_choice <- locations_occupancy_full_combine_year_quarter %>% 
-  distinct(year_quarter) %>% 
-  arrange(year_quarter)
+speciality_choice_longer <- locations_occupancy_full %>% 
+  distinct(specialty_name)
+
+phs_theme <- bs_theme(
+  bg = "#F0F4F5",
+  fg = "#212B32",
+  primary = "#005EB8",
+  base_font = font_collection(font_google("Hind", local = TRUE), "arial"),
+  heading_font = font_collection(font_google("Hind", local = TRUE))
+)

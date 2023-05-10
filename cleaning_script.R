@@ -53,7 +53,10 @@ clean_hosp_admissions <- inpatient_data %>%
          hb = ifelse(hb == "RA2701", "No Fixed Abode", hb),
          hb = ifelse(hb == "RA2702", "Rest of the UK", hb),
          hb = ifelse(hb == "RA2703", "Outside the UK", hb),
-         hb = ifelse(hb == "RA2704", "Unknown Residency", hb)
+         hb = ifelse(hb == "RA2704", "Unknown Residency", hb),
+         hb = ifelse(hb == "S27000001", "Non-NHS Provider", hb),
+         hb = ifelse(hb == "SB0801", "The Golden Jubilee National Hospital", hb),
+         hb = ifelse(hb == "SN0811", "National Facility NHS Louisa Jordan", hb)
   ) %>%
   rename(nhs_health_board = hb) %>% 
   separate(quarter,into = c("year", "quarter"), sep = "Q" ) %>% 
@@ -396,5 +399,4 @@ write_csv(pre_post_2020_avg_occupancy, here("app/clean_data/pre_post_2020_avg_oc
 
 write_csv(locations_occupancy_full, here("app/clean_data/locations_occupancy_full.csv"))
 
-write_csv(locations_occupancy_full_combine_year_quarter, here("app/clean_data/locations_occupancy_full_combine_year_quarter.csv"))
-
+write_csv(beds_data_year_quart, here("app/clean_data/beds_data_year_quart.csv"))

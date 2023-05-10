@@ -1,0 +1,84 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggpubr)
+library(broom)
+library(AICcmodavg)
+library(infer)
+library(knitr)
+library(kableExtra)
+
+
+hospital_admissions_qyear <- read_csv("app/clean_data/clean_hosp_admissions_qyear.csv")
+
+hosp_adm_q_split <- read_csv("app/clean_data/clean_hosp_admissions.csv") 
+
+hospital_beds <- read_csv("app/clean_data/pre_post_2020_avg_occupancy.csv")
+
+deprivations <- read_csv("app/clean_data/admission_deprivation_all.csv")
+
+demographics <- read_csv("app/clean_data/admission_demographics_all.csv")
+
+pre_post_2020_av_occ <- read_csv("app/clean_data/pre_post_2020_avg_occupancy.csv")
+```
+
+
+
+```{r}
+# hosp_admissions_summary table 
+
+hosp_adm_q_split %>% 
+  filter(!is.na(episodes)) %>% 
+  group_by(nhs_health_board, quarter, year) %>% 
+  filter(nhs_health_board %in% "Lothian",
+         quarter == 1,
+         year == 2018) %>% 
+  summarise(mean_hosp_adm = mean(episodes),
+            median_hosp_adm = median(episodes),
+            sd_hosp_adm = sd(episodes),
+            sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
+            ci_hosp_adm = 2 * sd(episodes),
+            )
+```
+
+
+```{r}
+# avg_los_summary table 
+
+hosp_adm_q_split %>% 
+  filter(!is.na(average_length_of_stay)) %>% 
+  group_by(nhs_health_board, quarter, year) %>% 
+  filter(nhs_health_board %in% "Lothian",
+         quarter == 1,
+         year == 2018) %>% 
+  summarise(mean_avlos = mean(average_length_of_stay),
+            median_avlos = median(average_length_of_stay),
+            sd_hosp_avlos = sd(average_length_of_stay),
+            sem_hosp_avlos = sd(average_length_of_stay)/sqrt(length(average_length_of_stay)),
+            ci_hosp_avlos = 2 * sd(average_length_of_stay),
+            )
+```
+
+
+```{r}
+# percentage occupancy summary table.
+beds_data_year_quart %>% 
+  filter(!is.na(percentage_occupancy)) %>% 
+  group_by(nhs_health_board, quarter, year) %>% 
+  filter(nhs_health_board %in% "Lothian",
+         quarter %in% "Q1",
+         year == 2018) %>% 
+  summarise(mean_per_occ = mean(percentage_occupancy),
+            median_per_occ = median(percentage_occupancy),
+            sd_hosp_per_occ = sd(percentage_occupancy),
+            sem_hosp_per_occ = sd(percentage_occupancy)/sqrt(length(percentage_occupancy)),
+            ci_hosp_per_occ= 2 * sd(percentage_occupancy),
+            )
+
+```
+
