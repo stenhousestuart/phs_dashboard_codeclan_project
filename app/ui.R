@@ -1,10 +1,10 @@
-ui <- fluidPage( theme = phs_theme,
+ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                  column(width = 5,
-                        h1(id="big-heading", "Covid-19 Dashboard"),
-                        tags$style(HTML("#big-heading{color: #948DA3;
-                                 background-color: #80BCEA;
+                        h1(id="big-heading", " Covid-19 Dashboard"),
+                        tags$style(HTML("#big-heading{color: #FFFFFF;
+                                 background-color: #3F3685;
                                  border-style: solid;
-                                 border-color: #0078D4}"))
+                                 border-color: #C1DD93}"))
                  ),
                  # titlePanel("Change me!", windowTitle = "Covid-19 Dashboard - DR20 group project"),
                  tabsetPanel(
@@ -13,12 +13,33 @@ ui <- fluidPage( theme = phs_theme,
                      title = ".README",
                      
                      fluidRow(
+                       column(width = 10,
+                              offset = 0.5,
                        tags$br(),
-                       print("This is space for us to put some introductory text - explaining the
-              purpose of the app, a short description of each tab along with details and rational
-              behind any assumptions/decisions.")
+                       p("This dashboard has been created by members of Codeclan's DR20 Professional Data Analysis Cohort. 
+                         The purpose of the dashboard is to enable users to explore data relating to the provision of acute 
+                         healthcare in Scotland. Although split into various sections, the  same 3x Key Performance Indicators
+                         have been utilised throughout."),
+                       tags$br(),
+                       p(tags$b("1. Number of Hospital Admissions"), tags$br(), "Metric: Number of Episodes",
+                         tags$br(), "Definition:", tags$em("An admission marks the start of an inpatient episode or day case episode. 
+                         (The National Data Catalogue, Data Dictionary)")),
+                       tags$br(),
+                       p(tags$b("2. Average Length of Hospital Stay"), tags$br(), "Metric: Length of Stay OR Avg. Length of Stay",
+                         tags$br(), "Definition:", tags$em("Length of stay is the length of an inpatient episode. 
+                         (The National Data Catalogue, Data Dictionary)")),
+                       tags$br(),
+                       p(tags$b("3. Percentage of Bed Occupancy"), tags$br(), "Metric: Percentage of Bed Occupancy",
+                         tags$br(), "Definition:", tags$em("An occupied bed is an available staffed bed which is either being used to 
+                         accommodate an inpatient or reserved for a patient on pass. 
+                         (The National Data Catalogue, Data Dictionary)")),
+                       tags$br(),
+                       p(tags$b("Data Quality:"), tags$br(), "All data has been sourced from Public Health Scotland 
+                         (www.opendata.nhs.scot) and data used ranges from 2017Q3 to 2022Q3. All efforts have been made to ensure 
+                         that the dashboard utilises as much of the available data as possible. For Percentage of Bed Occupancy, Length of Stay and
+                         Year/Quarter data however, complete data was not always available and this should be taken into consideration when interpreting results."),
+                     ),
                      )
-              
                    ),
               
               tabPanel(
