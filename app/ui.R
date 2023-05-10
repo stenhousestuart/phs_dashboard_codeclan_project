@@ -219,7 +219,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     ),
                     
                     column(width = 3,
-                           print("Description Text"))
+                           p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     
                     ),
                     fluidRow(
@@ -229,9 +229,10 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                         icon = icon("refresh"))
                     ),
                     ), 
-                    fluidRow(
+                    fluidRow(column(width = 10,
+                                    offset = 1,
                     plotOutput("temporal_output"),
-                    
+                    ),
                   ),
                   ),
                   
@@ -252,8 +253,8 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                          choices = geo_quarter_choice,
                                          selected = "Q1")
                       ),
-                      column(width = 6,
-                             print("Description Text"))
+                      column(width = 5,
+                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     ),
                     fluidRow(
                       column(width = 4,
@@ -287,11 +288,14 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                           icon = icon("refresh")
                              ),
                       ),
-                      column(width = 5,
-                             print("Description Text"))
+                      column(width = 4,
+                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     ),
-                  fluidRow(
+                    tags$br(),
+                  fluidRow(column(width = 10,
+                                  offset = 1,
                     plotOutput("geo_output"),
+                  ),
                   ),
                   ),
                   
@@ -388,11 +392,11 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                           
                           
                           
-                          column(width = 4,
-                                 print("This is a more sensible text box")
+                          column(width = 3,
+                                 p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                                  
-                          )
-                        ),
+                          ),
+                      
                         fluidRow(
                           
                           column(width = 4,
@@ -403,13 +407,13 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         ),
                         
                         fluidRow(
+                          column(width = 10,
+                                 offset = 1,
                           plotOutput("demo_age_output"),
-                          print("")
+                          ),
                           
                         ),
-                        
                       ),
-                      
                       tabPanel(
                         title = "Deprivation",
                         tags$br(),
@@ -432,9 +436,9 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                              selected = 1)
                           ),
                           
-                          column(width = 4,
-                                 print("The plots below use the Scottish Index of Multiple Deprivation, where SIMD 1
-                  is considered the most deprived and SIMD 5 being least deprived.")
+                          column(width = 3,
+                                 p("The plots below use the Scottish Index of Multiple Deprivation, where SIMD 1
+                  is considered the most deprived and SIMD 5 being least deprived.", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"),
                           ),
                         ), 
                   
@@ -442,7 +446,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     column(width = 4,
                            actionButton(inputId = "update_demo_deprivation",
                                         label = tags$b("Update"),
-                                        icon = icon("refresh"))
+                                        icon = icon("refresh")
                     )
                   ),
                   
@@ -451,7 +455,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                   ),
                   
                       ),
-                  
+                      ),
                   tabPanel(
                     title = "Gender & Age",
                     tags$br(),
@@ -471,10 +475,9 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                          selected = "20-29"),
                       ),
                       
-                      column(width = 4,
-                             print("This is the last one. Wasn't this fun?")  
+                      column(width = 3,
+                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px")) 
                       ),
-                    ),
                     
                     fluidRow(
                       column(width = 4,
@@ -484,8 +487,10 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                       )
                     ),
                     
-                    fluidRow(
+                    fluidRow(column(width = 10,
+                                    offset = 1,
                       plotOutput("demo_age_gender_output"),
+                    ),
                     ),
                     
                     fluidRow(

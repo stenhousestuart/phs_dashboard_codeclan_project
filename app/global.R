@@ -9,6 +9,7 @@ library(Hmisc)
 library(bslib)
 library(shinyWidgets)
 library(leafpop)
+library(phsstyles)
 
 
 # Read In Data
@@ -51,7 +52,6 @@ geo_year_choice <- locations_occupancy_full %>%
   drop_na(year) %>% 
   rename("Year" = year)
 
-
 geo_quarter_choice <- locations_occupancy_full %>% 
   arrange(quarter) %>% 
   distinct(quarter) %>% 
@@ -69,11 +69,3 @@ speciality_choice <- clean_hospital_admissions_speciality %>%
 speciality_choice_longer <- locations_occupancy_full %>% 
   distinct(specialty_name) %>% 
   rename("Specialty Name" = specialty_name)
-
-phs_theme <- bs_theme(
-  bg = "#F0F4F5",
-  fg = "#212B32",
-  primary = "#005EB8",
-  base_font = font_collection(font_google("Hind", local = TRUE), "arial"),
-  heading_font = font_collection(font_google("Hind", local = TRUE))
-)
