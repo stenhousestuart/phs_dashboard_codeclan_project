@@ -48,8 +48,10 @@ ui <- fluidPage(
                selectInput(inputId = "admission_input_tempo",
                            label = "Select Admission Type",
                            choices = admission_choice,
+                           multiple = TRUE,
                            selected = "All Inpatients")
-        ),
+               
+                    ),
         column(width = 6,
                selectInput(inputId = "health_board_input_tempo",
                            label = "Select Health Board",
