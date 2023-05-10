@@ -28,16 +28,20 @@ hosp_adm_q_split <- read_csv(here("app/clean_data/clean_hosp_admissions.csv"))
 
 # Set Input Choices
 age_choice <- admission_demographics_all %>% 
-  distinct(age)
+  distinct(age) %>% 
+  rename("Age" = age)
 
 admission_choice <- clean_hosp_admissions_qyear %>% 
-  distinct(admission_type)
+  distinct(admission_type) %>% 
+  rename("Admission Type" = admission_type)
 
 health_board_choice <- clean_hosp_admissions_qyear %>% 
-  distinct(nhs_health_board)
+  distinct(nhs_health_board) %>% 
+  rename("NHS Health Board" = nhs_health_board)
 
 deprivation_choice <- admission_deprivation_all %>% 
-  distinct(simd)
+  distinct(simd) %>% 
+  rename("SIMD" = simd)
 
 geo_year_choice <- locations_occupancy_full %>% 
   arrange(year) %>% 
@@ -57,10 +61,12 @@ geo_healthboard_choice <- pre_post_2020_avg_occupancy %>%
   rename("NHS Health Board" = nhs_health_board)
 
 speciality_choice <- clean_hospital_admissions_speciality %>% 
-  distinct(specialty_name)
+  distinct(specialty_name) %>% 
+  rename("Specialty Name" = specialty_name)
 
 speciality_choice_longer <- locations_occupancy_full %>% 
-  distinct(specialty_name)
+  distinct(specialty_name) %>% 
+  rename("Specialty Name" = specialty_name)
 
 phs_theme <- bs_theme(
   bg = "#F0F4F5",

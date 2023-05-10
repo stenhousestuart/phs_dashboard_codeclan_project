@@ -57,21 +57,23 @@ ui <- fluidPage( theme = phs_theme,
                 ),
                 fluidRow(
                   column(width = 3,
-                         selectInput(inputId = "admission_input_tempo",
+                         pickerInput(inputId = "admission_input_tempo",
                                      label = "Select Admission Type",
                                      choices = admission_choice,
-                                     multiple = TRUE,
-                                     selected = "All Inpatients")
+                                     pickerOptions(actionsBox = TRUE),
+                                     selected = "All Inpatients",
+                                     multiple = TRUE)
                          
                          
                   ),
                   column(width = 6,
                          
-                         selectInput(inputId = "health_board_input_tempo",
+                         pickerInput(inputId = "health_board_input_tempo",
                                      label = "Select Health Board",
                                      choices = health_board_choice,
                                      selected = "All of Scotland",
-                                     multiple = TRUE)
+                                     multiple = TRUE,
+                                     pickerOptions(actionsBox = TRUE))
                   ),
                   
                   column(width = 6,
@@ -169,12 +171,13 @@ ui <- fluidPage( theme = phs_theme,
                 ),
                 fluidRow( 
                   column(width = 6,
-                         selectInput(
+                        pickerInput(
                            inputId = "speciality_input",
                            label = "Please select Speciality(s)",
                            choices = speciality_choice,
                            multiple = TRUE,
-                           selected = "General Surgery"
+                           selected = "General Surgery",
+                           pickerOptions(actionsBox = TRUE)
                          ),
                   ),
                   column(width = 6,
@@ -190,12 +193,13 @@ ui <- fluidPage( theme = phs_theme,
               fluidRow(
                 plotOutput("speciality_output"),
                 
-                selectInput(
+                pickerInput(
                   inputId = "speciality_input_longer",
                   label = "Please select Speciality(s)",
                   choices = speciality_choice_longer,
                   multiple = TRUE,
-                  selected = "General Surgery"
+                  selected = "General Surgery",
+                  pickerOptions(actionsBox = TRUE)
                 ),
                 plotOutput("speciality_occupancy"),
               ),
@@ -218,11 +222,12 @@ ui <- fluidPage( theme = phs_theme,
                 column(width = 4,
                        
                        
-                       selectInput(inputId = "age_input",
+                       pickerInput(inputId = "age_input",
                                    label = "Select Age Range(s) To Compare:",
                                    choices = age_choice,
                                    multiple = TRUE,
-                                   selected = "All ages")
+                                   selected = "All ages",
+                                   pickerOptions(actionsBox = TRUE))
                 ),
                 
                 
@@ -277,10 +282,11 @@ ui <- fluidPage( theme = phs_theme,
                 column(width = 4,
                        
                        
-                       selectInput(inputId = "deprivation_input",
+                       pickerInput(inputId = "deprivation_input",
                                    label = "Select Deprivation Categories To Compare:",
                                    choices = deprivation_choice,
-                                   multiple = TRUE)
+                                   multiple = TRUE,
+                                   pickerOptions(actionsBox = TRUE))
                 ),
                 
                 
@@ -323,10 +329,11 @@ ui <- fluidPage( theme = phs_theme,
                 column(width = 4,
                        
                        
-                       selectInput(inputId = "gender_age_input",
+                       pickerInput(inputId = "gender_age_input",
                                    label = "Select Age Range(s) To Compare:",
                                    choices = age_choice,
-                                   multiple = TRUE),
+                                   multiple = TRUE,
+                                   pickerOptions(actionsBox = TRUE)),
                 ),
                 
                 
