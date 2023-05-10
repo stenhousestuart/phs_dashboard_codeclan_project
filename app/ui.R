@@ -65,7 +65,7 @@ ui <- fluidPage( theme = phs_theme,
                               
                               
                        ),
-                       column(width = 6,
+                       column(width = 3,
                               
                               selectInput(inputId = "health_board_input_tempo",
                                           label = "Select Health Board",
@@ -213,8 +213,15 @@ ui <- fluidPage( theme = phs_theme,
                          title = "Age",
                          
                          fluidRow(
-                           tags$br(),
-                           
+                           # tags$br(),
+                           column(width = 4,
+                                  
+                                  radioButtons(inputId = "age_plot_type_input",
+                                               label = "View:",
+                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
+                           ),
+                         ),
+                         fluidRow(
                            column(width = 4,
                                   
                                   
@@ -226,12 +233,7 @@ ui <- fluidPage( theme = phs_theme,
                            ),
                            
                            
-                           column(width = 4,
-                                  
-                                  radioButtons(inputId = "age_plot_type_input",
-                                               label = "View:",
-                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
-                           ),
+                           
                            
                            column(width = 6,
                                   print("This is an example of putting text here. This shows the extent of the amount of text we can put in this part, please excuse the A's. AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA, AAAAAAAAAAA
@@ -240,128 +242,120 @@ ui <- fluidPage( theme = phs_theme,
                                   
                            )
                          ),
-                         fluidRow(
-                           
-                           column(width = 4,
-                                  actionButton(inputId = "update_demo_age",
-                                               label = "Update Dashboard",
-                                               icon = icon("refresh"))
-                           )
-                         ),
+                      
+                       fluidRow(
                          
-                         
-                         fluidRow(
-                           plotOutput("demo_age_output"),
-                           print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
+                         column(width = 4,
+                                actionButton(inputId = "update_demo_age",
+                                             label = "Update Dashboard",
+                                             icon = icon("refresh"))
+                         )
+                       ),
+                       
+                       
+                       fluidRow(
+                         plotOutput("demo_age_output"),
+                         print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
             This would be where some stats go, but good luck interpretting these nonsense graphs")
-                           
+                         
+                       ),
+                       
+                       ),
+                     
+
+                     tabPanel(
+                       title = "Deprivation",
+                       
+                       fluidRow(
+                         tags$br(),
+                         
+                         column(width = 4,
+                                
+                                
+                                selectInput(inputId = "deprivation_input",
+                                            label = "Select Deprivation Categories To Compare:",
+                                            choices = deprivation_choice,
+                                            multiple = TRUE)
                          ),
                          
                          
+                         column(width = 3,
+                                
+                                radioButtons(inputId = "deprivation_plot_type_input",
+                                             label = "View:",
+                                             choices = c("Mean No. of Admissions", "Mean Length of Stay"))
+                         ),
+                         
+                         
+                         column(width = 6,
+                               print("This is another text space - But i'm running out of ideas for things to put in it.")
+                         ),
+                       ), 
+                       fluidRow(
+                         
+                         actionButton(inputId = "update_demo_deprivation",
+                                      label = "Update Dashboard",
+                                      icon = icon("refresh"))
+                         
                        ),
                        
-                       
-                       
-                       
-                       
-                    
-                   
-                   
-                   
-                   tabPanel(
-                     title = "Deprivation",
-                     
-                     fluidRow(
-                       tags$br(),
-                       
-                       column(width = 4,
-                              
-                              
-                              selectInput(inputId = "deprivation_input",
-                                          label = "Select Deprivation Categories To Compare:",
-                                          choices = deprivation_choice,
-                                          multiple = TRUE)
+                       fluidRow(
+                         plotOutput("demo_deprivation_output")
                        ),
                        
-                       
-                       column(width = 3,
-                              
-                              radioButtons(inputId = "deprivation_plot_type_input",
-                                           label = "View:",
-                                           choices = c("Mean No. of Admissions", "Mean Length of Stay"))
-                       ),
-                       
-                       
-                       column(width = 6,
-                              print("This is another text space - But i'm running out of ideas for things to put in it.")
-                       ),
-                     ), 
-                     fluidRow(
-                       
-                       actionButton(inputId = "update_demo_deprivation",
-                                    label = "Update Dashboard",
-                                    icon = icon("refresh"))
-                       
-                     ),
-                     
-                     fluidRow(
-                       plotOutput("demo_deprivation_output")
-                     ),
-                     
-                     fluidRow(
-                       print("The above plots use the Scottish Index of Multiple Deprivation, where SIMD 1
+                       fluidRow(
+                         print("The above plots use the Scottish Index of Multiple Deprivation, where SIMD 1
                   is considered the most deprived and SIMD 5 being least deprived.")
+                         
+                       ),
+                     ),
+                     
+                     tabPanel(
+                       title = "Gender & Age",
                        
+                       fluidRow(
+                         tags$br(),
+                         column(width = 4,
+                                
+                                
+                                selectInput(inputId = "gender_age_input",
+                                            label = "Select Age Range(s) To Compare:",
+                                            choices = age_choice,
+                                            multiple = TRUE),
+                         ),
+                         
+                         
+                         column(width = 4,
+                                
+                                radioButtons(inputId = "age_gender_plot_type_input",
+                                             label = "View:",
+                                             choices = c("No. of Admissions", "Average Length of Stay")),
+                         ),
+                         
+                         
+                         
+                         column(width = 6,
+                                print("This is the last one. Wasn't this fun?")  
+                         ),
+                       ),
+                       fluidRow(
+                         actionButton(inputId = "update_demo_gender_age",
+                                      label = "Update Dashboard",
+                                      icon = icon("refresh")),
+                       ),
+                       
+                       fluidRow(
+                         plotOutput("demo_age_gender_output"),
+                       ),
+                       
+                       fluidRow(
+                         print("Only years where complete data is available have been included.")
+                          
+                       ),
+                       ),
                      ),
                    ),
-                   
-                   tabPanel(
-                     title = "Gender & Age",
-                     
-                     fluidRow(
-                       tags$br(),
-                       column(width = 4,
-                              
-                              
-                              selectInput(inputId = "gender_age_input",
-                                          label = "Select Age Range(s) To Compare:",
-                                          choices = age_choice,
-                                          multiple = TRUE),
-                       ),
-                       
-                       
-                       column(width = 4,
-                              
-                              radioButtons(inputId = "age_gender_plot_type_input",
-                                           label = "View:",
-                                           choices = c("No. of Admissions", "Average Length of Stay")),
-                       ),
-                       
-                       
-                       
-                       column(width = 6,
-                              print("This is the last one. Wasn't this fun?")  
-                       ),
-                     ),
-                     fluidRow(
-                       actionButton(inputId = "update_demo_gender_age",
-                                    label = "Update Dashboard",
-                                    icon = icon("refresh")),
-                     ),
-                     
-                     fluidRow(
-                       plotOutput("demo_age_gender_output"),
-                     ),
-                     
-                     fluidRow(
-                       print("Only years where complete data is available have been included.")
-                       
-                     ),
-                     ),
-                   ),
-                    ),
-                 ),
-                 # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
+                 ), # WARNING: THIS MUST BE OUTSIDE tabSetPanel!
                  hr(),
                  print("Data taken from "),
                  tags$a(href = "https://www.opendata.nhs.scot/dataset?groups=covid-19",
@@ -371,5 +365,7 @@ ui <- fluidPage( theme = phs_theme,
                  tags$a(href = "https://fontawesome.com/icons",
                         "FontAwesome")
 )
+
+                
 
 
