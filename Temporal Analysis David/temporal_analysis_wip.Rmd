@@ -1066,3 +1066,20 @@ clean_hosp_admissions %>%
 
 ```
 
+```{r}
+clean_hosp_admissions_qyear %>%
+  filter(admission_type %in% c("All Inpatients", "Emergency Inpatients"),
+         nhs_health_board %in% c("Fife", "Lothian")) %>%
+  group_by(nhs_health_board, quarter) %>%
+  summarise(total_episodes = sum(episodes)) %>%
+  select(total_episodes) %>%
+  slice_max(total_episodes, n = 1) %>% 
+  ungroup() %>% 
+  slice_max(total_episodes, n = 1) %>% 
+pull()
+```
+```{r}
+clean_hosp_admissions_qyear %>% 
+  filter(nhs_health_board == "Ayrshire and Arran")
+```
+

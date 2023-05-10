@@ -24,29 +24,149 @@ ui <- fluidPage( theme = phs_theme,
               tabPanel(
                 title = "Stats",
                 tags$br(),
+                tabsetPanel(
+                  tabPanel(
+                    title = "Admissions",
                 tags$h3("Number of Hospital Admissions"),
                 tags$br(),
                 print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
                 tags$br(),
                 tags$br(),
                 fluidRow(
-                  
-                  selectInput(inputId = "stats_year_input",
-                              label = "Select Year:",
-                              choices = c("2017", "2018", "2019", "2020", "2021", "2022")
+                  column(width = 3,
+                  actionButton(inputId = "hospital_admission_stat_update",
+                               label = "Update Tables",
+                               icon = icon("refresh"))
+                  )
+                ),
+                fluidRow(
+                  column(width = 4,
+                  selectInput(inputId = "hospital_admission_stats_health_board_input",
+                              label = "Select Health Board(s):",
+                              choices = health_board_choice,
+                              multiple = TRUE
+                              )
                   ),
-                ),    
+                  column(width = 4,
+                         selectInput(inputId = "hospital_admission_stats_quarter_input",
+                                     label = "Select Quarter(s):",
+                                     choices = c("1", "2", "3", "4"),
+                                     multiple = TRUE
+                         ),
+                         ),
+                         column(width = 4,
+                                selectInput(inputId = "hospital_admission_stats_year_input",
+                                            label = "Select Year:",
+                                            choices = c("2017", "2018", "2019", "2020", "2021", "2022"),
+                                            multiple = TRUE
+                                )
+                         ),
+                  ),
+                    
                 
                 fluidRow(
                   column(width = 8,
-                         dataTableOutput("stats_table_output")
+                         dataTableOutput("hospital_admission_stats_split_output")
                   ),
-                  column(width = 3,
-                         img(src = "av_hosp_graph.png", style = "width: 500px"))
+                  column(width = 1,
+                         img(src = "av_hosp_graph.png", style = "width: 800px"))
+                ),
+                  ), # tab panel - admissions
+                tabPanel(
+                  title = "LoS",
+                  tags$h3("Length of Stay"),
+                  tags$br(),
+                  print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                  tags$br(),
+                  tags$br(),
+                  fluidRow(
+                    column(width = 3,
+                           actionButton(inputId = "length_of_stay_stat_update",
+                                        label = "Update Tables",
+                                        icon = icon("refresh"))
+                    )
+                  ),
+                fluidRow(
+                  column(width = 4,
+                         selectInput(inputId = "length_of_stay_stats_health_board_input",
+                                     label = "Select Health Board(s):",
+                                     choices = health_board_choice,
+                                     multiple = TRUE
+                         )
+                  ),
+                  column(width = 4,
+                         selectInput(inputId = "length_of_stay_stats_quarter_input",
+                                     label = "Select Quarter(s):",
+                                     choices = c("1", "2", "3", "4"),
+                                     multiple = TRUE
+                         ),
+                  ),
+                  column(width = 4,
+                         selectInput(inputId = "length_of_stay_stats_year_input",
+                                     label = "Select Year:",
+                                     choices = c("2017", "2018", "2019", "2020", "2021", "2022"),
+                                     multiple = TRUE
+                         )
+                  ),
+                ),
+                fluidRow(
+                  column(width = 8,
+                         dataTableOutput("length_of_stay_stats_output")
+                  ),
+                  column(width = 1,
+                         img(src = "av_length_graph.png", style = "width: 800px"))
                 ),
                 
+                ), # tab panel length of stay
+                 tabPanel(
+                   title = "Beds",
+                   tags$h3("Hospital beds occupancy"),
+                   tags$br(),
+                   print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                   tags$br(),
+                   tags$br(),
+                   fluidRow(
+                     column(width = 3,
+                            actionButton(inputId = "beds_stat_update",
+                                         label = "Update Tables",
+                                         icon = icon("refresh"))
+                     )
+                   ),
+                   fluidRow(
+                     column(width = 4,
+                            selectInput(inputId = "beds_stats_health_board_input",
+                                        label = "Select Health Board(s):",
+                                        choices = health_board_choice,
+                                        multiple = TRUE
+                            )
+                     ),
+                     column(width = 4,
+                            selectInput(inputId = "beds_stats_quarter_input",
+                                        label = "Select Quarter(s):",
+                                        choices = c("Q1", "Q2", "Q3", "Q4"),
+                                        multiple = TRUE
+                            ),
+                     ),
+                     column(width = 4,
+                            selectInput(inputId = "beds_stats_year_input",
+                                        label = "Select Year:",
+                                        choices = c("2017", "2018", "2019", "2020", "2021", "2022"),
+                                        multiple = TRUE
+                            )
+                     ),
+                   ),
+                   fluidRow(
+                     column(width = 8,
+                            dataTableOutput("beds_stats_output")
+                     ),
+                     column(width = 1,
+                            img(src = "av_bed_occ_graph.png", style = "width: 800px"))
+                   ),
+                 ) 
+                ) # tab set panel
+                ),
                 
-              ),
+              
               tabPanel(
                 title = "Temporal",
                 fluidRow(

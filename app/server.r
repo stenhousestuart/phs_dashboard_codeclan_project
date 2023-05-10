@@ -280,11 +280,14 @@ server <- function(input, output, session) {
   max_total_episodes <- eventReactive(eventExpr = input$update_temporal,
                                       valueExpr = {
                                         clean_hosp_admissions_qyear %>%
+                                          filter(location != "A101H") %>% 
                                           filter(admission_type %in% input$admission_input_tempo,
                                                  nhs_health_board %in% input$health_board_input_tempo) %>%
-                                          group_by(quarter) %>%
+                                          group_by(nhs_health_board, quarter) %>%
                                           summarise(total_episodes = sum(episodes)) %>%
                                           select(total_episodes) %>%
+                                          slice_max(total_episodes, n = 1) %>% 
+                                          ungroup() %>% 
                                           slice_max(total_episodes, n = 1) %>% 
                                           pull()
                                       })
@@ -542,22 +545,66 @@ speciality_occupancy_filter() %>%
 
 
 
-#filtering stats_split
-# stats_split_filtered <- eventReactive(eventExpr = input$hypothetical_stat_update,
-#                                       valueExpr = {
-#                                         hosp_adm_q_split %>%
-#   filter(!is.na(episodes)) %>%
-#   group_by(nhs_health_board, quarter, year) %>%
-#   filter(nhs_health_board %in% input$stats_health_board,
-#          quarter %in% input$stats_quarter,
-#          year %in% input$stats_year) 
-# 
-#                                       }
-#   )
-# # results to display
-# summarise(mean_hosp_adm = mean(episodes),
-#             median_hosp_adm = median(episodes)),
-#             sd_hosp_adm = sd(episodes),
-#             sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
-#             ci_hosp_adm = 2 * sd(episodes)
+#filtering hospital_admission_stats_split
+hospital_admission_stats_split_filtered <- eventReactive(eventExpr = input$hospital_admission_stat_update,
+                                      valueExpr = {
+   hosp_adm_q_split %>%
+  filter(!is.na(episodes)) %>%
+  group_by(nhs_health_board, quarter, year) %>%
+  filter(nhs_health_board %in% input$hospital_admission_stats_health_board_input,
+         quarter %in% input$hospital_admission_stats_quarter_input,
+         year %in% input$hospital_admission_stats_year_input)
+
+                                      }
+  )
+
+output$hospital_admission_stats_split_output <- renderDataTable(
+  hospital_admission_stats_split_filtered() %>% 
+summarise(mean_hosp_adm = mean(episodes),
+            median_hosp_adm = median(episodes),
+            sd_hosp_adm = sd(episodes),
+            sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
+            ci_hosp_adm = 2 * sd(episodes))
+)
+
+# filtering length_of_stay stats
+length_of_stay_stats_filtered <- eventReactive(eventExpr = input$length_of_stay_stat_update,
+                                                         valueExpr = {
+hosp_adm_q_split %>% 
+  filter(!is.na(average_length_of_stay)) %>% 
+  group_by(nhs_health_board, quarter, year) %>% 
+  filter(nhs_health_board %in% input$length_of_stay_stats_health_board_input,
+         quarter %in% input$length_of_stay_stats_quarter_input,
+         year %in% input$length_of_stay_stats_year_input)
+})
+
+output$length_of_stay_stats_output <- renderDataTable(
+  length_of_stay_stats_filtered() %>% 
+    summarise(mean_avlos = mean(average_length_of_stay),
+              median_avlos = median(average_length_of_stay),
+              sd_hosp_avlos = sd(average_length_of_stay),
+              sem_hosp_avlos = sd(average_length_of_stay)/sqrt(length(average_length_of_stay)),
+              ci_hosp_avlos = 2 * sd(average_length_of_stay)
+    )
+)
+
+# filtering beds stats
+beds_stats_filtered <- eventReactive(eventExpr = input$beds_stat_update,
+                                     valueExpr = {
+                                       beds_data_year_quart %>% 
+                                         filter(!is.na(percentage_occupancy)) %>% 
+                                         group_by(nhs_health_board, quarter, year) %>% 
+                                         filter(nhs_health_board %in% input$beds_stats_health_board_input,
+                                                quarter %in% input$beds_stats_quarter_input,
+                                                year %in% input$beds_stats_year_input)
+                                     })
+
+output$beds_stats_output <- renderDataTable(
+  beds_stats_filtered() %>% 
+    summarise(mean_per_occ = mean(percentage_occupancy),
+              median_per_occ = median(percentage_occupancy),
+              sd_hosp_per_occ = sd(percentage_occupancy),
+              sem_hosp_per_occ = sd(percentage_occupancy)/sqrt(length(percentage_occupancy)),
+              ci_hosp_per_occ= 2 * sd(percentage_occupancy),
+    ))
 }
