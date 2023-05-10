@@ -1754,8 +1754,9 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGphbml0b3IpXG5saWJyYXJ5KGdncHVicilcbmxpYnJhcnkoYnJvb20pXG5saWJyYXJ5KEFJQ2Ntb2RhdmcpXG5saWJyYXJ5KGluZmVyKVxubGlicmFyeShrbml0cilcbmxpYnJhcnkoa2FibGVFeHRyYSlcblxuXG5ob3NwaXRhbF9hZG1pc3Npb25zX3F5ZWFyIDwtIHJlYWRfY3N2KFwiYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyLmNzdlwiKVxuXG5ob3NwX2FkbV9xX3NwbGl0IDwtIHJlYWRfY3N2KFwiYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zLmNzdlwiKSBcblxuaG9zcGl0YWxfYmVkcyA8LSByZWFkX2NzdihcImFwcC9jbGVhbl9kYXRhL3ByZV9wb3N0XzIwMjBfYXZnX29jY3VwYW5jeS5jc3ZcIilcblxuZGVwcml2YXRpb25zIDwtIHJlYWRfY3N2KFwiYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlcHJpdmF0aW9uX2FsbC5jc3ZcIilcblxuZGVtb2dyYXBoaWNzIDwtIHJlYWRfY3N2KFwiYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlbW9ncmFwaGljc19hbGwuY3N2XCIpXG5cbnByZV9wb3N0XzIwMjBfYXZfb2NjIDwtIHJlYWRfY3N2KFwiYXBwL2NsZWFuX2RhdGEvcHJlX3Bvc3RfMjAyMF9hdmdfb2NjdXBhbmN5LmNzdlwiKVxuYGBgIn0= -->
-<pre class="r"><code>library(tidyverse)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGphbml0b3IpXG5saWJyYXJ5KGdncHVicilcbmxpYnJhcnkoYnJvb20pXG5saWJyYXJ5KEFJQ2Ntb2RhdmcpXG5saWJyYXJ5KGluZmVyKVxubGlicmFyeShrbml0cilcbmxpYnJhcnkoa2FibGVFeHRyYSlcblxuXG5ob3NwaXRhbF9hZG1pc3Npb25zX3F5ZWFyIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zX3F5ZWFyLmNzdlxcKVxuXG5ob3NwX2FkbV9xX3NwbGl0IDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvY2xlYW5faG9zcF9hZG1pc3Npb25zLmNzdlxcKSBcblxuaG9zcGl0YWxfYmVkcyA8LSByZWFkX2NzdihcXGFwcC9jbGVhbl9kYXRhL3ByZV9wb3N0XzIwMjBfYXZnX29jY3VwYW5jeS5jc3ZcXClcblxuZGVwcml2YXRpb25zIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlcHJpdmF0aW9uX2FsbC5jc3ZcXClcblxuZGVtb2dyYXBoaWNzIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvYWRtaXNzaW9uX2RlbW9ncmFwaGljc19hbGwuY3N2XFwpXG5cbnByZV9wb3N0XzIwMjBfYXZfb2NjIDwtIHJlYWRfY3N2KFxcYXBwL2NsZWFuX2RhdGEvcHJlX3Bvc3RfMjAyMF9hdmdfb2NjdXBhbmN5LmNzdlxcKVxuYGBgXG5gYGAifQ== -->
+<pre class="r"><code>```r
+library(tidyverse)
 library(janitor)
 library(ggpubr)
 library(broom)
@@ -1765,29 +1766,45 @@ library(knitr)
 library(kableExtra)
 
 
-hospital_admissions_qyear &lt;- read_csv(&quot;app/clean_data/clean_hosp_admissions_qyear.csv&quot;)
+hospital_admissions_qyear &lt;- read_csv(\app/clean_data/clean_hosp_admissions_qyear.csv\)
 
-hosp_adm_q_split &lt;- read_csv(&quot;app/clean_data/clean_hosp_admissions.csv&quot;) 
+hosp_adm_q_split &lt;- read_csv(\app/clean_data/clean_hosp_admissions.csv\) 
 
-hospital_beds &lt;- read_csv(&quot;app/clean_data/pre_post_2020_avg_occupancy.csv&quot;)
+hospital_beds &lt;- read_csv(\app/clean_data/pre_post_2020_avg_occupancy.csv\)
 
-deprivations &lt;- read_csv(&quot;app/clean_data/admission_deprivation_all.csv&quot;)
+deprivations &lt;- read_csv(\app/clean_data/admission_deprivation_all.csv\)
 
-demographics &lt;- read_csv(&quot;app/clean_data/admission_demographics_all.csv&quot;)
+demographics &lt;- read_csv(\app/clean_data/admission_demographics_all.csv\)
 
-pre_post_2020_av_occ &lt;- read_csv(&quot;app/clean_data/pre_post_2020_avg_occupancy.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBob3NwX2FkbWlzc2lvbnNfc3VtbWFyeSB0YWJsZSBcblxuaG9zcF9hZG1fcV9zcGxpdCAlPiUgXG4gIGZpbHRlcighaXMubmEoZXBpc29kZXMpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcIkxvdGhpYW5cIixcbiAgICAgICAgIHF1YXJ0ZXIgPT0gMSxcbiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9ob3NwX2FkbSA9IG1lYW4oZXBpc29kZXMpLFxuICAgICAgICAgICAgbWVkaWFuX2hvc3BfYWRtID0gbWVkaWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpLFxuICAgICAgICAgICAgc2VtX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpL3NxcnQobGVuZ3RoKGVwaXNvZGVzKSksXG4gICAgICAgICAgICBjaV9ob3NwX2FkbSA9IDIgKiBzZChlcGlzb2RlcyksXG4gICAgICAgICAgICApXG5gYGAifQ== -->
-<pre class="r"><code># hosp_admissions_summary table 
+pre_post_2020_av_occ &lt;- read_csv(\app/clean_data/pre_post_2020_avg_occupancy.csv\)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBob3NwX2FkbWlzc2lvbnNfc3VtbWFyeSB0YWJsZSBcblxuaG9zcF9hZG1fcV9zcGxpdCAlPiUgXG4gIGZpbHRlcighaXMubmEoZXBpc29kZXMpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcXExvdGhpYW5cXCxcbiAgICAgICAgIHF1YXJ0ZXIgPT0gMSxcbiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9ob3NwX2FkbSA9IG1lYW4oZXBpc29kZXMpLFxuICAgICAgICAgICAgbWVkaWFuX2hvc3BfYWRtID0gbWVkaWFuKGVwaXNvZGVzKSxcbiAgICAgICAgICAgIHNkX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpLFxuICAgICAgICAgICAgc2VtX2hvc3BfYWRtID0gc2QoZXBpc29kZXMpL3NxcnQobGVuZ3RoKGVwaXNvZGVzKSksXG4gICAgICAgICAgICBjaV9ob3NwX2FkbSA9IDIgKiBzZChlcGlzb2RlcyksXG4gICAgICAgICAgICApXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# hosp_admissions_summary table 
 
 hosp_adm_q_split %&gt;% 
   filter(!is.na(episodes)) %&gt;% 
   group_by(nhs_health_board, quarter, year) %&gt;% 
-  filter(nhs_health_board %in% &quot;Lothian&quot;,
+  filter(nhs_health_board %in% \Lothian\,
          quarter == 1,
          year == 2018) %&gt;% 
   summarise(mean_hosp_adm = mean(episodes),
@@ -1796,28 +1813,52 @@ hosp_adm_q_split %&gt;%
             sem_hosp_adm = sd(episodes)/sqrt(length(episodes)),
             ci_hosp_adm = 2 * sd(episodes),
             )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 -->
-<pre><code>`summarise()` has grouped output by &#39;nhs_health_board&#39;, &#39;quarter&#39;. You can override using the `.groups` argument.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOlsiMSDDlyA4Il0sIkdyb3VwcyI6WyJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJtVlJzVTdETUJCMTA0UzJnYllSL0FLTXpVQUh1aUFZRUJJU0V3S3BZb25jeEJDTHhBNjJLMkJqWkVaaVlBTHhFU3lNTElndjREUDRncFpMR29mV1BjbkplKzh1bDd2bms0TmgzeDI2Q0tFNnNpMEwxUjJBeURrN1Bld05FQ2hBYXNoR3JmeDlDMFViQUpwd3ZMbEU0NWlybUdJR3NKUExlNzlJUjhIM1h4NFcrZWNyM1h3ODJxcjQrOU5pL210OSt1R2YwNHEvYlg5M24zY0hGZi9SK1lYNW5EREJVaHF6dVJGVzJMOFFPQ1ZHZVV2d0c1K0Jubi9TaG1QZHcyTUtZZmJWUlY2eCswejBXQ3lEbU9CRXhjR0lZeEZwTDY3SFdDZ2lTbXJmRWF4eE95V1lCVEdYV1lDanRCUzdLWW5vc3J3cUkxTmFreVJkS2d2cHY0VFF4Smk4d1RORk9ZUFpyZnplSE1PYm1qQUViOHp5WGFOZUdJL1pWYSsva3h0WTVHZlJMbkZ0RGpkbi83U25aUytuN0xWQzJDVmxSSHVZNEJGSlN0SUI1d3RQL1V4UXB2Uk5nU3A5eFJYV2RXN0lFNjBVeTZISkh3VXh3NUt2QWdBQSJ9 -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["nhs_health_board"],"name":[1],"type":["chr"],"align":["left"]},{"label":["quarter"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mean_hosp_adm"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["median_hosp_adm"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["sd_hosp_adm"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sem_hosp_adm"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["ci_hosp_adm"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"Lothian","2":"1","3":"2018","4":"10048.82","5":"5781","6":"12326","7":"2329.395","8":"24652"}],"options":{"columns":{"min":{},"max":[10],"total":[8]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhdmdfbG9zX3N1bW1hcnkgdGFibGUgXG5cbmhvc3BfYWRtX3Ffc3BsaXQgJT4lIFxuICBmaWx0ZXIoIWlzLm5hKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcIkxvdGhpYW5cIixcbiAgICAgICAgIHF1YXJ0ZXIgPT0gMSxcbiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9hdmxvcyA9IG1lYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBtZWRpYW5fYXZsb3MgPSBtZWRpYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBzZF9ob3NwX2F2bG9zID0gc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBzZW1faG9zcF9hdmxvcyA9IHNkKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpL3NxcnQobGVuZ3RoKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpKSxcbiAgICAgICAgICAgIGNpX2hvc3BfYXZsb3MgPSAyICogc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICApXG5gYGAifQ== -->
-<pre class="r"><code># avg_los_summary table 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> has grouped output by ‘nhs_health_board’,
+‘quarter’. You can override using the <code>.groups</code> argument.</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOiIxIMOXIDgiLCJHcm91cHMiOiJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJ9fSwicmRmIjoiSDRzSUFBQUFBQUFBQm1WUnNVN0RNQkIxMDRTMmdiWVIvQUtNelVBSHVpQVlFQklTRXdLcFlvbmN4QkNMeEE2MksyQmpaRVppWUFMeEVTeU1MSWd2NERQNGdwWkxHb2ZXUGNuSmUrOHVsN3ZuazROaDN4MjZDS0U2c2kwTDFSMkF5RGs3UGV3TkVDaEFhc2hHcmZ4OUMwVWJBSnB3dkxsRTQ1aXJtR0lHc0pQTGU3OUlSOEgzWHg0VytlY3IzWHc4MnFyNCs5TmkvbXQ5K3VHZjA0cS9iWDkzbjNjSEZmL1IrWVg1bkREQlVocXp1UkZXMkw4UU9DVkdlVXZ3RzUrQm5uL1NobVBkdzJNS1lmYlZSVjZ4KzB6MFdDeURtT0JFeGNHSVl4RnBMNjdIV0NnaVNtcmZFYXh4T3lXWUJUR1hXWUNqdEJTN0tZbm9zcndxSTFOYWt5UmRLZ3ZwdjRUUXhKaTh3VE5GT1lQWnJmemVITU9ibWpBRWI4enlYYU5lR0kvWlZhKy9reHRZNUdmUkxuRnREamRuLzdTblpTK243TFZDMkNWbFJIdVk0QkZKU3RJQjV3dFAvVXhRcHZSTmdTcDl4UlhXZFc3SUU2MFV5NkhKSHdVeHc1S3ZBZ0FBIn0= --&gt;
+
+&lt;div data-pagedtable=&quot;false&quot;&gt;
+  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
+{&quot;columns&quot;:[{&quot;label&quot;:[&quot;nhs_health_board&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;chr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;quarter&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;year&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;mean_hosp_adm&quot;],&quot;name&quot;:[4],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;median_hosp_adm&quot;],&quot;name&quot;:[5],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sd_hosp_adm&quot;],&quot;name&quot;:[6],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sem_hosp_adm&quot;],&quot;name&quot;:[7],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;ci_hosp_adm&quot;],&quot;name&quot;:[8],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;Lothian&quot;,&quot;2&quot;:&quot;1&quot;,&quot;3&quot;:&quot;2018&quot;,&quot;4&quot;:&quot;10048.82&quot;,&quot;5&quot;:&quot;5781&quot;,&quot;6&quot;:&quot;12326&quot;,&quot;7&quot;:&quot;2329.395&quot;,&quot;8&quot;:&quot;24652&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[8]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[1]},&quot;pages&quot;:{}}}
+  &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;!-- rnb-frame-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBhdmdfbG9zX3N1bW1hcnkgdGFibGUgXG5cbmhvc3BfYWRtX3Ffc3BsaXQgJT4lIFxuICBmaWx0ZXIoIWlzLm5hKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcXExvdGhpYW5cXCxcbiAgICAgICAgIHF1YXJ0ZXIgPT0gMSxcbiAgICAgICAgIHllYXIgPT0gMjAxOCkgJT4lIFxuICBzdW1tYXJpc2UobWVhbl9hdmxvcyA9IG1lYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBtZWRpYW5fYXZsb3MgPSBtZWRpYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBzZF9ob3NwX2F2bG9zID0gc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICBzZW1faG9zcF9hdmxvcyA9IHNkKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpL3NxcnQobGVuZ3RoKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXkpKSxcbiAgICAgICAgICAgIGNpX2hvc3BfYXZsb3MgPSAyICogc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSksXG4gICAgICAgICAgICApXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# avg_los_summary table 
 
 hosp_adm_q_split %&gt;% 
   filter(!is.na(average_length_of_stay)) %&gt;% 
   group_by(nhs_health_board, quarter, year) %&gt;% 
-  filter(nhs_health_board %in% &quot;Lothian&quot;,
+  filter(nhs_health_board %in% \Lothian\,
          quarter == 1,
          year == 2018) %&gt;% 
   summarise(mean_avlos = mean(average_length_of_stay),
@@ -1826,28 +1867,52 @@ hosp_adm_q_split %&gt;%
             sem_hosp_avlos = sd(average_length_of_stay)/sqrt(length(average_length_of_stay)),
             ci_hosp_avlos = 2 * sd(average_length_of_stay),
             )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 -->
-<pre><code>`summarise()` has grouped output by &#39;nhs_health_board&#39;, &#39;quarter&#39;. You can override using the `.groups` argument.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOlsiMSDDlyA4Il0sIkdyb3VwcyI6WyJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJtVlJ2VTdETUJCMjA0UzJFYWtpTWJEeUFHMkUxQ1ViRElnRkpDZ0NxVXlSbXhnU2tkakZkdm1iMkVBQ0pCNEFpUWRnNFVWNEVoWW1Cb2FXU3hxWHhwems1THZ2dTF6dVBoOXNEWHIyd0VZSTFaRnBHS2h1QVVUVzBlRjIxMGZBUUZKREptcmw3eXNvV2dIUWhPTXVDSTFkSnVNRVU0RHRuTjc0UWlxS2ZQUDF2cHF2OWZzM1Qvc2Y4M3gxc05kNVAzNzUweHUrOC96OU1PLzMwN25iZVh2OG5PdnJTcS9NWjRVcEZrS2J6WTZ3eE40Snh4blJ5bHVjWFhvVStQd1RCNDV4QzQ4cGhONVhGYm5GN2pQU3BiRUlZb0pUR1FkRGhubWt2RGdmWXk0SkwxUHptbUNGN1l4Z0d1Q0xsSW1TV2M1SWxHaWNJNklnWm1KVUlkdUNaUDlaSjB3V1NZUW0ydVFOTnBJSm95QVorYjFabWpjMXJoSHVtT2E3UnQwd0h0T3picy9QcHk3MFdUZ2xyaTNnNXV5ZjVyVHNaWlc5bGdnOVRTaFJIcVo0U0ZLMURUaGZlT3FOZUVLbHNnZFk0VWttc2FxelE1WXFwbGdPVFg0Qm1YWVZhcThDQUFBPSJ9 -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["nhs_health_board"],"name":[1],"type":["chr"],"align":["left"]},{"label":["quarter"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["mean_avlos"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["median_avlos"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["sd_hosp_avlos"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sem_hosp_avlos"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["ci_hosp_avlos"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"Lothian","2":"1","3":"2018","4":"8.158825","5":"5.83624","6":"8.0141","7":"1.635871","8":"16.0282"}],"options":{"columns":{"min":{},"max":[10],"total":[8]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5iZWRzX2RhdGFfeWVhcl9xdWFydCAlPiUgXG4gIGZpbHRlcighaXMubmEocGVyY2VudGFnZV9vY2N1cGFuY3kpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcIkxvdGhpYW5cIixcbiAgICAgICAgIHF1YXJ0ZXIgJWluJSBcIlExXCIsXG4gICAgICAgICB5ZWFyID09IDIwMTgpICU+JSBcbiAgc3VtbWFyaXNlKG1lYW5fcGVyX29jYyA9IG1lYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgbWVkaWFuX3Blcl9vY2MgPSBtZWRpYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgc2RfaG9zcF9wZXJfb2NjID0gc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgc2VtX2hvc3BfcGVyX29jYyA9IHNkKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KS9zcXJ0KGxlbmd0aChwZXJjZW50YWdlX29jY3VwYW5jeSkpLFxuICAgICAgICAgICAgY2lfaG9zcF9wZXJfb2NjPSAyICogc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgKVxuYGBgIn0= -->
-<pre class="r"><code>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> has grouped output by ‘nhs_health_board’,
+‘quarter’. You can override using the <code>.groups</code> argument.</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOiIxIMOXIDgiLCJHcm91cHMiOiJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJ9fSwicmRmIjoiSDRzSUFBQUFBQUFBQm1WUnZVN0RNQkIyMDRTMkVha2lNYkR5QUcyRTFDVWJESWdGSkNnQ3FVeVJteGdTa2RqRmR2bWIyRUFDSkI0QWlRZGc0VVY0RWhZbUJvYVdTeHFYeHB6azVMdnZ1MXp1UGg5c0RYcjJ3RVlJMVpGcEdLaHVBVVRXMGVGMjEwZkFRRkpESm1ybDd5c29XZ0hRaE9NdUNJMWRKdU1FVTREdG5ONzRRaXFLZlBQMXZwcXY5ZnMzVC9zZjgzeDFzTmQ1UDM3NTB4dSs4L3o5TU8vMzA3bmJlWHY4bk92clNxL01aNFVwRmtLYnpZNnd4TjRKeHhuUnlsdWNYWG9VK1B3VEI0NXhDNDhwaE41WEZibkY3alBTcGJFSVlvSlRHUWREaG5ta3ZEZ2ZZeTRKTDFQem1tQ0Y3WXhnR3VDTGxJbVNXYzVJbEdpY0k2SWdabUpVSWR1Q1pQOVpKMHdXU1lRbTJ1UU5OcElKb3lBWitiMVptamMxcmhIdW1PYTdSdDB3SHRPemJzL1BweTcwV1RnbHJpM2c1dXlmNXJUc1paVzlsZ2c5VFNoUkhxWjRTRksxRFRoZmVPcU5lRUtsc2dkWTRVa21zYXF6UTVZcXBsZ09UWDRCbVhZVmFxOENBQUE9In0= --&gt;
+
+&lt;div data-pagedtable=&quot;false&quot;&gt;
+  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
+{&quot;columns&quot;:[{&quot;label&quot;:[&quot;nhs_health_board&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;chr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;quarter&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;year&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;mean_avlos&quot;],&quot;name&quot;:[4],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;median_avlos&quot;],&quot;name&quot;:[5],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sd_hosp_avlos&quot;],&quot;name&quot;:[6],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;sem_hosp_avlos&quot;],&quot;name&quot;:[7],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;ci_hosp_avlos&quot;],&quot;name&quot;:[8],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;Lothian&quot;,&quot;2&quot;:&quot;1&quot;,&quot;3&quot;:&quot;2018&quot;,&quot;4&quot;:&quot;8.158825&quot;,&quot;5&quot;:&quot;5.83624&quot;,&quot;6&quot;:&quot;8.0141&quot;,&quot;7&quot;:&quot;1.635871&quot;,&quot;8&quot;:&quot;16.0282&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[8]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[1]},&quot;pages&quot;:{}}}
+  &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;!-- rnb-frame-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5iZWRzX2RhdGFfeWVhcl9xdWFydCAlPiUgXG4gIGZpbHRlcighaXMubmEocGVyY2VudGFnZV9vY2N1cGFuY3kpKSAlPiUgXG4gIGdyb3VwX2J5KG5oc19oZWFsdGhfYm9hcmQsIHF1YXJ0ZXIsIHllYXIpICU+JSBcbiAgZmlsdGVyKG5oc19oZWFsdGhfYm9hcmQgJWluJSBcXExvdGhpYW5cXCxcbiAgICAgICAgIHF1YXJ0ZXIgJWluJSBcXFExXFwsXG4gICAgICAgICB5ZWFyID09IDIwMTgpICU+JSBcbiAgc3VtbWFyaXNlKG1lYW5fcGVyX29jYyA9IG1lYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgbWVkaWFuX3Blcl9vY2MgPSBtZWRpYW4ocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgc2RfaG9zcF9wZXJfb2NjID0gc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgc2VtX2hvc3BfcGVyX29jYyA9IHNkKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KS9zcXJ0KGxlbmd0aChwZXJjZW50YWdlX29jY3VwYW5jeSkpLFxuICAgICAgICAgICAgY2lfaG9zcF9wZXJfb2NjPSAyICogc2QocGVyY2VudGFnZV9vY2N1cGFuY3kpLFxuICAgICAgICAgICAgKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+
 beds_data_year_quart %&gt;% 
   filter(!is.na(percentage_occupancy)) %&gt;% 
   group_by(nhs_health_board, quarter, year) %&gt;% 
-  filter(nhs_health_board %in% &quot;Lothian&quot;,
-         quarter %in% &quot;Q1&quot;,
+  filter(nhs_health_board %in% \Lothian\,
+         quarter %in% \Q1\,
          year == 2018) %&gt;% 
   summarise(mean_per_occ = mean(percentage_occupancy),
             median_per_occ = median(percentage_occupancy),
@@ -1855,11 +1920,16 @@ beds_data_year_quart %&gt;%
             sem_hosp_per_occ = sd(percentage_occupancy)/sqrt(length(percentage_occupancy)),
             ci_hosp_per_occ= 2 * sd(percentage_occupancy),
             )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 -->
-<pre><code>`summarise()` has grouped output by &#39;nhs_health_board&#39;, &#39;quarter&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ25oc19oZWFsdGhfYm9hcmQnLCAncXVhcnRlcicuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> has grouped output by ‘nhs_health_board’,
+‘quarter’. You can override using the <code>.groups</code> argument.
+```</p>
 <!-- rnb-output-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOlsiMSDDlyA4Il0sIkdyb3VwcyI6WyJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJtMlJ2VTdETUJESDNUU2hiZFNQSUVabXhOU0lsZzZ3TVNBa0pCWlFFZDBpMXpGTlJHSUgyeFVnRmlSR25vSFg2SURFd0FzeE1yYllTUnkxQmt1SjczNTNQdnQvZDNVNk9YUW5MZ0NnRG16TEFuVkhtc0M1SHAvMWo0QWswcWtCRzdUVS9paVRkcVRSbEorM0ZtaGNVQkhGa0JqWXVod1l4QjRlREdSVjBGWHNaQXgzaDl2NXFjSy9hYzllUnd0VStjZjcxdHYzeDE3bE54WmZuOC92UDVWL3J1TWJyM1JRQWprM0xuWkRLS0IveTJDS2pmUVdvdzgra1Z3ZDZhaFh2OGpmU2k2enJrN3k4ZzRVMENNUkR5SU1FeEVGVXdwWnFEdHlQNGRNWUtaMVAyR283WGFLSVFreXpBS0tVTW02S1E3alA3VEh3eUNpUERPd3gzSDZIKytoZUJNRHNEUTBOR2dtWWtxa0Nrdk4wVEc2VkdNRzhPWkVxUTc3S0pxVHUvNUl6ZFBONDhYcWxIWnR6VzRXZDlxcnNwWlQxdHJDWkJZVHJMdVp3Q2xPdEh3NWc3eTdmc1ppSXZUTUpPVytvQUxxUEJmUlJKTmNIRmorQW1Zc0xRQy9BZ0FBIn0= -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjEsIm5jb2wiOjgsInN1bW1hcnkiOnsiQSB0aWJibGUiOiIxIMOXIDgiLCJHcm91cHMiOiJuaHNfaGVhbHRoX2JvYXJkLCBxdWFydGVyIFsxXSJ9fSwicmRmIjoiSDRzSUFBQUFBQUFBQm0yUnZVN0RNQkRIM1RTaGJkU1BJRVpteE5TSWxnNndNU0FrSkJaUUVkMGkxekZOUkdJSDJ4VWdGaVJHbm9IWDZJREV3QXN4TXJiWVNSeTFCa3VKNzM1M1B2dC9kM1U2T1hRbkxnQ2dEbXpMQW5WSG1zQzVIcC8xajRBazBxa0JHN1RVL2lpVGRxVFJsSiszRm1oY1VCSEZrQmpZdWh3WXhCNGVER1JWMEZYc1pBeDNoOXY1cWNLL2FjOWVSd3RVK2NmNzF0djN4MTdsTnhaZm44L3ZQNVYvcnVNYnIzUlFBamszTG5aREtLQi95MkNLamZRV293OCtrVndkNmFoWHY4amZTaTZ6cms3eThnNFUwQ01SRHlJTUV4RUZVd3BacUR0eVA0ZE1ZS1oxUDJHbzdYYUtJUWt5ekFLS1VNbTZLUTdqUDdUSHd5Q2lQRE93eDNINkgrK2hlQk1Ec0RRME5HZ21Za3FrQ2t2TjBURzZWR01HOE9aRXFRNzdLSnFUdS81SXpkUE40OFhxbEhadHpXNFdkOXFyc3BaVDF0ckNaQllUckx1WndDbE90SHc1Zzd5N2ZzWmlJdlRNSk9XK29BTHFQQmZSUkpOY0hGaitBbVlzTFFDL0FnQUEifQ== -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["nhs_health_board"],"name":[1],"type":["chr"],"align":["left"]},{"label":["quarter"],"name":[2],"type":["chr"],"align":["left"]},{"label":["year"],"name":[3],"type":["chr"],"align":["left"]},{"label":["mean_per_occ"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["median_per_occ"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["sd_hosp_per_occ"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sem_hosp_per_occ"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["ci_hosp_per_occ"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"Lothian","2":"Q1","3":"2018","4":"81.51728","5":"92.19382","6":"25.15238","7":"2.964237","8":"50.30477"}],"options":{"columns":{"min":{},"max":[10],"total":[8]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
