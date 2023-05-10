@@ -444,5 +444,7 @@ speciality_occupancy_filter() %>%
       col = "Speciality Name"
     )
 )
-  
+output$icon_cat <- renderUI(
+  htmltools::HTML('<i class="fa-solid fa-cat fa-bounce"></i>'))
+ 
 }

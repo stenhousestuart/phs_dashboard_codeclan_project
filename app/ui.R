@@ -1,7 +1,14 @@
-ui <- fluidPage(
-  titlePanel("Change me!"),
+ui <- fluidPage( theme = phs_theme,
+                 column(width = 5,
+                 h1(id="big-heading", "Covid-19 Dashboard"),
+                 tags$style(HTML("#big-heading{color: #948DA3;
+                                 background-color: #80BCEA;
+                                 border-style: solid;
+                                 border-color: #0078D4}"))
+                 ),
+ # titlePanel("Change me!", windowTitle = "Covid-19 Dashboard - DR20 group project"),
   tabsetPanel(
-    
+   
     tabPanel(
       title = ".README",
       
@@ -62,8 +69,11 @@ ui <- fluidPage(
                             Just imagine."))
       ),
       fluidRow(
+        column(width = 3,
         actionButton(inputId = "update_temporal",
-                     label = "Update dashboard")
+                     label = "Update dashboard",
+                     icon = icon("refresh", class = "fa-spin-pulse"))
+        )
       ),
       
       plotOutput("temporal_output"),
@@ -95,29 +105,36 @@ ui <- fluidPage(
         # ),
       ),
       fluidRow(
+        column(width = 3,
         actionButton(inputId = "update_geo",
-                     label = "Update dashboard")
+                     label = "Update dashboard",
+                     icon = icon("refresh", class = "fa-spin-pulse"))
+        )
       ),
       plotOutput("geo_output"),
       fluidRow(
         print("Some NA's were dropped as the data was not available - 20 rows were lost, most pertaining to Dr Gray's Hospital in Grampian")
       ),
       fluidRow(
-        column(width = 4,
+        column(width = 6,
                selectInput(inputId = "year_input_geo",
                            label = "Select Year",
                            choices = geo_year_choice,
                            selected = 2020)
         ),
-        column(width = 4,
+        column(width = 6,
                selectInput(inputId = "quarter_input_geo",
                            label = "Select Quarter",
                            choices = geo_quarter_choice,
                            selected = "Q1")
         ),
+        fluidRow(
         column(width = 4,
                actionButton(inputId = "update_geo_date",
-                            label = "Update dashboard"))
+                            label = "Update dashboard",
+                            icon = icon("map-location-dot", class = "fa-beat"))
+               )
+        )
       ),
       fluidRow(
         leafletOutput("geo_map_output"),
@@ -132,7 +149,7 @@ ui <- fluidPage(
                      label = "View:",
                      choices = c("Mean Admissions", "Mean Length of Stay"),
         ),
-        
+       fluidRow( 
         column(width = 6,
                selectInput(
                  inputId = "speciality_input",
@@ -144,15 +161,17 @@ ui <- fluidPage(
         ),
         column(width = 6,
                print("I don't think you've considered the impact of being able to write text here."))
+      )
       ),
       actionButton(inputId = "update_speciality",
-                   label = "Update Dashboard"),
+                   label = "Update Dashboard(s)",
+                   icon = icon("cat", class = "fa-bounce")),
       
       
       
       fluidRow(
         plotOutput("speciality_output"),
-        plotOutput("speciality_occupancy"),
+        
         selectInput(
           inputId = "speciality_input_longer",
           label = "Please select Speciality(s)",
@@ -160,7 +179,7 @@ ui <- fluidPage(
           multiple = TRUE,
           selected = "General Surgery"
         ),
-        
+        plotOutput("speciality_occupancy"),
       ),
       fluidRow(
         print("Please note that in the dataset used to produce these visualisations, there were a number of NA values for length of stay - 
@@ -201,7 +220,9 @@ ui <- fluidPage(
             
             column(width = 4,
                    actionButton(inputId = "update_demo_age",
-                                label = "Update Dashboard"))
+                                label = "Update Dashboard",
+                                icon = icon("refresh", class = "fa-spin-pulse"))
+                   )
           ),
           
           
@@ -224,7 +245,7 @@ ui <- fluidPage(
             column(width = 3,
                    
                    selectInput(inputId = "deprivation_input",
-                               label = "Select Deprivation Categoris To Compare:",
+                               label = "Select Deprivation Categories To Compare:",
                                choices = deprivation_choice,
                                multiple = TRUE)
             ),
@@ -242,7 +263,8 @@ ui <- fluidPage(
           fluidRow(
             
             actionButton(inputId = "update_demo_deprivation",
-                         label = "Update Dashboard")
+                         label = "Update Dashboard",
+                         icon = icon("refresh"))
           ),
           
           fluidRow(
@@ -282,7 +304,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             actionButton(inputId = "update_demo_gender_age",
-                         label = "Update Dashboard"),
+                         label = "Update Dashboard",
+                         icon = icon("refresh")),
           ),
           fluidRow(
             plotOutput("demo_age_gender_output"),
@@ -300,6 +323,9 @@ ui <- fluidPage(
   hr(),
   print("Data taken from "),
   tags$a(href = "https://www.opendata.nhs.scot/dataset?groups=covid-19",
-         "Public health Scotland")
-  
+         "Public health Scotland"),
+ tags$br(),
+  print("Icons taken from "),
+  tags$a(href = "https://fontawesome.com/icons",
+         "FontAwesome")
 )

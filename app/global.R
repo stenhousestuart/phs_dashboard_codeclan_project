@@ -6,6 +6,7 @@ library(janitor)
 library(leaflet)
 library(DT)
 library(Hmisc)
+library(bslib)
 
 
 # Read In Data
@@ -48,3 +49,12 @@ speciality_choice <- clean_hospital_admissions_speciality %>%
 
 speciality_choice_longer <- locations_occupancy_full %>% 
   distinct(specialty_name)
+
+phs_theme <- bs_theme(
+  bg = "#F0F4F5",
+  fg = "#212B32",
+  primary = "#005EB8",
+  base_font = font_collection(font_google("Hind", local = TRUE), "arial"),
+  heading_font = font_collection(font_google("Hind", local = TRUE))
+)
+
