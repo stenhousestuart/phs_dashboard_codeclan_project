@@ -36,7 +36,7 @@ server <- function(input, output, session) {
                                       title = "Average Hospital Bed Occupancy per Location and Quarter",
                                       colour = "NHS Health Board"
                                     ) #+
-                                  #ylim(min_beds, max_beds)
+                                  #ylim(min_beds, max_beds) not working!
                                   
                                 })
   filtered_geo_date <- eventReactive(eventExpr = input$update_geo_date,
