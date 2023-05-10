@@ -186,7 +186,7 @@ ui <- fluidPage( theme = phs_theme,
                          
                          
                   ),
-                  column(width = 6,
+                  column(width = 3,
                          
                          pickerInput(inputId = "health_board_input_tempo",
                                      label = "Select Health Board",
