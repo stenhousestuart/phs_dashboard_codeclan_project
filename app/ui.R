@@ -1,4 +1,5 @@
-ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
+ui <- fluidPage(
+  theme = bs_theme(bootswatch = "pulse"),
                  column(width = 5,
                         h1(id="big-heading", " Covid-19 Dashboard"),
                         tags$style(HTML("#big-heading{color: #FFFFFF;
@@ -315,14 +316,10 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                      title = "Speciality",
                      tabsetPanel(
                        tabPanel(
-                         title = "Specialities by mean",
-                     fluidRow(
-                       radioButtons(inputId = "speciality_plot_type_input",
-                                    label = "View:",
-                                    choices = c("Mean Admissions", "Mean Length of Stay"),
-                       ),
+                         title = "Length of Stay by Speciality",
+                     
                        fluidRow( 
-                         column(width = 6,
+                         column(width = 4,
                                 pickerInput(
                                   inputId = "speciality_input",
                                   label = "Please select Speciality(s)",
@@ -332,10 +329,10 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                   pickerOptions(actionsBox = TRUE)
                                 ),
                          ),
-                         column(width = 6,
+                         column(width = 8,
                                 print("I don't think you've considered the impact of being able to write text here."))
-                       )
-                     ),
+                       ),
+                     
                      actionButton(inputId = "update_speciality",
                                   label = "Update Dashboard",
                                   icon = icon("cat", class = "fa-bounce")),
