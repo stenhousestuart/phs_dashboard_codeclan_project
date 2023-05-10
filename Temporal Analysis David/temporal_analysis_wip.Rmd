@@ -727,6 +727,7 @@ filter(admission_type == "Emergency Inpatients",
 #     y = "Inpatient Episodes")# +
 #  # ylim(80000, 140000)
 ```
+
 ```{r}
 clean_hosp_admissions_qyear %>% 
 filter(admission_type == "All Inpatients",

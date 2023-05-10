@@ -460,3 +460,86 @@ beds_data_year_quart %>%
 >>>>>>> Stashed changes
 ```
 
+# males vs females
+
+```{r}
+admission_demographics_all <- read_csv(here("app/clean_data/admission_demographics_all.csv"))
+```
+
+
+
+```{r}
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  ggplot() +
+  aes(x = season, y = average_length_of_stay) +
+  geom_boxplot() +
+  coord_flip()
+
+```
+
+```{r}
+#null_dist removed missing variables
+null_distribution_alos <- hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(average_length_of_stay ~ season) %>% 
+  hypothesise(null = "independence") %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat ="diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+
+```{r}
+#null_dist removed missing variables
+observed_stat_alos <- hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>%
+  specify(average_length_of_stay ~ season) %>% 
+  calculate(stat = "diff in means", order = c("Spring/Summer", "Autumn/Winter"))
+```
+
+```{r}
+null_distribution_alos %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat_alos, direction = "both")
+
+
+```
+
+```{r}
+
+p_value <- null_distribution_alos %>%
+  get_p_value(obs_stat = observed_stat_alos, direction = "both")
+
+p_value
+
+```
+
+```{r}
+
+hosp_adm_q_split %>% 
+  mutate(season = ifelse(quarter %in% c(2,3), "Spring/Summer", "Autumn/Winter")) %>% 
+  filter(nhs_health_board != "All of Scotland") %>% 
+  group_by(season) %>% 
+  summarise(total_hospital_admissions = sum(episodes, na.rm = TRUE),
+             mean_av_los = mean(average_length_of_stay, na.rm = TRUE),
+             sd = sd(average_length_of_stay, na.rm = TRUE),
+             ci = 2 * sd) %>% 
+  ggplot() +
+  aes(x = season, y = mean_av_los) +
+  geom_col(fill = "red", color = "black") +
+  geom_errorbar(aes(ymin = mean_av_los, ymax = mean_av_los + ci), width = 0.2) +
+  ylim(0, 15) +
+  theme_bw() +
+  geom_segment(aes(x = 1, y = 14.25, xend = 2, yend = 14.25), color = "black", linewidth = 1) +
+  geom_label(label = "p = 0.976", 
+    x = 1.5,
+    y = 15,
+    label.padding = unit(0.15, "lines"), 
+    label.size = 0.15,
+    color = "black")
+
+```
+
+
