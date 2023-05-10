@@ -220,71 +220,80 @@ ui <- fluidPage( theme = phs_theme,
                    tabPanel(
                      title = "Geographical",
                      
-                     column(width = 6,
-                            offset = 0,
-                            pickerInput(inputId = "health_board_input_geo",
-                                        label = "Select Health Board",
-                                        choices = geo_healthboard_choice,
-                                        selected = "All of Scotland",
-                                        pickerOptions(actionsBox = TRUE),
-                                        multiple = TRUE),
-                            
-                     ),
-                     # column(width = 6,
-                     #        selectInput(inputId = "year_input_geo",
-                     #                    label = "Select Year",
-                     #                    choices = year_choice,
-                     #                    selected = "2020"),
-                     # ),
                      
-                     
-                     fluidRow(
-                       column(width = 3,
-                              actionButton(inputId = "update_geo",
-                                           label = "Update dashboard",
-                                           icon = icon("refresh")
-                              )
-                       ),
-                       plotOutput("geo_output"),
-                       fluidRow(
-                         column(width = 10,
-                                offset = 0,
-                                print("")
-                         ),
-                       ),
-                       fluidRow(),
+                       
+                       
                        fluidRow(
                          
-                         column(width = 6,
+                         column(width = 3,
                                 offset = 0,
                                 selectInput(inputId = "year_input_geo",
                                             label = "Select Year",
                                             choices = geo_year_choice,
                                             selected = 2020)
                          ),
-                         column(width = 6,
+                         column(width = 3,
                                 selectInput(inputId = "quarter_input_geo",
                                             label = "Select Quarter",
                                             choices = geo_quarter_choice,
                                             selected = "Q1")
+                                ),
+                         column(width = 6,
+                                print("Textbox explaining this page?"))
                          ),
-                         
-                         column(width = 3,
+                         fluidRow(
+                         column(width = 4,
                                 actionButton(inputId = "update_geo_date",
-                                             label = "Update dashboard",
+                                             label = "Update map",
                                              icon = icon("map-location-dot")))
-                       ),
+                         ),
+                       
                        fluidRow(
                          column(offset = 1,
                                 width = 10,
                                 leafletOutput("geo_map_output")
                          ),
+                         column(width = 6,
+                                offset = 0,
+                                pickerInput(inputId = "health_board_input_geo",
+                                            label = "Select Health Board",
+                                            choices = geo_healthboard_choice,
+                                            selected = "All of Scotland",
+                                            pickerOptions(actionsBox = TRUE),
+                                            multiple = TRUE),
+                                
+                         ),
+                         # column(width = 6,
+                         #        selectInput(inputId = "year_input_geo",
+                         #                    label = "Select Year",
+                         #                    choices = year_choice,
+                         #                    selected = "2020"),
+                         # ),
+                         
+                         
+                         fluidRow(
+                           column(width = 3,
+                                  actionButton(inputId = "update_geo",
+                                               label = "Update dashboard",
+                                               icon = icon("refresh")
+                                  )
+                           ),
+                           plotOutput("geo_output"),
+                           fluidRow(
+                             column(width = 10,
+                                    offset = 0,
+                                    print("")
+                             ),
                          
                        ),
                      ),
                    ),
+                   ),
                    tabPanel(
                      title = "Speciality",
+                     tabsetPanel(
+                       tabPanel(
+                         title = "Specialities by mean",
                      fluidRow(
                        radioButtons(inputId = "speciality_plot_type_input",
                                     label = "View:",
@@ -306,14 +315,16 @@ ui <- fluidPage( theme = phs_theme,
                        )
                      ),
                      actionButton(inputId = "update_speciality",
-                                  label = "Update Dashboard(s)",
+                                  label = "Update Dashboard",
                                   icon = icon("cat", class = "fa-bounce")),
-                     
-                     
-                     
                      fluidRow(
                        plotOutput("speciality_output"),
-                       
+                        ),
+                     ), # closes tabPanel for speciality by mean
+                     tabPanel(
+                       title = "Admissions by Speciality",
+                     fluidRow(
+                       column(width = 4,
                        pickerInput(
                          inputId = "speciality_input_longer",
                          label = "Please select Speciality(s)",
@@ -321,14 +332,25 @@ ui <- fluidPage( theme = phs_theme,
                          multiple = TRUE,
                          selected = "General Surgery",
                          pickerOptions(actionsBox = TRUE)
+                       )
                        ),
+                       column(width = 8,
+                              print("We can put text here if we need to"))
+                       ),
+                       fluidRow(
+                         column(width = 4,
+                         actionButton(inputId = "update_speciality_means",
+                                      label = "Update Dashboard",
+                                      icon = icon("cat", class = "fa-bounce")),
+                         )
+                       ),
+                       fluidRow(
                        plotOutput("speciality_occupancy"),
-                     ),
-                     fluidRow(
-                       print("Please note that in the dataset used to produce these visualisations, there were a number of NA values for length of stay - 
-        These have been dropped, and therefore may affect results.")
-                     ),
-                   ),
+                       )
+                   
+                   ) # closes tabPanel
+                   ) # closes tabSetPanel
+                   ), # closes tabPanel for speciality
                    
                    
                    tabPanel(
