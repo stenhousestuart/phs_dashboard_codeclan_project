@@ -1,6 +1,6 @@
 ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                 column(width = 5,
-                       h1(id="big-heading", " Covid-19 Dashboard"),
+                       h1(id="big-heading", " PHS Dashboard"),
                        tags$style(HTML("#big-heading{color: #FFFFFF;
                                  background-color: #3F3685;
                                  border-style: solid;
@@ -378,11 +378,11 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-                          column(width = 4,
+                          column(width = 3,
                                  
                                  
                                  pickerInput(inputId = "age_input",
-                                             label = tags$b("Select Age Range(s) To Compare:"),
+                                             label = tags$b("Age Range(s):"),
                                              choices = age_choice,
                                              multiple = TRUE,
                                              selected = "20-29",
@@ -391,10 +391,16 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                           
                           
                           
-                          
-                          column(width = 3,
-                                 p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
-                          
+                          column(width = 5,
+                                 p(tags$b("Hypothesis Test:")),
+                                 p(tags$b("H0:"), "Over 50 Mean Admissions - Under 50 Mean Admissions = 0",tags$br(),
+                                   tags$b("HA:"), "Over 50 Mean Admissions - Under 50 Mean Admissions != 0", tags$br(),
+                                   tags$b("Significance Level:"), "0.05"),
+                                 p("Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. We therefor reject 
+                                   H0 with evidence suggesting that there is a statistically significant difference in admission numbers 
+                                   between those over 50 and those under 50."),  
+                                   
+                        ),
                         ),
                         
                         fluidRow(
@@ -418,27 +424,33 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         title = "Deprivation",
                         tags$br(),
                         fluidRow( 
-                          column(width = 4,
+                          column(width = 3,
                                  
                                  radioButtons(inputId = "deprivation_plot_type_input",
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
                           
-                          column(width = 4,
+                          column(width = 3,
                                  
                                  
                                  pickerInput(inputId = "deprivation_input",
-                                             label = tags$b("Select Deprivation Categories:"),
+                                             label = tags$b("Deprivation Index:"),
                                              choices = deprivation_choice,
                                              multiple = TRUE,
                                              pickerOptions(actionsBox = TRUE),
                                              selected = 1)
                           ),
                           
-                          column(width = 3,
-                                 p("The plots below use the Scottish Index of Multiple Deprivation, where SIMD 1
-                  is considered the most deprived and SIMD 5 being least deprived.", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"),
+                          column(width = 6,
+                                 p(tags$b("Hypothesis Test:")),
+                                 p(tags$b("H0:"), "Mean SIMD 1 Admissions - Mean SIMD 5 Admissions = 0",tags$br(),
+                                   tags$b("HA:"), "Mean SIMD 1 Admissions - Mean SIMD 5 Admissions != 0",tags$br(),
+                                   tags$b("Significance Level:"), "0.05"),
+                                 p("Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. 
+                                   We therefor reject H0 with evidence suggesting that there is a statistically significant 
+                                   difference in admission numbers between those in the highest and lowest deprivation groups."), 
+                             
                           ),
                         ), 
                   
@@ -460,23 +472,32 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     title = "Gender & Age",
                     tags$br(),
                     fluidRow(
-                      column(width = 4,
+                      column(width = 3,
                              radioButtons(inputId = "age_gender_plot_type_input",
                                           label = tags$b("View:"),
                                           choices = c("No. of Admissions", "Average Length of Stay"))
                       ),  
                       tags$br(),
-                      column(width = 4,
+                      column(width = 3,
                              pickerInput(inputId = "gender_age_input",
-                                         label = tags$b("Select Age Range(s):"),
+                                         label = tags$b("Age Range(s):"),
                                          choices = age_choice,
                                          multiple = TRUE,
                                          pickerOptions(actionsBox = TRUE),
                                          selected = "20-29"),
                       ),
                       
-                      column(width = 3,
-                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px")) 
+                    
+                    column(width = 6,
+                           p(tags$b("Hypothesis Test:")),
+                           p(tags$b("H0:"), "Mean Female Admissions - Mean Male Admissions = 0",tags$br(),
+                             tags$b("HA:"), "Mean Female Admissions - Mean Male Admissions != 0",tags$br(),
+                             tags$b("Significance Level:"), "0.05"),
+                           p("Based on a bootstrapped NULL distribution, a p-value of 0.62 is returned which is greater than the 
+                             significance level. We therefor fail to reject H0 as there is insufficient evidence to suggest there 
+                             is a statistically significant difference in number of admissions between females and males."), 
+                           
+                    ),
                     ),
                     
                     fluidRow(

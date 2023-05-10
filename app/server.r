@@ -28,7 +28,7 @@ server <- function(input, output, session) {
                                                y = percentage_occupancy, 
                                                group = nhs_health_board, 
                                                colour = nhs_health_board)) + 
-                                    geom_point(size = 4, shape = 17) +
+                                    geom_point(size = 6, shape = 17) +
                                     geom_line(size = 1)+
                                     facet_wrap(~year) +
                                     labs(
@@ -38,7 +38,7 @@ server <- function(input, output, session) {
                                       colour = "NHS Health Board"
                                     ) +
                                     theme_light() +
-                                    scale_colour_discrete_phs(palette = "main") +
+                                    scale_colour_manual(values = phs_colour_scheme) +
                                     theme(plot.title = element_text(size = 18, face = "bold"),
                                           plot.subtitle = element_text(size = 13))
                                   
@@ -186,7 +186,7 @@ server <- function(input, output, session) {
                                        #              alpha = 0.6) +
                                        # stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
                                        geom_point(aes(colour = simd),
-                                                  size = 4,
+                                                  size = 6,
                                                   shape = 17) +
                                        geom_line(aes(group = simd, colour = simd),
                                                  size = 1) +
@@ -201,7 +201,7 @@ server <- function(input, output, session) {
                                          colour = "SIMD:",
                                          subtitle = "2017 Q3 to 2022 Q3") +
                                        theme_light() +
-                                       scale_colour_discrete_phs(palette = "main") +
+                                       scale_colour_manual(values = phs_colour_scheme) +
                                        theme(plot.title = element_text(size = 18, face = "bold"),
                                              plot.subtitle = element_text(size = 13))
                                    
@@ -224,7 +224,7 @@ server <- function(input, output, session) {
                                        #              alpha = 0.6) +
                                        # stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
                                        geom_point(aes(colour = simd),
-                                                  size = 4,
+                                                  size = 6,
                                                   shape = 17) +
                                        geom_line(aes(group = simd, colour = simd),
                                                  size = 1) +
@@ -239,7 +239,7 @@ server <- function(input, output, session) {
                                          colour = "SIMD:",
                                          subtitle = "2017 Q3 to 2022 Q3") +
                                        theme_light() +
-                                       scale_colour_discrete_phs(palette = "main") +
+                                       scale_colour_manual(values = phs_colour_scheme) +
                                        theme(plot.title = element_text(size = 18, face = "bold"),
                                              plot.subtitle = element_text(size = 13))
 
@@ -266,7 +266,7 @@ server <- function(input, output, session) {
                                            geom_line(aes(group = age, colour = age),
                                                      size = 1) +
                                            geom_point(aes(colour = age),
-                                                      size = 4,
+                                                      size = 6,
                                                       shape = 17) +
                                            facet_wrap(~pre_post_2020) +
                                            labs(
@@ -276,7 +276,7 @@ server <- function(input, output, session) {
                                              colour = "Age:",
                                              subtitle = "2017 Q3 to 2022 Q3") +
                                            theme_light() +
-                                           scale_colour_discrete_phs(palette = "main") +
+                                           scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
                                                  plot.subtitle = element_text(size = 13))
 
@@ -293,7 +293,7 @@ server <- function(input, output, session) {
                                            ggplot(aes(x = quarter, y = mean_average_length_of_stay)) +
                                            theme_phs() +
                                            geom_point(aes(colour = age),
-                                                      size = 4,
+                                                      size = 6,
                                                       shape = 17) +
                                            geom_line(aes(group = age, colour = age),
                                                      size = 1) +
@@ -305,7 +305,7 @@ server <- function(input, output, session) {
                                              colour = "Age:",
                                              subtitle = "2017 Q3 to 2022 Q3") +
                                            theme_light() +
-                                           scale_colour_discrete_phs(palette = "main") +
+                                           scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
                                                  plot.subtitle = element_text(size = 13))
 
@@ -404,7 +404,7 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                                      show.legend = FALSE,
                                                      size = 1) +
                                            geom_point(aes(colour = nhs_health_board), 
-                                                      size = 1.5,
+                                                      size = 6,
                                                       shape = 17) +
                                          #+
                                           # geom_line(aes(group = quarter)) 
@@ -437,7 +437,7 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            y = "Hospital Admissions\n",
                                            col = "NHS Health Board") +                                           
                                            theme_light() +
-                                           scale_colour_discrete_phs(palette = "main") +
+                                           scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
                                                  plot.subtitle = element_text(size = 13))
                                          
@@ -453,7 +453,7 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                                      show.legend = FALSE,
                                                      size = 1) +
                                            geom_point(aes(colour = nhs_health_board),
-                                                      size = 1.5,
+                                                      size = 6,
                                                       shape = 17) +
                                              #geom_line(aes(group = quarter)) +
                                              theme_bw() +
@@ -484,7 +484,7 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                                y = "Mean of Average Length of Stay (Days)\n",
                                                col = "NHS Health Board") +
                                            theme_light() +
-                                           scale_colour_discrete_phs(palette = "main") +
+                                           scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
                                                  plot.subtitle = element_text(size = 13))
                                        }
