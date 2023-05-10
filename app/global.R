@@ -5,7 +5,8 @@ library(here)
 library(janitor)
 library(leaflet)
 library(DT)
-
+library(shinyWidgets)
+library(leafpop)
 
 # Read In Data
 clean_hosp_admissions_qyear <- read_csv(here("app/clean_data/clean_hosp_admissions_qyear.csv"))
@@ -34,13 +35,21 @@ deprivation_choice <- admission_deprivation_all %>%
   distinct(simd)
 
 geo_year_choice <- locations_occupancy_full %>% 
-  distinct(year)
+  arrange(year) %>% 
+  distinct(year) %>%
+  drop_na(year) %>% 
+  rename("Year" = year)
+  
 
 geo_quarter_choice <- locations_occupancy_full %>% 
-  distinct(quarter)
+  arrange(quarter) %>% 
+  distinct(quarter) %>% 
+  drop_na(quarter) %>% 
+  rename("Quarter" = quarter)
 
 geo_healthboard_choice <- pre_post_2020_avg_occupancy %>% 
-  distinct(nhs_health_board)
+  distinct(nhs_health_board) %>% 
+  rename("NHS Health Board" = nhs_health_board)
 
 speciality_choice <- clean_hospital_admissions_speciality %>% 
   distinct(specialty_name)
