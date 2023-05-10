@@ -370,7 +370,6 @@ hospital_locations_all <- left_join(hospital_locations, hospital_long_lat, by = 
   select(-c(y_coordinate.y, grid_reference)) %>% 
   rename("y_coordinate" = y_coordinate.x)
 
-
 # Join occupancy data with full location data, save to new variable, write this to CSV
 locations_occupancy_full <-
   hospital_locations_all %>% 
@@ -378,7 +377,11 @@ locations_occupancy_full <-
   full_join(beds_data_year_quart, hospital_locations_all, by = "location")
 
 
-
+locations_occupancy_full_combine_year_quarter <- hospital_locations_all %>%
+  rename(location_code = location, location = location_name) %>% 
+  inner_join(beds_data_year_quart, hospital_locations_all, by = "location") %>% 
+  unite(year_quarter, c("year","quarter"), sep = "")
+  
 
 # writing CSV files
 
@@ -396,6 +399,4 @@ write_csv(pre_post_2020_avg_occupancy, here("app/clean_data/pre_post_2020_avg_oc
 
 write_csv(locations_occupancy_full, here("app/clean_data/locations_occupancy_full.csv"))
 
-
-
-
+write_csv(beds_data_year_quart, here("app/clean_data/beds_data_year_quart.csv"))
