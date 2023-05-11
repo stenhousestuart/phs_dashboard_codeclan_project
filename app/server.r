@@ -34,7 +34,7 @@ server <- function(input, output, session) {
                                     labs(
                                       x = "Quarter", 
                                       y = "Percentage of Occupied Beds",
-                                      title = "Average Hospital Bed Occupancy per Location and Quarter",
+                                      title = "Mean Hospital Bed Occupancy per Location and Quarter",
                                       colour = "NHS Health Board"
                                     ) #+
                                   #ylim(min_beds, max_beds) not working!

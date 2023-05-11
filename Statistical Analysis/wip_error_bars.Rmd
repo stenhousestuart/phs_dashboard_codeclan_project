@@ -166,4 +166,24 @@ hosp_adm_q_split %>%
         y = "Average Number of Hospital Admissions")
 ```
 
+```{r}
+pre_post_2020_avg_occupancy %>% 
+  mutate(year = if_else(year == "post 2020", "2020 - 2022", "2017 - 2019")) %>% 
+  filter(nhs_health_board %in% "Lothian") %>% 
+  mutate(year = factor(year, levels = c("2017 - 2019", "2020 - 2022"))) %>% 
+  ggplot(aes(x = factor(quarter, 
+                        level = c("Q1", "Q2", "Q3", "Q4")), 
+             y = percentage_occupancy, 
+             group = nhs_health_board, 
+             colour = nhs_health_board)) + 
+  geom_point() +
+  geom_line()+
+  facet_wrap(~year) +
+  labs(
+    x = "Quarter", 
+    y = "Percentage of Occupied Beds",
+    title = "Mean Hospital Bed Occupancy per Location and Quarter",
+    colour = "NHS Health Board"
+  )
+```
 

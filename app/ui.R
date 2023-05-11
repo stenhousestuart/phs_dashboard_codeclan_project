@@ -77,8 +77,7 @@ ui <- fluidPage(
                        ),
                        
                        column(width = 6,
-                              print("This is an example of the text that could go here! 
-                            Just imagine."))
+                              print("The selections allow visualisation of trends in the total number of admissions and the mean length of stay from Q3 2017 to Q3 2022."))
                      ),
                      fluidRow(
                        column(width = 3,
@@ -91,10 +90,7 @@ ui <- fluidPage(
                      plotOutput("temporal_output"),
                      
                      
-                     fluidRow(
-                       print("This is space for us to put some analysis relating to the results of each graph - but for now it is just gonna have rubbish in it.
-            This would be where some stats go, but good luck interpretting these nonsense graphs")
-                     )
+                     
                    ),
                    
                    tabPanel(
@@ -385,7 +381,7 @@ ui <- fluidPage(
                   title = "Hospital Admissions",
                   tags$h3("Number of Hospital Admissions"),
                   tags$br(),
-                  print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                  print("The table below contains descriptive statistics for hospital admissions from 2017 Q3 - 2022 Q3. The graph shows the data distribution and provides statistical analysis for the following question."),
                   tags$br(),
                   tags$br(),
                   print("Question: Does the mean number of hopsital admissions differ between the Spring/Summer and Autumn/Winter months for all Health Boards?"),
@@ -444,7 +440,7 @@ ui <- fluidPage(
                   title = "Average Length of Stay",
                   tags$h3("Length of Stay"),
                   tags$br(),
-                  print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                  print("The table below contains descriptive statistics for hospital admissions from 2017 Q3 - 2022 Q3. The graph shows the data distribution and provides statistical analysis for the following question."),
                   tags$br(),
                   tags$br(),
                   print("Question: Does the mean average length of stay differ between the Spring/Summer and Autumn/Winter months for all Health Boards?"),
@@ -502,7 +498,7 @@ ui <- fluidPage(
                   title = "Percentage Bed Occupancy",
                   tags$h3("Hospital beds occupancy"),
                   tags$br(),
-                  print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                  print("The table below contains descriptive statistics for hospital admissions from 2017 Q3 - 2022 Q3. The graph shows the data distribution and provides statistical analysis for the following question."),
                   tags$br(),
                   tags$br(),
                   print("Question: Does the mean percentage of bed occupancy differ between the Spring/Summer and Autumn/Winter months for all Health Boards?"),
@@ -512,7 +508,7 @@ ui <- fluidPage(
                   tags$br(),
                   print("Interpretation:"),
                   tags$br(),
-                  print("Based on our two-sample test of means using boostrap resampling our p-value (0.986) is not less than our significance level so we fail to reject
+                  print("Based on our two-sample test of means using boostrap resampling, our p-value (0.986) is not less than our significance level so we fail to reject
                                the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean percentage of bed occupancy differs between 
                                the Spring/Summer and Autumn/Winter months."),
                   fluidRow(
