@@ -28,16 +28,19 @@ server <- function(input, output, session) {
                                                y = percentage_occupancy, 
                                                group = nhs_health_board, 
                                                colour = nhs_health_board)) + 
-                                    geom_point() +
-                                    geom_line()+
+                                    geom_point(size = 6, shape = 17) +
+                                    geom_line(size = 1)+
                                     facet_wrap(~year) +
                                     labs(
                                       x = "Quarter", 
                                       y = "Percentage of Occupied Beds",
                                       title = "Average Hospital Bed Occupancy per Location and Quarter",
                                       colour = "NHS Health Board"
-                                    ) #+
-                                  #ylim(min_beds, max_beds) not working!
+                                    ) +
+                                    theme_light() +
+                                    scale_colour_manual(values = phs_colour_scheme) +
+                                    theme(plot.title = element_text(size = 18, face = "bold"),
+                                          plot.subtitle = element_text(size = 13))
                                   
                                 })
   
@@ -127,7 +130,11 @@ server <- function(input, output, session) {
                                                         y = "Number of Admissions \n",
                                                         title = "Number of Admissions by Age, Gender & Season") +
                                                    theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
-                                                   scale_y_continuous(labels = scales::comma)
+                                                   scale_y_continuous(labels = scales::comma) + 
+                                                   theme_light() +
+                                                   scale_fill_discrete_phs(palette = "main-blues") +
+                                                   theme(plot.title = element_text(size = 18, face = "bold"),
+                                                         plot.subtitle = element_text(size = 13))
                                                
                                              }
                                             
@@ -148,7 +155,11 @@ server <- function(input, output, session) {
                                                 labs(x = "\n Age",
                                                      y = "Average Length of Stay \n",
                                                      title = "Average Length of Stay by Age, Gender & Season") +
-                                                theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+                                                theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
+                                                theme_light() +
+                                                scale_fill_discrete_phs(palette = "main-blues") +
+                                                theme(plot.title = element_text(size = 18, face = "bold"),
+                                                      plot.subtitle = element_text(size = 13))
                                               
                                               
                                             }
@@ -174,8 +185,11 @@ server <- function(input, output, session) {
                                        #              aes(colour = simd),
                                        #              alpha = 0.6) +
                                        # stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
-                                       geom_point(aes(colour = simd)) +
-                                       geom_line(aes(group = simd, colour = simd)) +
+                                       geom_point(aes(colour = simd),
+                                                  size = 6,
+                                                  shape = 17) +
+                                       geom_line(aes(group = simd, colour = simd),
+                                                 size = 1) +
                                        # stat_summary(fun = "mean",
                                        #              geom = "line",
                                        #              aes(group = simd, colour = simd)) +
@@ -185,7 +199,11 @@ server <- function(input, output, session) {
                                          y = "Mean Episodes of Care \n",
                                          title = "Mean Episodes of Care by SIMD & Quarter",
                                          colour = "SIMD:",
-                                         subtitle = "2017 Q3 to 2022 Q3")
+                                         subtitle = "2017 Q3 to 2022 Q3") +
+                                       theme_light() +
+                                       scale_colour_manual(values = phs_colour_scheme) +
+                                       theme(plot.title = element_text(size = 18, face = "bold"),
+                                             plot.subtitle = element_text(size = 13))
                                    
                                    }
                                    
@@ -205,8 +223,11 @@ server <- function(input, output, session) {
                                        #              aes(colour = simd),
                                        #              alpha = 0.6) +
                                        # stat_summary(fun = "mean", geom = "point", size = 4, aes(colour = simd)) +
-                                       geom_point(aes(colour = simd)) +
-                                       geom_line(aes(group = simd, colour = simd)) +
+                                       geom_point(aes(colour = simd),
+                                                  size = 6,
+                                                  shape = 17) +
+                                       geom_line(aes(group = simd, colour = simd),
+                                                 size = 1) +
                                        # stat_summary(fun = "mean",
                                        #              geom = "line",
                                        #              aes(group = simd, colour = simd)) +
@@ -216,7 +237,11 @@ server <- function(input, output, session) {
                                          y = "Mean Length of Stay \n",
                                          title = "Mean Length of Stay by SIMD & Quarter",
                                          colour = "SIMD:",
-                                         subtitle = "2017 Q3 to 2022 Q3")
+                                         subtitle = "2017 Q3 to 2022 Q3") +
+                                       theme_light() +
+                                       scale_colour_manual(values = phs_colour_scheme) +
+                                       theme(plot.title = element_text(size = 18, face = "bold"),
+                                             plot.subtitle = element_text(size = 13))
 
                                      
                                      
@@ -238,15 +263,22 @@ server <- function(input, output, session) {
                                            group_by(quarter, age, pre_post_2020) %>% 
                                            summarise(mean_admissions_quarter = mean(total_admissions_year_quarter)) %>%
                                            ggplot(aes(x = quarter, y = mean_admissions_quarter)) +
-                                           geom_line(aes(group = age, colour = age)) +
-                                           geom_point(aes(colour = age)) +
+                                           geom_line(aes(group = age, colour = age),
+                                                     size = 1) +
+                                           geom_point(aes(colour = age),
+                                                      size = 6,
+                                                      shape = 17) +
                                            facet_wrap(~pre_post_2020) +
                                            labs(
                                              x = "\n Quarter",
-                                             y = "Mean Episodes of Care \n",
-                                             title = "Mean Episodes of Care by Age & Quarter",
+                                             y = "Mean No. of Admissions \n",
+                                             title = "Mean No. of Admissions by Age & Quarter",
                                              colour = "Age:",
-                                             subtitle = "2017 Q3 to 2022 Q3")
+                                             subtitle = "2017 Q3 to 2022 Q3") +
+                                           theme_light() +
+                                           scale_colour_manual(values = phs_colour_scheme) +
+                                           theme(plot.title = element_text(size = 18, face = "bold"),
+                                                 plot.subtitle = element_text(size = 13))
 
                                          
                                        }
@@ -259,15 +291,23 @@ server <- function(input, output, session) {
                                            group_by(quarter, age, pre_post_2020) %>%
                                            summarise(mean_average_length_of_stay = mean(average_length_of_stay)) %>%
                                            ggplot(aes(x = quarter, y = mean_average_length_of_stay)) +
-                                           geom_point(aes(colour = age)) +
-                                           geom_line(aes(group = age, colour = age)) +
+                                           theme_phs() +
+                                           geom_point(aes(colour = age),
+                                                      size = 6,
+                                                      shape = 17) +
+                                           geom_line(aes(group = age, colour = age),
+                                                     size = 1) +
                                            facet_wrap(~pre_post_2020) +
                                            labs(
                                              x = "\n Quarter",
                                              y = "Mean Length of Stay \n",
                                              title = "Mean Length of Stay by Age & Quarter",
                                              colour = "Age:",
-                                             subtitle = "2017 Q3 to 2022 Q3")  
+                                             subtitle = "2017 Q3 to 2022 Q3") +
+                                           theme_light() +
+                                           scale_colour_manual(values = phs_colour_scheme) +
+                                           theme(plot.title = element_text(size = 18, face = "bold"),
+                                                 plot.subtitle = element_text(size = 13))
 
                                          
                                          
@@ -331,7 +371,7 @@ server <- function(input, output, session) {
   )
   
   geo_palette <- colorNumeric(
-    palette = "Reds",
+    palette = "Blues",
     domain = locations_occupancy_full$percentage_occupancy)
   
   output$geo_map_output <- renderLeaflet(
@@ -360,8 +400,12 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            summarise(total_episodes = sum(episodes)) %>% 
                                            ggplot() +
                                            aes(x = quarter, y = total_episodes) +
-                                           geom_line(aes(group = nhs_health_board, colour = nhs_health_board),show.legend = FALSE) +
-                                           geom_point(aes(colour = nhs_health_board), size = 4, shape = 17) +
+                                           geom_line(aes(group = nhs_health_board, colour = nhs_health_board),
+                                                     show.legend = FALSE,
+                                                     size = 1) +
+                                           geom_point(aes(colour = nhs_health_board), 
+                                                      size = 6,
+                                                      shape = 17) +
                                          #+
                                           # geom_line(aes(group = quarter)) 
                                          
@@ -385,12 +429,17 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            color = "black"
                                          ) +
                                          geom_vline(xintercept = 10.5, linetype = "dashed") +
+                                           theme_phs() +
                                          labs(
                                            title = "Total Number of Hospital Admissions",
                                            subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
-                                           x = "Quarter",
-                                           y = "Hospital Admissions",
-                                           col = "NHS Health Board")
+                                           x = "\nQuarter",
+                                           y = "Hospital Admissions\n",
+                                           col = "NHS Health Board") +                                           
+                                           theme_light() +
+                                           scale_colour_manual(values = phs_colour_scheme) +
+                                           theme(plot.title = element_text(size = 18, face = "bold"),
+                                                 plot.subtitle = element_text(size = 13))
                                          
                                        }
                                        
@@ -400,8 +449,12 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                              summarise(average_length_of_stay = mean(average_length_of_stay)) %>% 
                                              ggplot() +
                                              aes(x = quarter, y = average_length_of_stay) +
-                                           geom_line(aes(group = nhs_health_board, colour = nhs_health_board),show.legend = FALSE) +
-                                           geom_point(aes(colour = nhs_health_board), size = 4, shape = 17) +
+                                           geom_line(aes(group = nhs_health_board, colour = nhs_health_board),
+                                                     show.legend = FALSE,
+                                                     size = 1) +
+                                           geom_point(aes(colour = nhs_health_board),
+                                                      size = 6,
+                                                      shape = 17) +
                                              #geom_line(aes(group = quarter)) +
                                              theme_bw() +
                                              theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
@@ -427,9 +480,13 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                              labs(
                                                title = "Average Length of Stay by Quarter",
                                                subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
-                                               x = "Quarter",
-                                               y = "Mean of Average Length of Stay (In Days)",
-                                               col = "NHS Health Board") 
+                                               x = "\nQuarter",
+                                               y = "Mean of Average Length of Stay (Days)\n",
+                                               col = "NHS Health Board") +
+                                           theme_light() +
+                                           scale_colour_manual(values = phs_colour_scheme) +
+                                           theme(plot.title = element_text(size = 18, face = "bold"),
+                                                 plot.subtitle = element_text(size = 13))
                                        }
                                      })
 
