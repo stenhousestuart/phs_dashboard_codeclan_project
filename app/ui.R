@@ -61,8 +61,8 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         tags$br(),
                         print("Interpretation:"),
                         tags$br(),
-                        print("Based on our two-sample test of means using boostrap resampling our p-value (0.976) is not less than our significance level so we fail to reject
-                               the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean number of hopsital admissions differs between 
+                        print("Based on our two-sample test of means using bootstrap resampling our p-value (0.976) is not less than our significance level so we fail to reject
+                               the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean number of hospital admissions differs between 
                                the Spring/Summer and Autumn/Winter months."), 
                         tags$br(),
                         tags$br(),
@@ -120,7 +120,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         tags$br(),
                         print("Interpretation:"),
                         tags$br(),
-                        print("Based on our two-sample test of means using boostrap resampling our p-value (0.984) is not less than our significance level so we fail to reject
+                        print("Based on our two-sample test of means using bootstrap resampling our p-value (0.984) is not less than our significance level so we fail to reject
                                the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean average length of stay differs between 
                                the Spring/Summer and Autumn/Winter months."), 
                         tags$br(),
@@ -178,7 +178,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         tags$br(),
                         print("Interpretation:"),
                         tags$br(),
-                        print("Based on our two-sample test of means using boostrap resampling, our p-value (0.986) is not less than our significance level so we fail to reject
+                        print("Based on our two-sample test of means using bootstrap resampling, our p-value (0.986) is not less than our significance level so we fail to reject
                                the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean percentage of bed occupancy differs between 
                                the Spring/Summer and Autumn/Winter months."),
                         tags$br(),
@@ -291,7 +291,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                          selected = "Q1")
                       ),
                       column(width = 5,
-                             p("Bed Occupancy Numbers for each NHS Health Board in each Quarter", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
+                             p("Bed Occupancy Numbers for each Hospital in each Quarter", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     ),
                     fluidRow(
                       column(width = 4,
@@ -410,15 +410,14 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         tags$br(),
                         fluidRow(
                           tags$br(),
-                          column(width = 4,
+                          column(width = 3,
                                  
                                  radioButtons(inputId = "age_plot_type_input",
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-                        ),
-                        fluidRow(
-                          column(width = 4,
+
+                          column(width = 3,
                                  
                                  
                                  pickerInput(inputId = "age_input",
@@ -431,14 +430,13 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                           
                           
                           
-                          column(width = 8,
-                                 p(tags$b("Hypothesis Test:")),
-                                 p(tags$b("H0:"), "Over 50 Mean Admissions - Under 50 Mean Admissions = 0",tags$br(),
-                                   tags$b("HA:"), "Over 50 Mean Admissions - Under 50 Mean Admissions != 0", tags$br(),
-                                   tags$b("Significance Level:"), "0.05"),
-                                 p("Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. We therefor reject 
+                          column(width = 6,
+                                 p(tags$b("Question:"), "Does the mean number of hospital admissions differ between individuals over 50 and under 50?",tags$br(),
+                                   tags$b("Test:"), "Two Sample Mean Test", tags$br(),
+                                   tags$b("Significance Level:"), "α0.05", tags$br(),
+                                   tags$b("Results/Interpretation:"), "Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. We therefor reject 
                                    H0 with evidence suggesting that there is a statistically significant difference in admission numbers 
-                                   between those over 50 and those under 50."),  
+                                   between those over 50 and those under 50."),
                                    
                         ),
                         ),
@@ -470,28 +468,25 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-                        ),
-                        fluidRow(
-                          column(width = 4,
+
+                          column(width = 3,
                                  
                                  
                                  pickerInput(inputId = "deprivation_input",
-                                             label = tags$b("Deprivation Index:"),
+                                             label = tags$b("Deprivation Index (1 Most Deprived / 5 Least Deprived):"),
                                              choices = deprivation_choice,
                                              multiple = TRUE,
                                              pickerOptions(actionsBox = TRUE),
                                              selected = 1)
                           ),
                           
-                          column(width = 8,
-                                 p(tags$b("Hypothesis Test:")),
-                                 p(tags$b("H0:"), "Mean SIMD 1 Admissions - Mean SIMD 5 Admissions = 0",tags$br(),
-                                   tags$b("HA:"), "Mean SIMD 1 Admissions - Mean SIMD 5 Admissions != 0",tags$br(),
-                                   tags$b("Significance Level:"), "0.05"),
-                                 p("Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. 
+                          column(width = 6,
+                                 p(tags$b("Question:"), "Does the mean number of hospital admissions differ between highest and lowest deprivation index?",tags$br(),
+                                   tags$b("Test:"), "Two Sample Mean Test", tags$br(),
+                                   tags$b("Significance Level:"), "α0.05", tags$br(),
+                                   tags$b("Results/Interpretation:"), "Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. 
                                    We therefor reject H0 with evidence suggesting that there is a statistically significant 
-                                   difference in admission numbers between those in the highest and lowest deprivation groups."), 
-                             
+                                   difference in admission numbers between those in the highest and lowest deprivation groups."),
                           ),
                         ), 
                   
@@ -518,10 +513,9 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                           label = tags$b("View:"),
                                           choices = c("No. of Admissions", "Average Length of Stay"))
                       ),
-                    ),
-                    fluidRow(
+
                       tags$br(),
-                      column(width = 4,
+                      column(width = 3,
                              pickerInput(inputId = "gender_age_input",
                                          label = tags$b("Age Range(s):"),
                                          choices = age_choice,
@@ -531,12 +525,11 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                       ),
                       
                     
-                    column(width = 8,
-                           p(tags$b("Hypothesis Test:")),
-                           p(tags$b("H0:"), "Mean Female Admissions - Mean Male Admissions = 0",tags$br(),
-                             tags$b("HA:"), "Mean Female Admissions - Mean Male Admissions != 0",tags$br(),
-                             tags$b("Significance Level:"), "0.05"),
-                           p("Based on a bootstrapped NULL distribution, a p-value of 0.62 is returned which is greater than the 
+                    column(width = 6,
+                           p(tags$b("Question:"), "Does the mean number of hospital admissions differ between females and males?",tags$br(),
+                             tags$b("Test:"), "Two Sample Mean Test",tags$br(),
+                             tags$b("Significance Level:"), "α0.05",tags$br(),
+                             tags$b("Results/Interpretation:"), "Based on a bootstrapped NULL distribution, a p-value of 0.62 is returned which is greater than the 
                              significance level. We therefor fail to reject H0 as there is insufficient evidence to suggest there 
                              is a statistically significant difference in number of admissions between females and males."), 
                            

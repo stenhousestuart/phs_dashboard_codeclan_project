@@ -40,7 +40,9 @@ server <- function(input, output, session) {
                                     theme_light() +
                                     scale_colour_manual(values = phs_colour_scheme) +
                                     theme(plot.title = element_text(size = 18, face = "bold"),
-                                          plot.subtitle = element_text(size = 13))
+                                          plot.subtitle = element_text(size = 17),
+                                          axis.title.x = element_text(size = 16),
+                                          axis.title.y = element_text(size = 16))
                                   
                                 })
   
@@ -134,7 +136,9 @@ server <- function(input, output, session) {
                                                    theme_light() +
                                                    scale_fill_discrete_phs(palette = "main-blues") +
                                                    theme(plot.title = element_text(size = 18, face = "bold"),
-                                                         plot.subtitle = element_text(size = 13))
+                                                         plot.subtitle = element_text(size = 17),
+                                                         axis.title.x = element_text(size = 16),
+                                                         axis.title.y = element_text(size = 16))
                                                
                                              }
                                             
@@ -159,7 +163,9 @@ server <- function(input, output, session) {
                                                 theme_light() +
                                                 scale_fill_discrete_phs(palette = "main-blues") +
                                                 theme(plot.title = element_text(size = 18, face = "bold"),
-                                                      plot.subtitle = element_text(size = 13))
+                                                      plot.subtitle = element_text(size = 17),
+                                                      axis.title.x = element_text(size = 16),
+                                                      axis.title.y = element_text(size = 16))
                                               
                                               
                                             }
@@ -203,7 +209,9 @@ server <- function(input, output, session) {
                                        theme_light() +
                                        scale_colour_manual(values = phs_colour_scheme) +
                                        theme(plot.title = element_text(size = 18, face = "bold"),
-                                             plot.subtitle = element_text(size = 13))
+                                             plot.subtitle = element_text(size = 17),
+                                             axis.title.x = element_text(size = 16),
+                                             axis.title.y = element_text(size = 16))
                                    
                                    }
                                    
@@ -241,7 +249,9 @@ server <- function(input, output, session) {
                                        theme_light() +
                                        scale_colour_manual(values = phs_colour_scheme) +
                                        theme(plot.title = element_text(size = 18, face = "bold"),
-                                             plot.subtitle = element_text(size = 13))
+                                             plot.subtitle = element_text(size = 17),
+                                             axis.title.x = element_text(size = 16),
+                                             axis.title.y = element_text(size = 16))
 
                                      
                                      
@@ -278,7 +288,9 @@ server <- function(input, output, session) {
                                            theme_light() +
                                            scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
-                                                 plot.subtitle = element_text(size = 13))
+                                                 plot.subtitle = element_text(size = 17),
+                                                 axis.title.x = element_text(size = 16),
+                                                 axis.title.y = element_text(size = 16))
 
                                          
                                        }
@@ -306,7 +318,9 @@ server <- function(input, output, session) {
                                            theme_light() +
                                            scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
-                                                 plot.subtitle = element_text(size = 13))
+                                                 plot.subtitle = element_text(size = 17),
+                                                 axis.title.x = element_text(size = 16),
+                                                 axis.title.y = element_text(size = 16))
 
                                          
                                          
@@ -437,7 +451,9 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            theme_light() +
                                            scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
-                                                 plot.subtitle = element_text(size = 13))
+                                                 plot.subtitle = element_text(size = 17),
+                                                 axis.title.x = element_text(size = 16),
+                                                 axis.title.y = element_text(size = 16))
                                          
                                        }
                                        
@@ -484,7 +500,9 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            theme_light() +
                                            scale_colour_manual(values = phs_colour_scheme) +
                                            theme(plot.title = element_text(size = 18, face = "bold"),
-                                                 plot.subtitle = element_text(size = 13))
+                                                 plot.subtitle = element_text(size = 17),
+                                                 axis.title.x = element_text(size = 16),
+                                                 axis.title.y = element_text(size = 16))
                                        }
                                      })
 
@@ -551,7 +569,7 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                  geom_point(aes(colour = specialty_name), size = 6, shape = 17) +
                                                  facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
                                                  labs(
-                                                   title = "Mean length of episodes by Quarter for Specialities",
+                                                   title = "Mean Length of Stay by Quarter for Specialities",
                                                    x = "Quarter",
                                                    y = "Mean of Average Length of Stay (In Days)",
                                                    col = "Speciality Name",
@@ -560,7 +578,9 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                  theme_light() +
                                                  scale_colour_manual(values = phs_colour_scheme) +
                                                  theme(plot.title = element_text(size = 18, face = "bold"),
-                                                       plot.subtitle = element_text(size = 13))
+                                                       plot.subtitle = element_text(size = 17),
+                                                       axis.title.x = element_text(size = 16),
+                                                       axis.title.y = element_text(size = 16))
                                              })
 
 output$speciality_output <-renderPlot(
@@ -592,7 +612,7 @@ speciality_occupancy_filter() %>%
                  color = "black") +
     facet_wrap(~factor(year, level = c("Pre-2020", "Post-2020"))) +
     labs(
-      title = "Mean Hospital Admission by Quarter for Specialities",
+      title = "Mean Hospital Admissions by Quarter for Specialities",
       x = "Quarter",
       y = "Hospital Admissions",
       col = "Speciality Name",
@@ -601,7 +621,9 @@ speciality_occupancy_filter() %>%
   theme_light() +
   scale_colour_manual(values = phs_colour_scheme) +
   theme(plot.title = element_text(size = 18, face = "bold"),
-        plot.subtitle = element_text(size = 13))
+        plot.subtitle = element_text(size = 17),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16))
 )
 
 
