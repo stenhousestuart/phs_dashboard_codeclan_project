@@ -103,7 +103,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                  dataTableOutput("hospital_admission_stats_split_output")
                           ),
                           column(width = 1,
-                                 img(src = "av_hosp_graph.png", style = "width: 800px"))
+                                 img(src = "av_hosp_correcto.png", style = "width: 800px"))
                         ),
                       ), # tab panel - admissions
                       tabPanel(
