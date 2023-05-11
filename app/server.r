@@ -202,8 +202,8 @@ server <- function(input, output, session) {
                                        facet_wrap(~pre_post_2020) +
                                        labs(
                                          x = "\n Quarter",
-                                         y = "Mean Episodes of Care \n",
-                                         title = "Mean Episodes of Care by SIMD & Quarter",
+                                         y = "Mean Admissions \n",
+                                         title = "Mean Admissions by SIMD & Quarter",
                                          colour = "SIMD:",
                                          subtitle = "2017 Q3 to 2022 Q3") +
                                        theme_light() +
