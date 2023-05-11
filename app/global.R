@@ -76,10 +76,9 @@ speciality_choice_longer <- locations_occupancy_full %>%
   arrange(specialty_name) %>% 
   rename("Specialty Name" = specialty_name)
 
-scale_colour_manual(values = phs_colour_scheme)
-
 phs_colour_scheme <- c("#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3",
                                 "#1E7F84", "#C73918", "#E1C7DF",
-                                "#B3D7F2", "#DAEBBE")
+                                "#B3D7F2", "#DAEBBE", "#8073AC", "#853F36", 
+                                "#367C85", "#D6604D")
 
 

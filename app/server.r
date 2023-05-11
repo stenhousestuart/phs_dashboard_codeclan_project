@@ -291,7 +291,6 @@ server <- function(input, output, session) {
                                            group_by(quarter, age, pre_post_2020) %>%
                                            summarise(mean_average_length_of_stay = mean(average_length_of_stay)) %>%
                                            ggplot(aes(x = quarter, y = mean_average_length_of_stay)) +
-                                           theme_phs() +
                                            geom_point(aes(colour = age),
                                                       size = 6,
                                                       shape = 17) +
@@ -429,7 +428,6 @@ filtered_temporal_output <- eventReactive(eventExpr = input$update_temporal,
                                            color = "black"
                                          ) +
                                          geom_vline(xintercept = 10.5, linetype = "dashed") +
-                                           theme_phs() +
                                          labs(
                                            title = "Total Number of Hospital Admissions",
                                            subtitle = "Quarterly Data from Q3 2017-Q3 2022\n",
