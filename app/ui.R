@@ -44,14 +44,26 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                   ),
                   
                   tabPanel(
-                    title = "Stats",
+                    title = "Statistical Analysis",
                     tags$br(),
                     tabsetPanel(
                       tabPanel(
-                        title = "Admissions",
+                        title = "Hospital Admissions",
                         tags$h3("Number of Hospital Admissions"),
                         tags$br(),
-                        print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                        print("The table below contains descriptive statistics for hospital admissions from 2017 Q3 - 2022 Q3. The graph shows the data distribution and provides statistical analysis for the following question."),
+                        tags$br(),
+                        tags$br(),
+                        print("Question: Does the mean number of hopsital admissions differ between the Spring/Summer and Autumn/Winter months for all Health Boards?"),
+                        tags$br(),
+                        print("Significance level: α = 0.05"),
+                        tags$br(),
+                        tags$br(),
+                        print("Interpretation:"),
+                        tags$br(),
+                        print("Based on our two-sample test of means using boostrap resampling our p-value (0.976) is not less than our significance level so we fail to reject
+                               the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean number of hopsital admissions differs between 
+                               the Spring/Summer and Autumn/Winter months."), 
                         tags$br(),
                         tags$br(),
                         fluidRow(
@@ -95,10 +107,22 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         ),
                       ), # tab panel - admissions
                       tabPanel(
-                        title = "LoS",
+                        title = "Average Length of Stay",
                         tags$h3("Length of Stay"),
                         tags$br(),
-                        print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                        print("The table below contains descriptive statistics for hospital admissions from 2017 Q3 - 2022 Q3. The graph shows the data distribution and provides statistical analysis for the following question."),
+                        tags$br(),
+                        tags$br(),
+                        print("Question: Does the mean average length of stay differ between the Spring/Summer and Autumn/Winter months for all Health Boards?"),
+                        tags$br(),
+                        print("Significance level: α = 0.05"),
+                        tags$br(),
+                        tags$br(),
+                        print("Interpretation:"),
+                        tags$br(),
+                        print("Based on our two-sample test of means using boostrap resampling our p-value (0.984) is not less than our significance level so we fail to reject
+                               the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean average length of stay differs between 
+                               the Spring/Summer and Autumn/Winter months."), 
                         tags$br(),
                         tags$br(),
                         fluidRow(
@@ -141,10 +165,22 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         
                       ), # tab panel length of stay
                       tabPanel(
-                        title = "Beds",
-                        tags$h3("Hospital beds occupancy"),
+                        title = "Percentage of Bed Occupancy",
+                        tags$h3("Hospital Beds Occupancy"),
                         tags$br(),
-                        print("The below displays data from 2017Q3 - 2022Q3 and includes all available data."),
+                        print("The table below contains descriptive statistics for the percentage of bed occupancy from 2017 Q3 - 2022 Q3. The graph shows the data distribution and provides statistical analysis for the following question."),
+                        tags$br(),
+                        tags$br(),
+                        print("Question: Does the mean percentage of bed occupancy differ between the Spring/Summer and Autumn/Winter months for all Health Boards?"),
+                        tags$br(),
+                        print("Significance level: α = 0.05"),
+                        tags$br(),
+                        tags$br(),
+                        print("Interpretation:"),
+                        tags$br(),
+                        print("Based on our two-sample test of means using boostrap resampling, our p-value (0.986) is not less than our significance level so we fail to reject
+                               the null hypothesis. Based on our data there is not sufficient evidence to suggest that the mean percentage of bed occupancy differs between 
+                               the Spring/Summer and Autumn/Winter months."),
                         tags$br(),
                         tags$br(),
                         fluidRow(
@@ -190,7 +226,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                   
                   
                   tabPanel(
-                    title = "Temporal",
+                    title = "Trends over Time",
                     tags$br(),
                     fluidRow(
                       column(width = 3,
@@ -222,7 +258,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     ),
                     
                     column(width = 3,
-                           p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
+                           p("The selections allow visualisation of trends in the total number of admissions and the mean length of stay from Q3 2017 to Q3 2022.", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     
                     ),
                     fluidRow(
@@ -240,7 +276,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                   ),
                   
                   tabPanel(
-                    title = "Geographical",
+                    title = "Trends by Location",
                     tags$br(),
                     fluidRow(
                       
@@ -257,7 +293,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                          selected = "Q1")
                       ),
                       column(width = 5,
-                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
+                             p("Bed Occupancy Numbers for each NHS Health Board in each Quarter", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     ),
                     fluidRow(
                       column(width = 4,
@@ -288,7 +324,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                      
                       
                       column(width = 8,
-                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
+                             p("Trends in the Percentage of Bed Occupancy Numbers for each NHS Health Board", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                     # ),
                     ),
                   fluidRow(
@@ -307,10 +343,10 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     ),
                   ),
                   tabPanel(
-                    title = "Speciality",
+                    title = "Changes to Medical Speciality Numbers",
                     tabsetPanel(
                       tabPanel(
-                        title = "Length of Stay by Speciality",
+                        title = "Average Length of Stay by Speciality",
                         
                         fluidRow( 
                           column(width = 4,
@@ -324,7 +360,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                  ),
                           ),
                           column(width = 8,
-                                 print("I don't think you've considered the impact of being able to write text here."))
+                                 print("Differences in average length of stay for admissions to Medical Speciality Departments"))
                         ),
                         
                         actionButton(inputId = "update_speciality",
@@ -335,7 +371,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                         ),
                       ), # closes tabPanel for speciality by mean
                       tabPanel(
-                        title = "Admissions by Speciality",
+                        title = "Hospital Admissions by Medical Speciality",
                         fluidRow(
                           column(width = 4,
                                  pickerInput(
@@ -348,7 +384,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                  )
                           ),
                           column(width = 8,
-                                 print("We can put text here if we need to"))
+                                 print("Differences in hospital admissions to Medical Speciality Departments"))
                         ),
                         fluidRow(
                           column(width = 4,
