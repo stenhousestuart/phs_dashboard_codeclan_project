@@ -241,9 +241,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                            pickerInput(inputId = "admission_input_tempo",
                                        label = tags$b("Admission Type:"),
                                        choices = admission_choice,
-                                       pickerOptions(actionsBox = TRUE),
-                                       selected = "All Inpatients",
-                                       multiple = TRUE)
+                                       selected = "All Inpatients")
                            
                            
                     ),
