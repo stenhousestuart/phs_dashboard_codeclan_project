@@ -357,8 +357,8 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                    pickerOptions(actionsBox = TRUE)
                                  ),
                           ),
-                          column(width = 8,
-                                 print("Differences in average length of stay for admissions to Medical Speciality Departments"))
+                          column(width = 5,
+                                 p("Differences in average length of stay for admissions to Medical Speciality Departments", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                         ),
                         
                         actionButton(inputId = "update_speciality",
@@ -381,8 +381,8 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                    pickerOptions(actionsBox = TRUE)
                                  )
                           ),
-                          column(width = 8,
-                                 print("Differences in hospital admissions to Medical Speciality Departments"))
+                          column(width = 5,
+                                 p("Differences in hospital admissions to Medical Speciality Departments", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
                         ),
                         fluidRow(
                           column(width = 4,
