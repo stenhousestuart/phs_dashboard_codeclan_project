@@ -2078,9 +2078,8 @@ p_value
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5ob3NwX2FkbV9xX3NwbGl0ICU+JSBcbiAgbXV0YXRlKHNlYXNvbiA9IGlmZWxzZShxdWFydGVyICVpbiUgYygyLDMpLCBcIlNwcmluZy9TdW1tZXJcIiwgXCJBdXR1bW4vV2ludGVyXCIpKSAlPiUgXG4gIGZpbHRlcihuaHNfaGVhbHRoX2JvYXJkICE9IFwiQWxsIG9mIFNjb3RsYW5kXCIpICU+JSBcbiAgZ3JvdXBfYnkoc2Vhc29uKSAlPiUgXG4gIHN1bW1hcmlzZSh0b3RhbF9ob3NwaXRhbF9hZG1pc3Npb25zID0gc3VtKGVwaXNvZGVzLCBuYS5ybSA9IFRSVUUpLFxuICAgICAgICAgICAgIG1lYW5fYXZfbG9zID0gbWVhbihhdmVyYWdlX2xlbmd0aF9vZl9zdGF5LCBuYS5ybSA9IFRSVUUpLFxuICAgICAgICAgICAgIHNkID0gc2QoYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSwgbmEucm0gPSBUUlVFKSxcbiAgICAgICAgICAgICBjaSA9IDIgKiBzZCkgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gc2Vhc29uLCB5ID0gbWVhbl9hdl9sb3MpICtcbiAgZ2VvbV9jb2woZmlsbCA9IFwicmVkXCIsIGNvbG9yID0gXCJibGFja1wiKSArXG4gIGdlb21fZXJyb3JiYXIoYWVzKHltaW4gPSBtZWFuX2F2X2xvcywgeW1heCA9IG1lYW5fYXZfbG9zICsgY2kpLCB3aWR0aCA9IDAuMikgK1xuICB5bGltKDAsIDE1KSArXG4gIHRoZW1lX2J3KCkgK1xuICBnZW9tX3NlZ21lbnQoYWVzKHggPSAxLCB5ID0gMTQuMjUsIHhlbmQgPSAyLCB5ZW5kID0gMTQuMjUpLCBjb2xvciA9IFwiYmxhY2tcIiwgbGluZXdpZHRoID0gMSkgK1xuICBnZW9tX2xhYmVsKGxhYmVsID0gXCJwID0gMC45NzZcIiwgXG4gICAgeCA9IDEuNSxcbiAgICB5ID0gMTUsXG4gICAgbGFiZWwucGFkZGluZyA9IHVuaXQoMC4xNSwgXCJsaW5lc1wiKSwgXG4gICAgbGFiZWwuc2l6ZSA9IDAuMTUsXG4gICAgY29sb3IgPSBcImJsYWNrXCIpXG5cbmBgYCJ9 -->
-<pre class="r"><code>
-hosp_adm_q_split %&gt;% 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG9zcF9hZG1fcV9zcGxpdCAlPiUgXG4gIG11dGF0ZShzZWFzb24gPSBpZmVsc2UocXVhcnRlciAlaW4lIGMoMiwzKSwgXCJTcHJpbmcvU3VtbWVyXCIsIFwiQXV0dW1uL1dpbnRlclwiKSkgJT4lIFxuICBmaWx0ZXIobmhzX2hlYWx0aF9ib2FyZCAhPSBcIkFsbCBvZiBTY290bGFuZFwiKSAlPiUgXG4gIGdyb3VwX2J5KHNlYXNvbikgJT4lIFxuICBzdW1tYXJpc2UodG90YWxfaG9zcGl0YWxfYWRtaXNzaW9ucyA9IHN1bShlcGlzb2RlcywgbmEucm0gPSBUUlVFKSxcbiAgICAgICAgICAgICBtZWFuX2F2X2xvcyA9IG1lYW4oYXZlcmFnZV9sZW5ndGhfb2Zfc3RheSwgbmEucm0gPSBUUlVFKSxcbiAgICAgICAgICAgICBzZCA9IHNkKGF2ZXJhZ2VfbGVuZ3RoX29mX3N0YXksIG5hLnJtID0gVFJVRSksXG4gICAgICAgICAgICAgY2kgPSAyICogc2QpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHNlYXNvbiwgeSA9IG1lYW5fYXZfbG9zKSArXG4gIGdlb21fY29sKGZpbGwgPSBcInJlZFwiLCBjb2xvciA9IFwiYmxhY2tcIikgK1xuICBnZW9tX2Vycm9yYmFyKGFlcyh5bWluID0gbWVhbl9hdl9sb3MsIHltYXggPSBtZWFuX2F2X2xvcyArIGNpKSwgd2lkdGggPSAwLjIpICtcbiAgeWxpbSgwLCAxNSkgK1xuICB0aGVtZV9idygpICtcbiAgZ2VvbV9zZWdtZW50KGFlcyh4ID0gMSwgeSA9IDE0LjI1LCB4ZW5kID0gMiwgeWVuZCA9IDE0LjI1KSwgY29sb3IgPSBcImJsYWNrXCIsIGxpbmV3aWR0aCA9IDEpICtcbiAgZ2VvbV9sYWJlbChsYWJlbCA9IFwicCA9IDAuOTc2XCIsIFxuICAgIHggPSAxLjUsXG4gICAgeSA9IDE1LFxuICAgIGxhYmVsLnBhZGRpbmcgPSB1bml0KDAuMTUsIFwibGluZXNcIiksIFxuICAgIGxhYmVsLnNpemUgPSAwLjE1LFxuICAgIGNvbG9yID0gXCJibGFja1wiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>hosp_adm_q_split %&gt;% 
   mutate(season = ifelse(quarter %in% c(2,3), &quot;Spring/Summer&quot;, &quot;Autumn/Winter&quot;)) %&gt;% 
   filter(nhs_health_board != &quot;All of Scotland&quot;) %&gt;% 
   group_by(season) %&gt;% 
@@ -2103,6 +2102,10 @@ hosp_adm_q_split %&gt;%
     color = &quot;black&quot;)
 </code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbXV0YXRlKC4sIHNlYXNvbiA9IGlmZWxzZShxdWFydGVyICVpbiUgYygyLCAzKSwgXCJTcHJpbmcvU3VtbWVyXCIsICA6IFxuICBvYmplY3QgJ2hvc3BfYWRtX3Ffc3BsaXQnIG5vdCBmb3VuZFxuIn0= -->
+<pre><code>Error in mutate(., season = ifelse(quarter %in% c(2, 3), &quot;Spring/Summer&quot;,  : 
+  object &#39;hosp_adm_q_split&#39; not found</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
