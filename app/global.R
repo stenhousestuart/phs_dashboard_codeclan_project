@@ -5,10 +5,12 @@ library(here)
 library(janitor)
 library(leaflet)
 library(DT)
-library(Hmisc)
 library(bslib)
 library(shinyWidgets)
 library(leafpop)
+library(phsstyles)
+library(infer)
+
 
 
 # Read In Data
@@ -53,7 +55,6 @@ geo_year_choice <- locations_occupancy_full %>%
   drop_na(year) %>% 
   rename("Year" = year)
 
-
 geo_quarter_choice <- locations_occupancy_full %>% 
   arrange(quarter) %>% 
   distinct(quarter) %>% 
@@ -76,10 +77,9 @@ speciality_choice_longer <- locations_occupancy_full %>%
   arrange(specialty_name) %>% 
   rename("Specialty Name" = specialty_name)
 
-phs_theme <- bs_theme(
-  bg = "#F0F4F5",
-  fg = "#212B32",
-  primary = "#005EB8",
-  base_font = font_collection(font_google("Hind", local = TRUE), "arial"),
-  heading_font = font_collection(font_google("Hind", local = TRUE))
-)
+phs_colour_scheme <- c("#3F3685", "#9B4393", "#0078D4", "#83BB26", "#948DA3",
+                                "#1E7F84", "#C73918", "#E1C7DF",
+                                "#B3D7F2", "#DAEBBE", "#8073AC", "#853F36", 
+                                "#367C85", "#D6604D")
+
+
