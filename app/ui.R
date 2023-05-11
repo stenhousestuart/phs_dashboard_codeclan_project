@@ -192,12 +192,15 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                   tabPanel(
                     title = "Temporal",
                     tags$br(),
-                    fluidRow(column(width = 3,
+                    fluidRow(
+                      column(width = 3,
                                     radioButtons(inputId = "temporal_plot_type_input",
                                                  label = tags$b("View:"),
                                                  choices = c("Total Number of Admissions", "Mean Length of Stay")
                                     ),
                     ),
+                    ),
+                    fluidRow(
                     column(width = 3,
                            pickerInput(inputId = "admission_input_tempo",
                                        label = tags$b("Admission Type:"),
@@ -282,15 +285,20 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                          multiple = TRUE),
                              
                       ),
-                      column(width = 3,
+                     
+                      
+                      column(width = 8,
+                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
+                    # ),
+                    ),
+                  fluidRow(
+                  column(width = 3,
                              actionButton(inputId = "update_geo",
                                           label = "Update",
                                           icon = icon("refresh")
                              ),
-                      ),
-                      column(width = 4,
-                             p("Description Text", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
-                    ),
+                         )
+                  ),
                     tags$br(),
                     fluidRow(column(width = 10,
                                     offset = 1,
@@ -298,33 +306,27 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     ),
                     ),
                   ),
-                  
-                  
                   tabPanel(
                     title = "Speciality",
                     tabsetPanel(
                       tabPanel(
-                        title = "Specialities by mean",
-                        fluidRow(
-                          radioButtons(inputId = "speciality_plot_type_input",
-                                       label = "View:",
-                                       choices = c("Mean Admissions", "Mean Length of Stay"),
+                        title = "Length of Stay by Speciality",
+                        
+                        fluidRow( 
+                          column(width = 4,
+                                 pickerInput(
+                                   inputId = "speciality_input",
+                                   label = "Please select Speciality(s)",
+                                   choices = speciality_choice,
+                                   multiple = TRUE,
+                                   selected = "General Surgery",
+                                   pickerOptions(actionsBox = TRUE)
+                                 ),
                           ),
-                          fluidRow( 
-                            column(width = 6,
-                                   pickerInput(
-                                     inputId = "speciality_input",
-                                     label = "Please select Speciality(s)",
-                                     choices = speciality_choice,
-                                     multiple = TRUE,
-                                     selected = "General Surgery",
-                                     pickerOptions(actionsBox = TRUE)
-                                   ),
-                            ),
-                            column(width = 6,
-                                   print("I don't think you've considered the impact of being able to write text here."))
-                          )
+                          column(width = 8,
+                                 print("I don't think you've considered the impact of being able to write text here."))
                         ),
+                        
                         actionButton(inputId = "update_speciality",
                                      label = "Update Dashboard",
                                      icon = icon("cat", class = "fa-bounce")),
@@ -364,6 +366,8 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                   ), # closes tabPanel for speciality
                   
                   
+                  
+                  
                   tabPanel(
                     title = "Demographics",
                     tabsetPanel(
@@ -378,7 +382,9 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-                          column(width = 3,
+                        ),
+                        fluidRow(
+                          column(width = 4,
                                  
                                  
                                  pickerInput(inputId = "age_input",
@@ -391,7 +397,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                           
                           
                           
-                          column(width = 5,
+                          column(width = 8,
                                  p(tags$b("Hypothesis Test:")),
                                  p(tags$b("H0:"), "Over 50 Mean Admissions - Under 50 Mean Admissions = 0",tags$br(),
                                    tags$b("HA:"), "Over 50 Mean Admissions - Under 50 Mean Admissions != 0", tags$br(),
@@ -430,8 +436,9 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-                          
-                          column(width = 3,
+                        ),
+                        fluidRow(
+                          column(width = 4,
                                  
                                  
                                  pickerInput(inputId = "deprivation_input",
@@ -442,7 +449,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                              selected = 1)
                           ),
                           
-                          column(width = 6,
+                          column(width = 8,
                                  p(tags$b("Hypothesis Test:")),
                                  p(tags$b("H0:"), "Mean SIMD 1 Admissions - Mean SIMD 5 Admissions = 0",tags$br(),
                                    tags$b("HA:"), "Mean SIMD 1 Admissions - Mean SIMD 5 Admissions != 0",tags$br(),
@@ -476,9 +483,11 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                              radioButtons(inputId = "age_gender_plot_type_input",
                                           label = tags$b("View:"),
                                           choices = c("No. of Admissions", "Average Length of Stay"))
-                      ),  
+                      ),
+                    ),
+                    fluidRow(
                       tags$br(),
-                      column(width = 3,
+                      column(width = 4,
                              pickerInput(inputId = "gender_age_input",
                                          label = tags$b("Age Range(s):"),
                                          choices = age_choice,
@@ -488,7 +497,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                       ),
                       
                     
-                    column(width = 6,
+                    column(width = 8,
                            p(tags$b("Hypothesis Test:")),
                            p(tags$b("H0:"), "Mean Female Admissions - Mean Male Admissions = 0",tags$br(),
                              tags$b("HA:"), "Mean Female Admissions - Mean Male Admissions != 0",tags$br(),
