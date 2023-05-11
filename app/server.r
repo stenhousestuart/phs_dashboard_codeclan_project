@@ -542,20 +542,25 @@ speciality_output_selection <- eventReactive(eventExpr = input$update_speciality
                                                # }
                                                
                                                # else{
-                                                 filtered_speciality() %>% 
-                                                   group_by(quarter, specialty_name, pre_post_covid) %>% 
-                                                   drop_na(average_length_of_spell) %>% 
-                                                   summarise(avg_length_of_stay = mean(average_length_of_spell)) %>% 
-                                                   ggplot(aes(x = quarter, y = avg_length_of_stay, colour = specialty_name)) +
-                                                   geom_line() +
-                                                   facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
-                                                   labs(
-                                                     title = "Mean length of episodes by Quarter for Specialities",
-                                                     x = "Quarter",
-                                                     y = "Mean of Average Length of Stay (In Days)",
-                                                     col = "Speciality Name",
-                                                     subtitle = "2017 Q3 to 2022 Q3"
-                                                   )
+                                               filtered_speciality() %>% 
+                                                 group_by(quarter, specialty_name, pre_post_covid) %>% 
+                                                 drop_na(average_length_of_spell) %>% 
+                                                 summarise(avg_length_of_stay = mean(average_length_of_spell)) %>% 
+                                                 ggplot(aes(x = quarter, y = avg_length_of_stay, colour = specialty_name)) +
+                                                 geom_line() +
+                                                 geom_point(aes(colour = specialty_name), size = 6, shape = 17) +
+                                                 facet_wrap(~factor(pre_post_covid, level = c("Pre-2020", "Post-2020"))) +
+                                                 labs(
+                                                   title = "Mean length of episodes by Quarter for Specialities",
+                                                   x = "Quarter",
+                                                   y = "Mean of Average Length of Stay (In Days)",
+                                                   col = "Speciality Name",
+                                                   subtitle = "2017 Q3 to 2022 Q3"
+                                                 ) +
+                                                 theme_light() +
+                                                 scale_colour_manual(values = phs_colour_scheme) +
+                                                 theme(plot.title = element_text(size = 18, face = "bold"),
+                                                       plot.subtitle = element_text(size = 13))
                                              })
 
 output$speciality_output <-renderPlot(
@@ -581,7 +586,7 @@ speciality_occupancy_filter() %>%
     stat_summary(fun.data = "mean_cl_normal",
                  geom = "errorbar",
                  width = .1) +
-    stat_summary(fun = "mean", geom = "point", size = 4) +
+    stat_summary(fun = "mean", geom = "point", size = 4, shape = 17) +
     stat_summary(fun = "mean",
                  geom = "line",
                  color = "black") +
@@ -592,7 +597,11 @@ speciality_occupancy_filter() %>%
       y = "Hospital Admissions",
       col = "Speciality Name",
       subtitle = "2017 Q3 to 2022 Q3"
-    )
+    ) + 
+  theme_light() +
+  scale_colour_manual(values = phs_colour_scheme) +
+  theme(plot.title = element_text(size = 18, face = "bold"),
+        plot.subtitle = element_text(size = 13))
 )
 
 
