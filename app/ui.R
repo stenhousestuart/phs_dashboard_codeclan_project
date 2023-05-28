@@ -230,34 +230,34 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                     tags$br(),
                     fluidRow(
                       column(width = 3,
-                                    radioButtons(inputId = "temporal_plot_type_input",
-                                                 label = tags$b("View:"),
-                                                 choices = c("Total Number of Admissions", "Mean Length of Stay")
-                                    ),
-                    ),
+                             radioButtons(inputId = "temporal_plot_type_input",
+                                          label = tags$b("View:"),
+                                          choices = c("Total Number of Admissions", "Mean Length of Stay")
+                             ),
+                      ),
                     ),
                     fluidRow(
-                    column(width = 3,
-                           pickerInput(inputId = "admission_input_tempo",
-                                       label = tags$b("Admission Type:"),
-                                       choices = admission_choice,
-                                       selected = "All Inpatients")
-                           
-                           
-                    ),
-                    column(width = 3,
-                           
-                           pickerInput(inputId = "health_board_input_tempo",
-                                       label = tags$b("Health Board:"),
-                                       choices = health_board_choice,
-                                       selected = "All of Scotland",
-                                       multiple = TRUE,
-                                       pickerOptions(actionsBox = TRUE))
-                    ),
-                    
-                    column(width = 3,
-                           p("The selections allow visualisation of trends in the total number of admissions and the mean length of stay from Q3 2017 to Q3 2022.", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
-                    
+                      column(width = 3,
+                             pickerInput(inputId = "admission_input_tempo",
+                                         label = tags$b("Admission Type:"),
+                                         choices = admission_choice,
+                                         selected = "All Inpatients")
+                             
+                             
+                      ),
+                      column(width = 3,
+                             
+                             pickerInput(inputId = "health_board_input_tempo",
+                                         label = tags$b("Health Board:"),
+                                         choices = health_board_choice,
+                                         selected = "All of Scotland",
+                                         multiple = TRUE,
+                                         pickerOptions(actionsBox = TRUE))
+                      ),
+                      
+                      column(width = 3,
+                             p("The selections allow visualisation of trends in the total number of admissions and the mean length of stay from Q3 2017 to Q3 2022.", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
+                      
                     ),
                     fluidRow(
                       column(width = 3,
@@ -319,20 +319,20 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                          multiple = TRUE),
                              
                       ),
-                     
+                      
                       
                       column(width = 8,
                              p("Trends in the Percentage of Bed Occupancy Numbers for each NHS Health Board", style="text-align:justify;color:black;background-color:#DAEBBE;padding:15px;border-radius:10px"))
-                    # ),
+                      # ),
                     ),
-                  fluidRow(
-                  column(width = 3,
+                    fluidRow(
+                      column(width = 3,
                              actionButton(inputId = "update_geo",
                                           label = "Update",
                                           icon = icon("refresh")
                              ),
-                         )
-                  ),
+                      )
+                    ),
                     tags$br(),
                     fluidRow(column(width = 10,
                                     offset = 1,
@@ -416,7 +416,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-
+                          
                           column(width = 3,
                                  
                                  
@@ -437,8 +437,8 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                    tags$b("Results/Interpretation:"), "Based on a bootstrapped NULL distribution, a very low p-value which is less than 0.05 is returned. We therefor reject 
                                    H0 with evidence suggesting that there is a statistically significant difference in admission numbers 
                                    between those over 50 and those under 50."),
-                                   
-                        ),
+                                 
+                          ),
                         ),
                         
                         fluidRow(
@@ -468,7 +468,7 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                               label = tags$b("View:"),
                                               choices = c("Mean No. of Admissions", "Mean Length of Stay"))
                           ),
-
+                          
                           column(width = 3,
                                  
                                  
@@ -489,72 +489,72 @@ ui <- fluidPage(theme = bs_theme(bootswatch = "pulse"),
                                    difference in admission numbers between those in the highest and lowest deprivation groups."),
                           ),
                         ), 
-                  
-                  fluidRow(
-                    column(width = 4,
-                           actionButton(inputId = "update_demo_deprivation",
-                                        label = tags$b("Update"),
-                                        icon = icon("refresh")
-                           )
-                    ),
-                    
-                    fluidRow(
-                      plotOutput("demo_deprivation_output")
-                    ),
-                    
-                  ),
+                        
+                        fluidRow(
+                          column(width = 4,
+                                 actionButton(inputId = "update_demo_deprivation",
+                                              label = tags$b("Update"),
+                                              icon = icon("refresh")
+                                 )
+                          ),
+                          
+                          fluidRow(
+                            plotOutput("demo_deprivation_output")
+                          ),
+                          
+                        ),
                       ),
-                  tabPanel(
-                    title = "Gender & Age",
-                    tags$br(),
-                    fluidRow(
-                      column(width = 3,
-                             radioButtons(inputId = "age_gender_plot_type_input",
-                                          label = tags$b("View:"),
-                                          choices = c("No. of Admissions", "Average Length of Stay"))
-                      ),
-
-                      tags$br(),
-                      column(width = 3,
-                             pickerInput(inputId = "gender_age_input",
-                                         label = tags$b("Age Range(s):"),
-                                         choices = age_choice,
-                                         multiple = TRUE,
-                                         pickerOptions(actionsBox = TRUE),
-                                         selected = "20-29"),
-                      ),
-                      
-                    
-                    column(width = 6,
-                           p(tags$b("Question:"), "Does the mean number of hospital admissions differ between females and males?",tags$br(),
-                             tags$b("Test:"), "Two Sample Mean Test",tags$br(),
-                             tags$b("Significance Level:"), "α0.05",tags$br(),
-                             tags$b("Results/Interpretation:"), "Based on a bootstrapped NULL distribution, a p-value of 0.62 is returned which is greater than the 
+                      tabPanel(
+                        title = "Gender & Age",
+                        tags$br(),
+                        fluidRow(
+                          column(width = 3,
+                                 radioButtons(inputId = "age_gender_plot_type_input",
+                                              label = tags$b("View:"),
+                                              choices = c("No. of Admissions", "Average Length of Stay"))
+                          ),
+                          
+                          tags$br(),
+                          column(width = 3,
+                                 pickerInput(inputId = "gender_age_input",
+                                             label = tags$b("Age Range(s):"),
+                                             choices = age_choice,
+                                             multiple = TRUE,
+                                             pickerOptions(actionsBox = TRUE),
+                                             selected = "20-29"),
+                          ),
+                          
+                          
+                          column(width = 6,
+                                 p(tags$b("Question:"), "Does the mean number of hospital admissions differ between females and males?",tags$br(),
+                                   tags$b("Test:"), "Two Sample Mean Test",tags$br(),
+                                   tags$b("Significance Level:"), "α0.05",tags$br(),
+                                   tags$b("Results/Interpretation:"), "Based on a bootstrapped NULL distribution, a p-value of 0.62 is returned which is greater than the 
                              significance level. We therefor fail to reject H0 as there is insufficient evidence to suggest there 
                              is a statistically significant difference in number of admissions between females and males."), 
-                           
-                    ),
-                    ),
-                    
-                    fluidRow(
-                      column(width = 4,
-                             actionButton(inputId = "update_demo_gender_age",
-                                          label = tags$b("Update"),
-                                          icon = icon("refresh")),
-                      )
-                    ),
-                    
-                    fluidRow(column(width = 10,
-                                    offset = 1,
-                                    plotOutput("demo_age_gender_output"),
-                    ),
-                    ),
-                    
-                    fluidRow(
-                      print("Only years where complete data is available have been included.")
-                      
-                    ),
-                  ),
+                             
+                          ),
+                        ),
+                        
+                        fluidRow(
+                          column(width = 4,
+                                 actionButton(inputId = "update_demo_gender_age",
+                                              label = tags$b("Update"),
+                                              icon = icon("refresh")),
+                          )
+                        ),
+                        
+                        fluidRow(column(width = 10,
+                                        offset = 1,
+                                        plotOutput("demo_age_gender_output"),
+                        ),
+                        ),
+                        
+                        fluidRow(
+                          print("Only years where complete data is available have been included.")
+                          
+                        ),
+                      ),
                     ),
                   ),
                 ),
